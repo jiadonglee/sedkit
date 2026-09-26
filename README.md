@@ -1,0 +1,81 @@
+# sedlet
+
+Download and fit stellar spectral energy distributions.
+
+sedlet combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
+AllWISE photometry. A compact empirical stellar model predicts absolute
+fluxes for a single star or a coeval binary. The package runs on NumPy and
+SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
+
+## Install
+
+```bash
+pip install "sedlet[download] @ git+https://github.com/jiadonglee/sedlet.git"
+```
+
+For a local checkout, use `pip install -e ".[download]"`. Plain
+`pip install .` supports offline fitting and plotting. Notebooks additionally
+need Jupyter: `pip install -e ".[download,notebook]"`.
+
+## One source
+
+```python
+from sedlet import download, fit, plot
+
+sed = download("1521154374020165376", cache_dir="data")
+result = fit(sed, age_gyr=5.0, feh=0.0)
+print(result["binary"]["m1"], result["binary"]["q"])
+fig = plot(sed, result, path="sed.png")
+```
+
+This example fixes age and metallicity. Use `age_gyr=None, feh=None` to fit
+them. Use `kind="single"`, `kind="binary"`, or the default `kind="both"`;
+`q=0.7` fixes the binary mass ratio. `result["delta"]` is the single minus
+binary objective, including the shared parallax constraint. It is a model
+preference diagnostic, not a binary probability.
+
+Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
+at Gaia's reference epoch. Coordinate lookup requires exactly one Gaia
+match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
+
+## Examples and interfaces
+
+- [Quickstart notebook](examples/quickstart.ipynb): download, fit, plot and reuse.
+- [Offline mock](examples/mock.py): a reproducible coeval binary experiment.
+- [Public source example](examples/real_source.py): an observed SED and residuals.
+- [API](docs/api.md): observations, predictions and fitting options.
+- [Model and limitations](docs/model.md): physical assumptions and support.
+- [Data and provenance](docs/data.md): units, quality masks and cache products.
+- [orblet interface](docs/orblet.md): shared masses and G-band light ratio.
+- [Validation](docs/validation.md): installation and example checks.
+
+An offline snapshot of the public source is included:
+
+```python
+from sedlet import SED
+sed = SED.load("examples/gaia_dr3_1521154374020165376.npz")
+```
+
+![Observed SED example](examples/real_source.png)
+
+The example fixes age and metallicity. Its binary fit reaches the parallax
+constraint boundary and retains structured XP residuals; the figure
+demonstrates the workflow, rather than confirming a companion.
+
+## Development
+
+```bash
+pip install -e ".[test]"
+pytest -q
+```
+
+## Credits
+
+The bundled empirical model is extracted from
+[J-CAPS](https://github.com/jiadonglee/J-Caps), using PARSEC stellar tracks.
+Public XP spectra are calibrated with
+[GaiaXPy](https://gaia-dpci.github.io/GaiaXPy-website/).
+Catalogue data are retrieved through
+[astroquery](https://astroquery.readthedocs.io/en/latest/gaia/gaia.html).
+Please acknowledge Gaia, 2MASS, WISE, PARSEC and J-CAPS when using these
+data and models in research; see [provenance](docs/data.md).

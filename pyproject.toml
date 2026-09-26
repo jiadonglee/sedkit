@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sedlet"
+version = "0.1.0"
+description = "Download and fit stellar spectral energy distributions"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT AND BSD-2-Clause"
+license-files = ["LICENSE"]
+authors = [{name = "Jiadong Li"}]
+dependencies = ["numpy>=1.24", "scipy>=1.10", "matplotlib>=3.7"]
+
+[project.optional-dependencies]
+download = ["astropy>=6", "astroquery>=0.4.7", "gaiaxpy>=2.1", "requests>=2.31"]
+notebook = ["jupyterlab", "ipykernel"]
+test = ["pytest>=7", "astropy>=6", "requests>=2.31"]
+
+[project.urls]
+Repository = "https://github.com/jiadonglee/sedlet"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sedlet = ["models/*.npz", "models/stellar/*.npz", "models/stellar/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
