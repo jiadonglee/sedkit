@@ -6,5 +6,5 @@ from .fit import fit
 from .plot import plot
 from .fetch import download
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = ["SED", "StellarModel", "download", "fit", "plot"]

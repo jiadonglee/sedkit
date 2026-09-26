@@ -58,6 +58,15 @@ components, light ratio, `chi2`, `m2lnl`, `objective`, `n_fit`, `mask`,
 
 ## Plotting
 
-`plot(sed, result=None, path=None)` returns a Matplotlib Figure. Save it with
-`path=` or `fig.savefig(...)`. Residuals are divided by measurement errors,
-so they may exceed unity even when model uncertainty accommodates them.
+`plot(sed, result=None, path=None, *, axes=None, components=True, title=None)`
+returns a Matplotlib Figure. Save it with `path=` or `fig.savefig(...)`.
+The paper-style upper panel shows linear lambda F_lambda in physical units;
+the lower panel shows ln(F/F_single), or ln(F/F_binary) for a binary-only
+result. Measurement errors are unchanged; log-panel error bars use the
+first-order error/flux approximation. Nonpositive measurements appear only
+in the upper panel. Open points identify available but excluded channels.
+
+Use `components=False` to hide component spectra, `title=` for a custom
+caption, or `axes=(sed_axis, ratio_axis)` for a multi-source layout. With
+external axes, supply the shared legend and save their owning figure.
+The plotting style is scoped to the call; spectra are not normalized.

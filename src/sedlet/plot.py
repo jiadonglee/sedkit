@@ -1,70 +1,121 @@
-"""SED plots in observed absolute flux, with residuals and components."""
+"""Paper-style SED and relative-flux diagnostics on the absolute flux scale."""
 
 import numpy as np
 
 from .model import StellarModel
 
+SINGLE, BINARY, OBS = "#eb6834", "#2a78d6", "#9a9994"
+INK, INK2 = "#0b0b0b", "#52514e"
+PAPER_STYLE = {
+    "font.size": 10, "axes.labelsize": 10, "axes.titlesize": 10.5,
+    "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 9,
+    "font.family": "sans-serif", "axes.spines.top": False,
+    "axes.spines.right": False, "axes.edgecolor": INK2,
+    "axes.labelcolor": INK, "xtick.color": INK2, "ytick.color": INK2,
+    "text.color": INK, "axes.grid": False, "lines.linewidth": 1.2,
+    "legend.frameon": False, "savefig.dpi": 300, "pdf.fonttype": 42,
+}
+BINARY_LS = (0, (4, 1.5))
 
-def plot(sed, result=None, *, path=None):
-    """Return a Matplotlib Figure; optionally save PNG/PDF to path.
 
-    Residuals use measurement errors, not the larger fitted model errors.
-    Open symbols mark available measurements excluded from the fit.
+def _segments(ax, wave, values, **kwargs):
+    for start, stop in ((0, 61), (66, 168)):
+        order = np.argsort(wave[start:stop]) + start
+        ax.plot(wave[order], values[order], **kwargs)
+        kwargs.pop("label", None)
+
+
+def plot(sed, result=None, path=None, *, axes=None, components=True, title=None):
+    """Return a paper-style Figure, optionally save it or draw into two axes.
+
+    The upper panel is linear lambda F_lambda in physical units. The lower
+    panel shows ln(F/F_single), with the binary/single model difference.
+    Error bars use the unchanged measurement errors; log-panel errors are
+    first-order error/flux. Open points are available but excluded bands.
+    `axes=(sed_axis, ratio_axis)` supports multi-source layouts. With external
+    axes the caller supplies a shared legend and saves the owning figure.
     """
     import matplotlib.pyplot as plt
 
-    model = StellarModel()
-    wave = model.wavelength_um
-    fig, (ax, residual) = plt.subplots(2, 1, figsize=(9, 6), sharex=True,
-                                      gridspec_kw={"height_ratios": [3, 1]}, layout="constrained")
+    wave = StellarModel().wavelength_um
+    fits = [] if result is None else (
+        [result["single"], result["binary"]] if "binary" in result else [result])
+    fitted = fits[-1]["mask"] if fits else sed.fit_mask()
     available = np.isfinite(sed.flux) & np.isfinite(sed.error) & (sed.error > 0)
-    fitted = sed.fit_mask() if result is None else (
-        result["binary"]["mask"] if "binary" in result else result["mask"])
-    for segment, label, marker, color in (
-            (slice(0, 61), "Gaia XP", ".", "#343a40"),
-            (slice(61, 66), "2MASS / WISE", "s", "#a15d00"),
-            (slice(66, 168), "SPHEREx", "o", "#27827e")):
-        index = np.arange(168)[segment]
-        index = index[available[index]]
-        if not len(index):
-            continue
-        used = index[fitted[index]]
-        held = index[~fitted[index]]
-        ax.errorbar(wave[used], wave[used] * sed.flux[used],
-                    yerr=wave[used] * sed.error[used], fmt=marker, ms=4,
-                    color=color, alpha=0.8, label=label)
-        if len(held):
-            ax.errorbar(wave[held], wave[held] * sed.flux[held],
-                        yerr=wave[held] * sed.error[held], fmt=marker, ms=5,
-                        color=color, markerfacecolor="none", alpha=0.5,
-                        label=label + " (excluded)")
-    if result is not None:
-        fits = [result["single"], result["binary"]] if "binary" in result else [result]
+    observed = wave * sed.flux * 1e-15
+    values = observed[available]
+    peak = np.max(values) if len(values) else 1e-15
+    power = int(np.floor(np.log10(peak))) if peak > 0 else -15
+    unit = 10.0**power
+    standalone = axes is None
+    with plt.rc_context(PAPER_STYLE):
+        if standalone:
+            fig, (ax, ratio) = plt.subplots(2, 1, figsize=(7.087, 4.7), sharex=True,
+                gridspec_kw={"height_ratios": [2.5, 1]}, layout="constrained")
+        else:
+            ax, ratio = axes
+            fig = ax.figure
+        ref = fits[0]["flux"] if fits else None
+        for segment, label, marker, size in (
+                (slice(0, 61), "XP", "o", 2.1),
+                (slice(61, 64), r"$JHK_s$", "s", 4.2),
+                (slice(64, 66), "WISE", "s", 4.2),
+                (slice(66, 168), "SPHEREx", "o", 2.1)):
+            indices = np.arange(168)[segment]
+            indices = indices[available[indices]]
+            for keep, face, suffix in ((True, OBS, ""), (False, "white", " (excluded)")):
+                index = indices[fitted[indices] == keep]
+                if not len(index):
+                    continue
+                ax.errorbar(wave[index], observed[index] / unit,
+                    yerr=wave[index] * sed.error[index] * 1e-15 / unit,
+                    fmt=marker, ms=size, mfc=face, mec=INK2, mew=.45,
+                    color=OBS, elinewidth=.35, lw=0, zorder=2,
+                    label=label + suffix)
+                if ref is not None:
+                    good = index[(sed.flux[index] > 0) & (ref[index] > 0)]
+                    ratio.errorbar(wave[good], np.log(sed.flux[good] / ref[good]),
+                        yerr=sed.error[good] / sed.flux[good], fmt=marker,
+                        ms=size, mfc=face, mec=INK2, mew=.4, color=OBS,
+                        elinewidth=.3, lw=0, alpha=1 if keep else .55, zorder=2)
         for fit_result in fits:
-            color = "#d87528" if fit_result["kind"] == "single" else "#3166b5"
-            for start, stop in ((0, 61), (66, 168)):
-                ax.plot(wave[start:stop], wave[start:stop] * fit_result["flux"][start:stop],
-                        color=color, label=fit_result["kind"] if start == 0 else None)
-            ax.scatter(wave[61:66], wave[61:66] * fit_result["flux"][61:66],
-                       marker="_", s=65, color=color)
-            residual.plot(wave[fitted],
-                          ((sed.flux - fit_result["flux"]) / sed.error)[fitted],
-                          ".", ms=3, color=color)
-        chosen = fits[-1]
-        if chosen["kind"] == "binary":
-            for component, linestyle, label in zip(chosen["components"], ("--", ":"), ("primary", "secondary")):
-                for start, stop in ((0, 61), (66, 168)):
-                    ax.plot(wave[start:stop], wave[start:stop] * component[start:stop],
-                            linestyle, color="#3166b5", alpha=0.6,
-                            label=label if start == 0 else None)
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-    ax.set_ylabel(r"$\lambda F_\lambda$ [$10^{-15}$ W m$^{-2}$]")
-    ax.set_title("Gaia DR3 " + sed.source_id if sed.source_id else "Stellar SED")
-    ax.legend(fontsize=8, ncol=3)
-    residual.axhline(0, color="0.5", lw=0.7)
-    residual.set_ylabel("Residual / error")
-    residual.set_xlabel("Wavelength [µm]")
-    if path is not None:
-        fig.savefig(path, dpi=160)
+            binary = fit_result["kind"] == "binary"
+            color, ls = (BINARY, BINARY_LS) if binary else (SINGLE, "-")
+            flux = wave * fit_result["flux"] * 1e-15 / unit
+            _segments(ax, wave, flux, color=color, ls=ls,
+                      lw=1.35, zorder=5, label=fit_result["kind"])
+            ax.plot(wave[61:66], flux[61:66], "_", ms=8, mew=1.3, color=color, zorder=5)
+            relative = np.log(fit_result["flux"] / ref)
+            _segments(ratio, wave, relative, color=color, ls=ls, lw=1.35, zorder=5)
+            ratio.plot(wave[61:66], relative[61:66], "_", ms=8, mew=1.3, color=color, zorder=5)
+        if fits and fits[-1]["kind"] == "binary" and components:
+            for component, ls, label in zip(fits[-1]["components"], ("--", ":"), ("primary", "secondary")):
+                _segments(ax, wave, wave * component * 1e-15 / unit,
+                          color=INK2, ls=ls, lw=.75, alpha=.65, label=label, zorder=1)
+        if not fits:
+            ratio.axhline(0, color=INK2, lw=.7)
+            ratio.set_ylabel("No fitted model")
+        else:
+            reference = fits[0]["kind"]
+            ratio.set_ylabel(r"$\ln(F/F_{\rm " + reference + r"})$")
+        ax.set_ylim(min(0.0, float(np.min(values)) / unit * 1.05) if len(values) else 0, None)
+        ax.set_ylabel(rf"$\lambda F_\lambda$ [$10^{{{power}}}$ W m$^{{-2}}$]")
+        ax.set_title(title if title is not None else (
+            "Gaia DR3 " + sed.source_id if sed.source_id else "Stellar SED"),
+            loc="left", fontsize=9.5, pad=5)
+        for axis in (ax, ratio):
+            axis.set_xscale("log")
+            axis.set_xlim(.37, 5.3)
+            axis.set_xticks((.4, .7, 1, 2, 3, 5), ("0.4", "0.7", "1", "2", "3", "5"))
+            axis.minorticks_off()
+            axis.tick_params(labelsize=9)
+            axis.spines["top"].set_visible(False)
+            axis.spines["right"].set_visible(False)
+        ratio.set_xlabel(r"Wavelength [$\mu$m]")
+        if standalone:
+            handles, labels = ax.get_legend_handles_labels()
+            fig.legend(handles, labels, loc="outside upper center", ncol=4,
+                       fontsize=8.5, handlelength=1.8, columnspacing=1)
+        if path is not None:
+            fig.savefig(path, dpi=300, bbox_inches="tight", pad_inches=.02)
     return fig

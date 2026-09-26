@@ -43,6 +43,7 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 - [Quickstart notebook](examples/quickstart.ipynb): download, fit, plot and reuse.
 - [Offline mock](examples/mock.py): a reproducible coeval binary experiment.
 - [Public source example](examples/real_source.py): an observed SED and residuals.
+- [Four real SB2 systems](docs/sb2.md): SED fits compared with RV mass ratios.
 - [API](docs/api.md): observations, predictions and fitting options.
 - [Model and limitations](docs/model.md): physical assumptions and support.
 - [Data and provenance](docs/data.md): units, quality masks and cache products.
@@ -55,6 +56,12 @@ An offline snapshot of the public source is included:
 from sedlet import SED
 sed = SED.load("examples/gaia_dr3_1521154374020165376.npz")
 ```
+
+![Four Gaia DR3 SB2 systems](examples/sb2_20260927/overview.png)
+
+The SB2 examples fit age and metallicity. All four prefer the binary model,
+but SED mass ratios do not agree uniformly with the independent RV values.
+See the [experiment](docs/sb2.md) for the comparison and limitations.
 
 ![Observed SED example](examples/real_source.png)
 
