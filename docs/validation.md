@@ -29,3 +29,14 @@ XP+JHKs observations. All four prefer the binary model, with differing
 agreement between SED and RV mass ratios. See the [SB2 experiment](sb2.md)
 for results, selection, reproducible inputs and limitations. Individual
 and combined paper-style plots were inspected after export.
+
+## SPHEREx acquisition
+
+On 2026-09-27, a live TallTable query and QR2 aperture extraction for
+Gaia DR3 858860697467058688 produced 34 valid SPHEREx channels from 80
+complete, unflagged apertures. The combined SED fits 98 channels, retaining
+all XP and broadband measurements unchanged. The [example](spherex.md)
+includes native Jy spectra, all exposure measurements and the extraction
+configuration. Four focused tests check physical unit conversion against
+Astropy, unchanged inputs, missing/mismatched channel handling, proper-motion
+arguments, cache reuse and explicit refresh.

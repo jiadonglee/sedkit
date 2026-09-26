@@ -1,0 +1,23 @@
+{
+  "data_release": "qr2",
+  "method": "aperture",
+  "spectral_channels_collection": "cal-sch-v1-2026-106",
+  "extraction_source": "https://github.com/jiadonglee/XphereX",
+  "extraction_revision": "b313934d84fea9221c9607ba70f259c025faf660",
+  "aperture_radius_pix": 2.0,
+  "query_radius_arcmin": 0.8,
+  "ra": 176.07741902262634,
+  "dec": 60.321599713253484,
+  "pmra": -10.021950270197856,
+  "pmdec": -109.84696273456142,
+  "ref_epoch": 2016.0,
+  "query_epoch": 2025.5,
+  "query_ra": 176.0773655997283,
+  "query_dec": 60.321309787099764,
+  "n_pixels": 66662,
+  "n_exposures": 307,
+  "n_valid_exposures": 80,
+  "aperture_quality": "no fatal aperture flags and full unmasked area",
+  "input_unit": "Jy",
+  "proper_motion": "query-centre propagation to 2025.5"
+}

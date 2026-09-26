@@ -15,7 +15,8 @@ pip install "sedlet[download] @ git+https://github.com/jiadonglee/sedlet.git"
 
 For a local checkout, use `pip install -e ".[download]"`. Plain
 `pip install .` supports offline fitting and plotting. Notebooks additionally
-need Jupyter: `pip install -e ".[download,notebook]"`.
+need Jupyter: `pip install -e ".[download,notebook]"`. For optional SPHEREx
+acquisition, add the `spherex` extra; see [SPHEREx downloads](docs/spherex.md).
 
 ## One source
 
@@ -44,6 +45,7 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 - [Offline mock](examples/mock.py): a reproducible coeval binary experiment.
 - [Public source example](examples/real_source.py): an observed SED and residuals.
 - [Four real SB2 systems](docs/sb2.md): SED fits compared with RV mass ratios.
+- [SPHEREx downloads](docs/spherex.md): append QR2 spectra or import XphereX results.
 - [API](docs/api.md): observations, predictions and fitting options.
 - [Model and limitations](docs/model.md): physical assumptions and support.
 - [Data and provenance](docs/data.md): units, quality masks and cache products.
@@ -82,6 +84,9 @@ The bundled empirical model is extracted from
 [J-CAPS](https://github.com/jiadonglee/J-Caps), using PARSEC stellar tracks.
 Public XP spectra are calibrated with
 [GaiaXPy](https://gaia-dpci.github.io/GaiaXPy-website/).
+SPHEREx aperture extraction uses [XphereX](https://github.com/jiadonglee/XphereX),
+[TallTable](https://github.com/cmhainje/talltable) and
+[SPExPI](https://github.com/fkiwy/spexpi).
 Catalogue data are retrieved through
 [astroquery](https://astroquery.readthedocs.io/en/latest/gaia/gaia.html).
 Please acknowledge Gaia, 2MASS, WISE, PARSEC and J-CAPS when using these

@@ -31,10 +31,14 @@ The cache contains public measurements, not fitted or corrected fluxes.
 from these public services on 2026-09-26, retaining native measurements,
 errors and catalogue metadata.
 
-SPHEREx support accepts already extracted spectra on the 102-channel
-model grid. Supplied quality masks are retained; G<9 targets exclude that
-segment during fitting because of observed bright-source bias. Pixel
-downloads and spectral extraction are separate from this package.
+SPHEREx spectra can be [downloaded and extracted](spherex.md) through
+TallTable/SPExPI, or imported from XphereX CSVs. The downloader retains
+per-exposure aperture flags and combines only complete, unflagged apertures.
+Jy fluxes/errors are converted to physical F_lambda units; missing channels
+remain masked on the 102-channel model grid. Supplied quality masks are
+retained; G<9 targets exclude that
+segment during fitting because of observed bright-source bias.
+The optional extraction worker has its own isolated dependencies.
 
 ## Sources
 

@@ -17,6 +17,12 @@ with 10 nm spacing; do not substitute another 61-channel grid.
 SED with an already extracted SPHEREx spectrum. Wavelengths must match
 `StellarModel().wavelength_um[66:]`. It does not extract images or resample.
 
+`download_spherex(sed, cache_dir="data", refresh=False, radius_arcmin=0.8)`
+returns a copy with a QR2 aperture spectrum attached. It requires the optional
+`spherex` extra. `load_spherex(sed, path, method=None)` imports channel-binned
+XphereX aperture/PSF CSVs in Jy. See [SPHEREx acquisition](spherex.md) for
+quality selection, native units, cache products and supported channels.
+
 ## Prediction
 
 ```python

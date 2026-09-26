@@ -1,0 +1,31 @@
+{
+  "source_id": "858860697467058688",
+  "n_spherex": 34,
+  "single": {
+    "m1": 0.9320806346331426,
+    "q": 0.0,
+    "age_gyr": 10.0,
+    "feh": 0.2858532760989501,
+    "chi2": 697.8374893327953,
+    "n_fit": 98,
+    "at_bounds": [
+      "ln_age"
+    ],
+    "converged": true
+  },
+  "binary": {
+    "m1": 0.8710458816965834,
+    "q": 0.8285341499469794,
+    "age_gyr": 10.0,
+    "feh": 0.09062076292477608,
+    "chi2": 108.56415379535949,
+    "n_fit": 98,
+    "at_bounds": [
+      "ln_age"
+    ],
+    "converged": true
+  },
+  "delta": 580.7557102414391,
+  "q_rv": 0.8679092693033352,
+  "interpretation": "observed aperture spectrum; age reaches the model boundary"
+}

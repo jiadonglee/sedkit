@@ -5,6 +5,7 @@ from .model import StellarModel
 from .fit import fit
 from .plot import plot
 from .fetch import download
+from .spherex import download_spherex, load_spherex
 
-__version__ = "0.1.1"
-__all__ = ["SED", "StellarModel", "download", "fit", "plot"]
+__version__ = "0.1.2"
+__all__ = ["SED", "StellarModel", "download", "download_spherex", "load_spherex", "fit", "plot"]
