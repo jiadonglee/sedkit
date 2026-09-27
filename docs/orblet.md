@@ -60,6 +60,8 @@ are also checked. [Results](../examples/orblet_20260927/summary.json),
 [SED diagnostics](../examples/orblet_20260927/sed.png) are included, together
 with the simulated observations and PDF figures.
 
+The [HD 195987 example](real-orblet.md) tests observed XP and SB2 RV data.
+
 ## Limitations
 
 This is a conditional, same-template mock with measurement noise only.

@@ -50,6 +50,7 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 - [Model and limitations](docs/model.md): physical assumptions and support.
 - [Data and provenance](docs/data.md): units, quality masks and cache products.
 - [orblet interface](docs/orblet.md): composable likelihood and tested joint mock.
+- [Observed joint fit](docs/real-orblet.md): HD 195987 XP and double-lined RVs.
 - [Validation](docs/validation.md): installation and example checks.
 
 An offline snapshot of the public source is included:

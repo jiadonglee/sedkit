@@ -50,3 +50,13 @@ five-parameter SED + SB2 RV + along-scan astrometry model from three starts.
 The same observations give a strongly biased q when the photocentre light
 correction is omitted. This conditional test fixes orbital shape, age,
 metallicity and astrometric offsets; it does not establish real-data accuracy.
+
+## Observed joint fit
+
+On 2026-09-27, the [HD 195987 experiment](real-orblet.md) fits 61 observed
+XP channels and 52 double-lined RV epochs. Two distinct starts recover
+the same best conditional joint solution. Raw observations are unchanged,
+the SED-only control is no worse than its joint SED-plus-distance term,
+and the profiled RV amplitudes reproduce the independent RV-only fit.
+Age reaches the support boundary and secondary RV residuals exceed the
+published errors; parameter accuracy and uncertainty remain unvalidated.
