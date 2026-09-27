@@ -40,3 +40,13 @@ includes native Jy spectra, all exposure measurements and the extraction
 configuration. Four focused tests check physical unit conversion against
 Astropy, unchanged inputs, missing/mismatched channel handling, proper-motion
 arguments, cache reuse and explicit refresh.
+
+## Joint orblet mock
+
+On 2026-09-27, all 13 package tests passed, including the public
+`loglike_sed` interface, unchanged measurements and absence of a duplicate
+catalogue parallax constraint. The [joint mock](orblet.md) recovers a shared
+five-parameter SED + SB2 RV + along-scan astrometry model from three starts.
+The same observations give a strongly biased q when the photocentre light
+correction is omitted. This conditional test fixes orbital shape, age,
+metallicity and astrometric offsets; it does not establish real-data accuracy.

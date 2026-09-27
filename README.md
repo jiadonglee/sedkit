@@ -49,7 +49,7 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 - [API](docs/api.md): observations, predictions and fitting options.
 - [Model and limitations](docs/model.md): physical assumptions and support.
 - [Data and provenance](docs/data.md): units, quality masks and cache products.
-- [orblet interface](docs/orblet.md): shared masses and G-band light ratio.
+- [orblet interface](docs/orblet.md): composable likelihood and tested joint mock.
 - [Validation](docs/validation.md): installation and example checks.
 
 An offline snapshot of the public source is included:

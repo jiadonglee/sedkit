@@ -1,0 +1,50 @@
+{
+  "truth": {
+    "m1": 0.75,
+    "q": 0.8,
+    "inc_rad": 1.0471975511965976,
+    "parallax_mas": 20.0,
+    "gamma_kms": 18.0
+  },
+  "recovered": {
+    "m1": 0.7504496834105936,
+    "q": 0.799768743520923,
+    "inc_rad": 1.0451372216579013,
+    "parallax_mas": 19.98976591953692,
+    "gamma_kms": 18.02075424081572
+  },
+  "dark_recovered": {
+    "m1": 0.7640042915718421,
+    "q": 0.5844248080977613,
+    "inc_rad": 1.1170398688365923,
+    "parallax_mas": 19.76817164942588,
+    "gamma_kms": 18.13780609485759
+  },
+  "converged": true,
+  "dark_converged": true,
+  "delta_dark_objective": 24752.85290698839,
+  "loglike_parts": {
+    "sed": -630.2501879798284,
+    "rv1": 17.890567221451885,
+    "rv2": 14.28969210922575,
+    "along_scan": 147.98562401348832
+  },
+  "n_sed": 166,
+  "n_rv1": 48,
+  "n_rv2": 53,
+  "n_al": 100,
+  "orbit": {
+    "period_yr": 0.32854209445585214,
+    "ecc": 0.25,
+    "omega": 0.7,
+    "Omega": 1.1,
+    "tau": 0.18,
+    "epoch_ref_mjd": 60000.0,
+    "tp_mjd": 60021.6
+  },
+  "age_gyr": 5.0,
+  "feh": 0.0,
+  "seed": 20260927,
+  "orblet_revision": "7aa297df4520d1e93c8a7a5a763a1f2d928bfa51",
+  "assumptions": "fixed orbital shape, age, metallicity and astrometric offsets; measurement-only mock"
+}

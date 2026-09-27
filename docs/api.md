@@ -41,6 +41,22 @@ Labels are `[Teff, M_Ks, G-Ks, [M/H]]`.
 `model.in_domain(labels)` checks training coverage. Neither operation
 establishes real-data accuracy.
 
+## Composable likelihood
+
+```python
+from sedkit import loglike_sed
+ll_sed = loglike_sed(sed, m1=0.75, q=0.8, parallax_mas=20,
+                    age_gyr=5, feh=0, model=model)
+```
+
+`loglike_sed` evaluates one shared parameter proposal without priors or a
+catalogue parallax constraint. It includes model covariance and its
+determinant, preserving absolute observed fluxes and errors. Reuse `model`
+inside a sampler. W1/W2 are excluded unless `use_wise=True`.
+Unsupported stellar components or nonpositive parallax return `-inf`.
+The fixed `-N/2 log(2pi)` constant is omitted; compare on the same data mask.
+See the [orblet example](orblet.md) for a composed SED + SB2 RV + astrometry fit.
+
 ## Fitting
 
 `fit(sed, kind="both", model=None, age_gyr=5, feh=0, q=None,
