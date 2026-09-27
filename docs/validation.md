@@ -60,3 +60,12 @@ the SED-only control is no worse than its joint SED-plus-distance term,
 and the profiled RV amplitudes reproduce the independent RV-only fit.
 Age reaches the support boundary and secondary RV residuals exceed the
 published errors; parameter accuracy and uncertainty remain unvalidated.
+
+## Group-meeting notebooks
+
+On 2026-09-27, all [three observed-data notebooks](group-meeting.md) executed
+top-to-bottom with Python 3.11, network downloads disabled and the pinned
+orblet revision. Seven figures are embedded in the saved outputs. The SED
+checks preserve original measurements; the joint likelihood reproduces its
+stored objective and the photocentre factor matches orblet. Scientific
+limitations are carried into the notebook explanations.
