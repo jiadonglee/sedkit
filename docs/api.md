@@ -26,7 +26,7 @@ quality selection, native units, cache products and supported channels.
 ## Prediction
 
 ```python
-from sedlet import StellarModel
+from sedkit import StellarModel
 model = StellarModel()
 pair = model.evaluate(m1=0.75, q=0.8, age_gyr=5, feh=0)
 ```

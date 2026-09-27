@@ -24,7 +24,7 @@ and likelihood, without a posterior uncertainty calculation.
 
 ## Reproduce
 
-Install `sedlet[download]`, then run:
+Install `sedkit[download]`, then run:
 
 ```bash
 python examples/sb2_20260927/run.py

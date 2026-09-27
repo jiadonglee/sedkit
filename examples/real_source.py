@@ -3,7 +3,7 @@
 from pathlib import Path
 import json
 
-from sedlet import download, fit, plot
+from sedkit import download, fit, plot
 
 
 def main():

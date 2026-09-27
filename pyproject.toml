@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sedlet"
+name = "sedkit"
 version = "0.1.2"
 description = "Download and fit stellar spectral energy distributions"
 readme = "README.md"
@@ -20,13 +20,13 @@ notebook = ["jupyterlab", "ipykernel"]
 test = ["pytest>=7", "astropy>=6", "requests>=2.31"]
 
 [project.urls]
-Repository = "https://github.com/jiadonglee/sedlet"
+Repository = "https://github.com/jiadonglee/sedkit"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-sedlet = ["models/*.npz", "models/stellar/*.npz", "models/stellar/*.json"]
+sedkit = ["models/*.npz", "models/stellar/*.npz", "models/stellar/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

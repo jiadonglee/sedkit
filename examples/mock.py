@@ -5,7 +5,7 @@ import json
 
 import numpy as np
 
-from sedlet import SED, StellarModel, fit, plot
+from sedkit import SED, StellarModel, fit, plot
 
 
 def main():

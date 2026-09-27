@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from sedlet import SED, StellarModel, download_spherex, load_spherex
-import sedlet.spherex as acquisition
+from sedkit import SED, StellarModel, download_spherex, load_spherex
+import sedkit.spherex as acquisition
 
 
 def observation():

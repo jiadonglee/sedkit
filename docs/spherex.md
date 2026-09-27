@@ -8,11 +8,11 @@ SPHEREx measurements attached. No XphereX checkout is needed.
 ## Install and run
 
 ```bash
-pip install "sedlet[download,spherex] @ git+https://github.com/jiadonglee/sedlet.git"
+pip install "sedkit[download,spherex] @ git+https://github.com/jiadonglee/sedkit.git"
 ```
 
 ```python
-from sedlet import download, download_spherex, fit, plot
+from sedkit import download, download_spherex, fit, plot
 
 sed = download("858860697467058688", cache_dir="data")
 sed = download_spherex(sed, cache_dir="data")
@@ -51,7 +51,7 @@ zero-point correction or uncertainty rescaling is applied.
 ## Import an existing XphereX result
 
 ```python
-from sedlet import load_spherex
+from sedkit import load_spherex
 sed = load_spherex(sed, "path/to/psf_spectrum.csv", method="psf")
 ```
 
@@ -59,7 +59,7 @@ This accepts aperture or PSF CSVs with `wavelength_um`, `flux_jy`, `error_jy`.
 Rows must identify unique channels on the bundled 102-channel grid, within
 1e-6 um. Subsets are accepted; this is channel assignment, not interpolation.
 Import trusts the upstream extraction quality, retaining finite measurements
-with positive errors. New PSF extraction runs in XphereX; sedlet downloads
+with positive errors. New PSF extraction runs in XphereX; sedkit downloads
 through its aperture route.
 
 ## Observed example and limitations

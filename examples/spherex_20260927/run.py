@@ -5,7 +5,7 @@ import argparse
 import json
 import shutil
 
-from sedlet import SED, download_spherex, load_spherex, fit, plot
+from sedkit import SED, download_spherex, load_spherex, fit, plot
 
 HERE = Path(__file__).parent
 SOURCE_ID = "858860697467058688"

@@ -5,8 +5,8 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.table import Table
-from sedlet import SED, StellarModel, download, fit, plot
-from sedlet.plot import PAPER_STYLE
+from sedkit import SED, StellarModel, download, fit, plot
+from sedkit.plot import PAPER_STYLE
 
 HERE = Path(__file__).parent
 

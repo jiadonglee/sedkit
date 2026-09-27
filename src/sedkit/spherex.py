@@ -49,7 +49,7 @@ def load_spherex(sed, path, *, method=None):
 def download_spherex(sed, *, cache_dir="data", refresh=False, radius_arcmin=0.8):
     """Download QR2 pixels and attach an aperture spectrum to a copy of sed.
 
-    Requires sedlet[spherex] and network access on the first run. Uses the
+    Requires sedkit[spherex] and network access on the first run. Uses the
     Gaia position, proper motion and reference epoch stored by download().
     An isolated Python 3.12 worker runs the XphereX aperture extraction with
     TallTable and SPExPI. Existing spectra and calibration files are reused.
@@ -76,7 +76,7 @@ def download_spherex(sed, *, cache_dir="data", refresh=False, radius_arcmin=0.8)
             try:
                 import uv as uv_package
             except ImportError as exc:
-                raise ImportError("install the optional downloader: pip install 'sedlet[spherex]'") from exc
+                raise ImportError("install the optional downloader: pip install 'sedkit[spherex]'") from exc
             uv = uv_package.find_uv_bin()
         worker = Path(__file__).with_name("_spherex_aperture.py")
         command = [str(uv), "run", "--python", "3.12", str(worker),

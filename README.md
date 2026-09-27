@@ -1,8 +1,8 @@
-# sedlet
+# sedkit
 
 Download and fit stellar spectral energy distributions.
 
-sedlet combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
+sedkit combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
 AllWISE photometry. A compact empirical stellar model predicts absolute
 fluxes for a single star or a coeval binary. The package runs on NumPy and
 SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
@@ -10,7 +10,7 @@ SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
 ## Install
 
 ```bash
-pip install "sedlet[download] @ git+https://github.com/jiadonglee/sedlet.git"
+pip install "sedkit[download] @ git+https://github.com/jiadonglee/sedkit.git"
 ```
 
 For a local checkout, use `pip install -e ".[download]"`. Plain
@@ -21,7 +21,7 @@ acquisition, add the `spherex` extra; see [SPHEREx downloads](docs/spherex.md).
 ## One source
 
 ```python
-from sedlet import download, fit, plot
+from sedkit import download, fit, plot
 
 sed = download("1521154374020165376", cache_dir="data")
 result = fit(sed, age_gyr=5.0, feh=0.0)
@@ -55,7 +55,7 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 An offline snapshot of the public source is included:
 
 ```python
-from sedlet import SED
+from sedkit import SED
 sed = SED.load("examples/gaia_dr3_1521154374020165376.npz")
 ```
 

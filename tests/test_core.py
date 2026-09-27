@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sedlet import SED, StellarModel, fit
-from sedlet.fit import neg2_log_likelihood
+from sedkit import SED, StellarModel, fit
+from sedkit.fit import neg2_log_likelihood
 
 
 @pytest.fixture(scope="module")

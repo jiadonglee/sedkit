@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from astropy.table import Table
 import requests
 
-from sedlet.fetch import _tap
+from sedkit.fetch import _tap
 
 
 def test_tap_normalizes_gaia_field_names_and_keeps_exact_id(monkeypatch):

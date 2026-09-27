@@ -1,13 +1,13 @@
 # Connecting to orblet
 
-sedlet and orblet can be composed without importing one into the other.
+sedkit and orblet can be composed without importing one into the other.
 A shared parameter set supplies M1, q, age, metallicity, parallax and the
 orbital elements. `StellarModel.evaluate` returns the component masses,
 absolute spectra, G magnitudes and `beta_g = F_G,2/F_G,1`.
 
 For a primary-frame orbit, the signed photocentre scaling is
 `a_phot/a1 = (q - beta_g) / (q * (1 + beta_g))`.
-sedlet returns this as `a_phot_over_a1`; it agrees with orblet's
+sedkit returns this as `a_phot_over_a1`; it agrees with orblet's
 `signed_photocentre_axis_ratio(q, beta)` convention.
 
 Use the true component masses and inclination for the RV model. Scale
