@@ -15,9 +15,9 @@ dependencies = ["numpy>=1.24", "scipy>=1.10", "matplotlib>=3.7"]
 
 [project.optional-dependencies]
 spherex = ["uv>=0.7"]
-download = ["astropy>=6", "astroquery>=0.4.7", "gaiaxpy>=2.1", "requests>=2.31"]
+download = ["astropy>=6", "astroquery>=0.4.7", "gaiaxpy>=2.1", "requests>=2.31", "pyvo>=1.5"]
 notebook = ["jupyterlab", "ipykernel"]
-test = ["pytest>=7", "astropy>=6", "requests>=2.31"]
+test = ["pytest>=7", "astropy>=6", "requests>=2.31", "pyvo>=1.5"]
 
 [project.urls]
 Repository = "https://github.com/jiadonglee/sedkit"

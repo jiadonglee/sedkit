@@ -40,6 +40,11 @@ retained; G<9 targets exclude that
 segment during fitting because of observed bright-source bias.
 The optional extraction worker has its own isolated dependencies.
 
+`query_gaia` and `download_gaia` provide a separate [batch acquisition
+route](gaia.md). They retain the original catalogue VOTable and DataLink
+FITS ZIPs, including native units and covariance arrays. Batch products are
+not converted into calibrated `SED` objects automatically.
+
 ## Sources
 
 - [Gaia DR3 archive and acknowledgements](https://gea.esac.esa.int/archive/)
