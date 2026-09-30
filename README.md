@@ -41,6 +41,28 @@ Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
 at Gaia's reference epoch. Coordinate lookup requires exactly one Gaia
 match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 
+## Gaia batch downloads
+
+[Minimal single + batch tutorial](examples/gaia_downloads.ipynb)
+
+```python
+from sedkit import query_gaia, download_gaia
+
+catalogue = query_gaia(
+    "SELECT TOP 100 source_id FROM gaiadr3.gaia_source WHERE parallax > 10",
+    cache_dir="data/nearby/catalogue",
+)
+batches = download_gaia(
+    catalogue["source_id"], products=["XP_CONTINUOUS", "RVS"],
+    cache_dir="data/nearby/products",
+)
+```
+
+The APIs query catalogues asynchronously and download native FITS products
+in batches. Completed batches are reused after interruption; unavailable
+products are reported separately. See [Gaia batch downloads](docs/gaia.md)
+for 300 pc selection, epoch photometry, cache behaviour and return values.
+
 ## Is a Gaia substellar candidate a hidden twin?
 
 A Gaia photocentre orbit fixes a combination of mass ratio and flux ratio,

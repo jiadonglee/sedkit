@@ -23,6 +23,13 @@ returns a copy with a QR2 aperture spectrum attached. It requires the optional
 XphereX aperture/PSF CSVs in Jy. See [SPHEREx acquisition](spherex.md) for
 quality selection, native units, cache products and supported channels.
 
+`query_gaia(query, cache_dir=..., tap="esa")` returns a catalogue as an
+Astropy Table from an asynchronous ADQL job. `download_gaia(source_ids,
+products=["XP_CONTINUOUS", "RVS"], cache_dir=...)` returns records pointing
+to native FITS ZIP batches, including delivered and unavailable IDs. Both
+support resuming the same request. See [Gaia batch downloads](gaia.md) for
+all arguments, examples and cache semantics.
+
 ## Prediction
 
 ```python

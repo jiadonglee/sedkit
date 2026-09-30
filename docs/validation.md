@@ -69,3 +69,15 @@ orblet revision. Seven figures are embedded in the saved outputs. The SED
 checks preserve original measurements; the joint likelihood reproduces its
 stored objective and the photocentre factor matches orblet. Scientific
 limitations are carried into the notebook explanations.
+
+## Gaia batch API
+
+On 2026-09-30, all 22 package tests passed. Six batch tests cover exact
+19-digit identifiers, VOTable arrays/units/masks, rejection of truncated
+catalogues, incomplete-product detection, cached batches and resumed TAP
+jobs. A live ARI TAP query followed by ESA DataLink downloads for Gaia DR3
+30343944744320 and 1521154374020165376 returned two XP_CONTINUOUS spectra,
+one RVS spectrum and one EPOCH_PHOTOMETRY product in 12.6 seconds overall.
+A repeated call reused all three ZIP files. The unavailable RVS and epoch
+photometry for the second source were reported separately. This two-source
+check verifies DR3 acquisition and reuse, not bulk throughput or DR4 support.
