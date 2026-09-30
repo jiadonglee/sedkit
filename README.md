@@ -4,7 +4,9 @@ Download and fit stellar spectral energy distributions.
 
 sedkit combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
 AllWISE photometry. A compact empirical stellar model predicts absolute
-fluxes for a single star or a coeval binary. The package runs on NumPy and
+fluxes for a single star or a coeval binary, and tells whether a Gaia
+astrometric orbit comes from a faint companion or a hidden near-equal-mass
+twin. The package runs on NumPy and
 SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
 
 ## Install
@@ -39,6 +41,30 @@ Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
 at Gaia's reference epoch. Coordinate lookup requires exactly one Gaia
 match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 
+## Is a Gaia substellar candidate a hidden twin?
+
+A Gaia photocentre orbit fixes a combination of mass ratio and flux ratio,
+not the mass ratio. The same small orbit is made by a brown dwarf or by a
+near-equal-mass star whose light cancels the photocentre motion.
+`sedkit.orbit` returns both solutions, the brightening each predicts, and
+which one the observed SED prefers:
+
+```python
+from sedkit import download
+from sedkit.orbit import solve_orbit, rank_roots
+roots = solve_orbit(a0_mas=0.6978, parallax_mas=13.913, period_day=339.57, m1=0.686)
+ranked = rank_roots(download("5148853253106611200"), roots, parallax_mas=13.913)
+print([(r["kind"], round(r["q"], 2), round(r["delta"])) for r in ranked])
+# [('dark', 0.06, 0), ('luminous', 0.97, 1118)]
+```
+
+On two Gaia DR3 substellar candidates with radial-velocity follow-up, XP and
+2MASS alone choose the luminous solution for the binary and the dark one for
+the star with a confirmed substellar companion
+([details](docs/orbit.md)).
+
+![Two solutions of two Gaia orbits](examples/orbit_20260930/orbit_roots.png)
+
 ## Examples and interfaces
 
 - [Quickstart notebook](examples/quickstart.ipynb): download, fit, plot and reuse.
@@ -52,6 +78,7 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 - [Data and provenance](docs/data.md): units, quality masks and cache products.
 - [orblet interface](docs/orblet.md): composable likelihood and tested joint mock.
 - [Observed joint fit](docs/real-orblet.md): HD 195987 XP and double-lined RVs.
+- [Photocentre orbits](docs/orbit.md): faint companion or hidden twin.
 - [Validation](docs/validation.md): installation and example checks.
 
 An offline snapshot of the public source is included:

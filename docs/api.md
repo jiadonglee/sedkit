@@ -92,3 +92,15 @@ Use `components=False` to hide component spectra, `title=` for a custom
 caption, or `axes=(sed_axis, ratio_axis)` for a multi-source layout. With
 external axes, supply the shared legend and save their owning figure.
 The plotting style is scoped to the call; spectra are not normalized.
+
+## Photocentre orbits
+
+`sedkit.orbit.solve_orbit(a0_mas, parallax_mas, period_day, m1, age_gyr=5,
+feh=0, model=None)` returns the solutions of a Gaia photocentre orbit for a
+coeval main-sequence companion; `solve_amrf(a_obs, m1, ...)` takes the
+astrometric mass-ratio function directly. Each solution has `kind`, `q`,
+`m2`, `beta_G`, `delta_G` and `delta_Ks`.
+`rank_roots(sed, roots, parallax_mas=None, model=None, **fit_kwargs)` fits
+the SED at each solution and sorts them by the fit objective, with `delta`
+above the best. See [Photocentre orbits](orbit.md).
+
