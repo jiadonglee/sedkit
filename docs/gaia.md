@@ -1,5 +1,7 @@
 # Gaia batch downloads
 
+[Minimal single + batch notebook](../examples/gaia_downloads.ipynb)
+
 Install `sedkit[download]`. Two APIs cover catalogue selection and native
 DataLink products. The existing `download(source_id)` still returns one
 calibrated `SED`; `download_gaia` returns raw product files for catalogue-scale

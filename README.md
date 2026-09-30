@@ -43,6 +43,8 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 
 ## Gaia batch downloads
 
+[Minimal single + batch tutorial](examples/gaia_downloads.ipynb)
+
 ```python
 from sedkit import query_gaia, download_gaia
 
