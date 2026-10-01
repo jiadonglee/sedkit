@@ -63,12 +63,18 @@ published errors; parameter accuracy and uncertainty remain unvalidated.
 
 ## Group-meeting notebooks
 
-On 2026-09-27, all [three observed-data notebooks](group-meeting.md) executed
+On 2026-09-27, notebooks 01--03 of the [group meeting](group-meeting.md) executed
 top-to-bottom with Python 3.11, network downloads disabled and the pinned
 orblet revision. Seven figures are embedded in the saved outputs. The SED
 checks preserve original measurements; the joint likelihood reproduces its
 stored objective and the photocentre factor matches orblet. Scientific
 limitations are carried into the notebook explanations.
+
+On 2026-10-01, notebook 01 re-executed on the current package with unchanged
+fit values, and notebook 04 executed offline from the two included orbit
+snapshots. Its solutions and objective differences match the
+[orbit example](orbit.md): luminous for the equal-mass binary (637),
+dark for LP 769-9 (1118).
 
 ## Gaia batch API
 

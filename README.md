@@ -90,7 +90,7 @@ the star with a confirmed substellar companion
 ## Examples and interfaces
 
 - [Quickstart notebook](examples/quickstart.ipynb): download, fit, plot and reuse.
-- [Three group-meeting notebooks](docs/group-meeting.md): observed SEDs, SPHEREx and orblet.
+- [Group-meeting notebooks](docs/group-meeting.md): an observed SB2 and a hidden-twin test of Gaia orbits.
 - [Offline mock](examples/mock.py): a reproducible coeval binary experiment.
 - [Public source example](examples/real_source.py): an observed SED and residuals.
 - [Four real SB2 systems](docs/sb2.md): SED fits compared with RV mass ratios.

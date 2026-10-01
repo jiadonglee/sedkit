@@ -1,18 +1,26 @@
-# Group meeting: three observed-data notebooks
+# Group meeting: two observed-data notebooks
 
-A 20-minute introduction to sedkit, from public-data acquisition to composition
-with orblet. The notebooks use English text, small code cells and saved figures.
+A 15-minute introduction to sedkit for a Gaia audience: fit one observed SB2,
+then use the same model to test Gaia astrometric substellar candidates.
+The notebooks use English text, small code cells and saved figures.
 Default execution reads included observed snapshots; live downloads are optional.
 
 | Notebook | Question | Time |
 | --- | --- | --- |
 | [01: observed SB2](../examples/group_meeting/01_observed_sb2.ipynb) | How do we download and compare single/binary SED fits? | 6 min |
+| [04: Gaia orbit, hidden twin](../examples/group_meeting/04_gaia_orbit_twin.ipynb) | Is an astrometric brown-dwarf candidate a near-equal-mass star? | 7 min |
+
+Further notebooks, for questions or a longer slot:
+
+| Notebook | Question | Time |
+| --- | --- | --- |
 | [02: observed SPHEREx](../examples/group_meeting/02_observed_spherex.ipynb) | What changes when measured infrared channels are added? | 6 min |
 | [03: orblet joint fit](../examples/group_meeting/03_orblet_joint_fit.ipynb) | How do real XP and SB2 RVs share a physical binary model? | 8 min |
 
 ## Run
 
-Use Python 3.11 or 3.12 for all three notebooks. From a sedkit checkout:
+Use Python 3.11 or 3.12. Notebooks 01 and 04 need only sedkit; 03 also needs
+orblet. From a sedkit checkout:
 
 ```bash
 pip install -e ".[download,notebook]"
@@ -37,6 +45,11 @@ original observation snapshots and previous experiment results unchanged.
 Explain absolute flux and the physical component sum before showing q_RV.
 Binary preference is a diagnostic, not a binary probability.
 
+04: start from the AMRF equation: one orbit fixes a combination of q and
+light, so a near-twin can mimic a small orbit. Show both solutions and their
+predicted brightening, then the SED residuals at each. Two systems demonstrate
+the test; they do not measure a contamination rate.
+
 02: begin with the exposure-selection histogram, then attach the measured CSV.
 The additional channels move q away from the RV value in this example.
 Show that discrepancy and the extraction limitations, without correcting fluxes.
@@ -55,4 +68,4 @@ analysis, so their agreement is not fully independent. The observed residuals
 and these limits are visible in the notebooks.
 
 Data provenance: [SB2 observations](sb2.md), [SPHEREx extraction](spherex.md),
-[HD 195987](real-orblet.md). Interface details: [API](api.md), [orblet](orblet.md).
+[HD 195987](real-orblet.md), [photocentre orbits](orbit.md). Interface details: [API](api.md), [orblet](orblet.md).
