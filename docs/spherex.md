@@ -62,18 +62,7 @@ Import trusts the upstream extraction quality, retaining finite measurements
 with positive errors. New PSF extraction runs in XphereX; sedkit downloads
 through its aperture route.
 
-## Observed example and limitations
-
-[run.py](../examples/spherex_20260927/run.py) reproduces the included observed
-example offline. `python examples/spherex_20260927/run.py --download` invokes
-the downloader and writes cached products before fitting.
-
-For Gaia DR3 858860697467058688, 66,662 pixels yield 307 measured exposures.
-80 have complete, unflagged apertures, providing 34 valid channels. Together
-with XP+JHKs this gives 98 fitted channels and q=0.829, versus RV q=0.868.
-The age reaches 10 Gyr; this example does not establish mass accuracy.
-
-![Observed XP plus SPHEREx fit](../examples/spherex_20260927/fit.png)
+## Limitations
 
 Aperture fluxes are not corrected for PSF encircled energy. The source centre
 is fixed at the propagated query epoch, without per-exposure motion tracking

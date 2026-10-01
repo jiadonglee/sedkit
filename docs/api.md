@@ -62,7 +62,7 @@ determinant, preserving absolute observed fluxes and errors. Reuse `model`
 inside a sampler. W1/W2 are excluded unless `use_wise=True`.
 Unsupported stellar components or nonpositive parallax return `-inf`.
 The fixed `-N/2 log(2pi)` constant is omitted; compare on the same data mask.
-See the [orblet example](orblet.md) for a composed SED + SB2 RV + astrometry fit.
+See [orblet](orblet.md) for composing SED, SB2 RV and astrometry likelihoods.
 
 ## Fitting
 

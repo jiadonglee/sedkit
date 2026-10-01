@@ -27,9 +27,7 @@ Each `cache_dir/source_id/` contains raw Gaia, 2MASS and AllWISE ECSV
 tables, raw XP XML, calibrated XP ECSV and `sed.npz`. Existing products
 are reused. `refresh=True` explicitly replaces the source's cached products.
 The cache contains public measurements, not fitted or corrected fluxes.
-`examples/gaia_dr3_1521154374020165376.npz` is an offline snapshot downloaded
-from these public services on 2026-09-26, retaining native measurements,
-errors and catalogue metadata.
+The orbit tests read two such `SED` snapshots from `tests/fixtures/`.
 
 SPHEREx spectra can be [downloaded and extracted](spherex.md) through
 TallTable/SPExPI, or imported from XphereX CSVs. The downloader retains

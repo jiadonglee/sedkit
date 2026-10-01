@@ -52,9 +52,9 @@ python -m sedkit.orbit --amrf 0.14 --m1 0.50
 
 ## Two observed candidates
 
-[run.py](../examples/orbit_20260930/run.py) applies the three checks to two
+The [notebook](../examples/02_gaia_orbit_twin.ipynb) applies the three checks to two
 Gaia DR3 astrometric substellar candidates with radial-velocity follow-up,
-from included XP and 2MASS snapshots.
+from downloaded XP and 2MASS photometry.
 
 | Source | Follow-up | Luminous root | Predicted ΔKs | Preferred root | Δ objective |
 | --- | --- | ---: | ---: | --- | ---: |
@@ -64,12 +64,6 @@ from included XP and 2MASS snapshots.
 The binary lies 0.68 mag above the single-star sequence in Ks, as the
 luminous root predicts; LP 769-9 lies 0.15 mag above it. The SED makes the
 same choice from the spectrum alone.
-
-![Two solutions of two Gaia orbits](../examples/orbit_20260930/orbit_roots.png)
-
-Left: `A(q)` for a dark (dotted) and a main-sequence companion (solid), the
-observed `A` (dashed) and its two solutions. Right: residuals of the SED fit
-at each solution.
 
 ## Scope
 

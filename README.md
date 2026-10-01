@@ -43,8 +43,6 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 
 ## Gaia batch downloads
 
-[Minimal single + batch tutorial](examples/gaia_downloads.ipynb)
-
 ```python
 from sedkit import query_gaia, download_gaia
 
@@ -85,42 +83,25 @@ On two Gaia DR3 substellar candidates with radial-velocity follow-up, XP and
 the star with a confirmed substellar companion
 ([details](docs/orbit.md)).
 
-![Two solutions of two Gaia orbits](examples/orbit_20260930/orbit_roots.png)
+## Examples
 
-## Examples and interfaces
+Two executed notebooks, run from `examples/`:
 
-- [Quickstart notebook](examples/quickstart.ipynb): download, fit, plot and reuse.
-- [Group-meeting notebooks](docs/group-meeting.md): an observed SB2 and a hidden-twin test of Gaia orbits.
-- [Offline mock](examples/mock.py): a reproducible coeval binary experiment.
-- [Public source example](examples/real_source.py): an observed SED and residuals.
-- [Four real SB2 systems](docs/sb2.md): SED fits compared with RV mass ratios.
-- [SPHEREx downloads](docs/spherex.md): append QR2 spectra or import XphereX results.
+- [01: fit an observed SED](examples/01_sed_fit.ipynb): download a Gaia DR3 SB2,
+  compare single and coeval-binary fits, check q against the RV ratio, and scale up.
+- [02: Gaia orbit, hidden twin](examples/02_gaia_orbit_twin.ipynb): both solutions of
+  two astrometric substellar candidates and the one their SEDs prefer.
+
+## Documentation
+
 - [API](docs/api.md): observations, predictions and fitting options.
 - [Model and limitations](docs/model.md): physical assumptions and support.
 - [Data and provenance](docs/data.md): units, quality masks and cache products.
-- [orblet interface](docs/orblet.md): composable likelihood and tested joint mock.
-- [Observed joint fit](docs/real-orblet.md): HD 195987 XP and double-lined RVs.
+- [Gaia batch downloads](docs/gaia.md): catalogue queries and native products.
+- [SPHEREx downloads](docs/spherex.md): append QR2 spectra or import XphereX results.
 - [Photocentre orbits](docs/orbit.md): faint companion or hidden twin.
+- [orblet interface](docs/orblet.md): composing SED, RV and astrometry likelihoods.
 - [Validation](docs/validation.md): installation and example checks.
-
-An offline snapshot of the public source is included:
-
-```python
-from sedkit import SED
-sed = SED.load("examples/gaia_dr3_1521154374020165376.npz")
-```
-
-![Four Gaia DR3 SB2 systems](examples/sb2_20260927/overview.png)
-
-The SB2 examples fit age and metallicity. All four prefer the binary model,
-but SED mass ratios do not agree uniformly with the independent RV values.
-See the [experiment](docs/sb2.md) for the comparison and limitations.
-
-![Observed SED example](examples/real_source.png)
-
-The example fixes age and metallicity. Its binary fit reaches the parallax
-constraint boundary and retains structured XP residuals; the figure
-demonstrates the workflow, rather than confirming a companion.
 
 ## Development
 

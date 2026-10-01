@@ -6,7 +6,7 @@ import pytest
 from sedkit import SED, StellarModel
 from sedkit.orbit import amrf, amrf_observed, dark_mass_ratio, rank_roots, solve_amrf, solve_orbit
 
-EXAMPLES = Path(__file__).parents[1] / "examples/orbit_20260930"
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture(scope="module")
@@ -37,7 +37,7 @@ def test_rank_roots_on_observed_candidates(model):
     cases = {"1916454200349735680": ((0.4404, 26.953, 238.50, 0.644), "luminous"),
              "5148853253106611200": ((0.6978, 13.913, 339.57, 0.686), "dark")}
     for sid, (orbit, best) in cases.items():
-        sed = SED.load(EXAMPLES / f"{sid}.npz")
+        sed = SED.load(FIXTURES / f"gaia_dr3_{sid}.npz")
         ranked = rank_roots(sed, solve_orbit(*orbit, model=model), parallax_mas=orbit[1], model=model)
         assert ranked[0]["kind"] == best and ranked[0]["delta"] == 0
         assert ranked[1]["delta"] > 100
