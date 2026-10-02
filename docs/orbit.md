@@ -58,7 +58,7 @@ from downloaded XP and 2MASS photometry.
 
 | Source | Follow-up | Luminous root | Predicted ΔKs | Preferred root | Δ objective |
 | --- | --- | ---: | ---: | --- | ---: |
-| Gaia DR3 1916454200349735680 | near-equal-mass binary | q = 0.99 | 0.72 mag | luminous | 637 |
+| Gaia DR3 1916454200349735680 | near-equal-mass binary | q = 0.99 | 0.72 mag | luminous | 645 |
 | LP 769-9 | substellar companion | q = 0.97 | 0.70 mag | dark | 1118 |
 
 The binary lies 0.68 mag above the single-star sequence in Ks, as the

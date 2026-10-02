@@ -53,6 +53,9 @@ not converted into calibrated `SED` objects automatically.
 - [J-CAPS source model](https://github.com/jiadonglee/J-Caps)
 
 The compact network, normalization, calibration and model-error assets
-come from J-CAPS v2.1 / its stellar v2.2 fitting route. PARSEC subset
-columns are mass, logTe, logL, Ks and G; they are stellar evolutionary
-models, not observations. The source code license is retained in LICENSE.
+come from J-CAPS v2.1 / its stellar v2.2 fitting route. The PARSEC tables
+are built by `scripts/build_parsec_tracks.py` from CMD 3.8: PARSEC v1.2S,
+YBC bolometric corrections, Gaia DR2 (Evans et al. 2018) + Tycho2 + 2MASS
+Vega magnitudes, no extinction, labels 0 and 1. Their columns are mass,
+logTe, logL, Ks and G; they are stellar evolutionary models, not
+observations. The source code license is retained in LICENSE.

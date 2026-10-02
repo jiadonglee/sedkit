@@ -27,6 +27,10 @@ def test_no_extrapolation(model):
         model.evaluate(0.75, 0.8, 15, 0)
 
 
+def test_main_sequence_between_age_nodes(model):
+    assert model.evaluate(1.1, 0, 5, 0) is not None
+
+
 def test_covariance_likelihood_matches_dense_solve(model):
     pair = model.evaluate(0.75, 0.8, 5, 0)
     flux = pair["flux_10pc"] * 0.25

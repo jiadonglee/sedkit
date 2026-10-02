@@ -53,7 +53,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
                      and sed.parallax_error_mas > 0)
 
     def fit_one(binary):
-        names, bounds = ["ln_m1"], [(np.log(0.08), np.log(1.3))]
+        names, bounds = ["ln_m1"], [(np.log(0.08), np.log(1.4))]
         if age_gyr is None:
             names.append("ln_age")
             bounds.append((np.log(0.5), np.log(10.0)))
@@ -90,7 +90,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         ages = (1.0, 4.0, 9.0) if age_gyr is None else (age_gyr,)
         metals = (-0.5, 0.0, 0.3) if feh is None else (feh,)
         ratios = (0.3, 0.45, 0.6, 0.75, 0.9, 1.0) if binary and q is None else (q if binary else 0.0,)
-        for mass in np.geomspace(0.09, 1.29, 32):
+        for mass in np.geomspace(0.09, 1.39, 32):
             for age in ages:
                 for metal in metals:
                     for ratio in ratios:

@@ -27,12 +27,26 @@ arguments, cache reuse and explicit refresh.
 
 ## Example notebooks
 
-On 2026-10-01, both [example notebooks](../examples) executed top to bottom
-with Python 3.11. Live downloads reproduced the stored test snapshots
-exactly; repeated runs reuse the cache.
-The SB2 fit gives q=0.855 against the Gaia NSS RV ratio 0.868. The orbit
-notebook prefers the luminous solution for Gaia DR3 1916454200349735680
-(objective difference 637) and the dark solution for LP 769-9 (1118).
+On 2026-10-02, both [example notebooks](../examples) executed top to bottom
+with Python 3.11 and the 0.05-dex PARSEC tables. Repeated runs reuse the
+cache. The SB2 fit gives q=0.855 against the Gaia NSS RV ratio 0.868. The
+orbit notebook prefers the luminous solution for Gaia DR3
+1916454200349735680 (objective difference 645) and the dark solution for
+LP 769-9 (1118).
+
+## PARSEC tables
+
+On 2026-10-02, `scripts/build_parsec_tracks.py` rebuilt the tables from
+CMD 3.8. At the four age nodes of the previous 0.5-dex tables, all 64
+tables agree more than 0.05 solar masses below the turn-off within 0.001
+dex in logTe, 0.004 dex in logL and 0.01 mag in Ks and G. Separate CMD
+isochrones at the 26 intermediate ages from log age 8.725 to 9.975, at
+[M/H] = -0.5, 0 and +0.3 (`data/stellar_model/parsec_fine_age/midpoint_check`
+outside the repository), test the interpolation. For supported stars
+below 1.5 solar masses, the 99th-percentile Teff difference is 5--15 K
+(maximum 56 K), and Ks and G differ by at most 0.02 mag at the 99th
+percentile. The previous tables differ from the same isochrones by up to
+261 K, and by 0.11--0.16 mag in Ks and G at the 99th percentile.
 
 ## Gaia batch API
 

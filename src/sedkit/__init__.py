@@ -9,5 +9,5 @@ from .fetch import download
 from .gaia import query_gaia, download_gaia
 from .spherex import download_spherex, load_spherex
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 __all__ = ["SED", "StellarModel", "download", "query_gaia", "download_gaia", "download_spherex", "load_spherex", "fit", "loglike_sed", "plot"]
