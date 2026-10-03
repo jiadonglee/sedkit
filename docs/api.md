@@ -60,6 +60,7 @@ ll_sed = loglike_sed(sed, m1=0.75, q=0.8, parallax_mas=20,
 catalogue parallax constraint. It includes model covariance and its
 determinant, preserving absolute observed fluxes and errors. Reuse `model`
 inside a sampler. W1/W2 are excluded unless `use_wise=True`.
+`extinction=E` attenuates the model in native ZGR23 units without a dust prior.
 Unsupported stellar components or nonpositive parallax return `-inf`.
 The fixed `-N/2 log(2pi)` constant is omitted; compare on the same data mask.
 See [orblet](orblet.md) for composing SED, SB2 RV and astrometry likelihoods.
@@ -67,23 +68,27 @@ See [orblet](orblet.md) for composing SED, SB2 RV and astrometry likelihoods.
 ## Fitting
 
 `fit(sed, kind="both", model=None, age_gyr=5, feh=0, q=None,
-use_wise=False, fit_parallax=True)` uses multi-start Nelder--Mead.
+use_wise=False, fit_parallax=False, extinction=0, dust_prior=None)` uses multi-start Nelder--Mead with a
+fixed initial step in each fitted parameter.
 Reuse a `StellarModel` across sources through `model=`.
 
 - Age and metallicity are fixed unless set to `None`.
 - Free binary q covers 0.1--1, further restricted by component support.
 - `q=` fixes q for the binary hypothesis.
-- Parallax is fitted within three catalogue standard deviations, with one
-  Gaussian constraint. Zero/absent uncertainty fixes it. Set
-  `fit_parallax=False` for a fixed-distance experiment.
+- Parallax is fixed at the catalogue value by default. Set
+  `fit_parallax=True` to fit within three catalogue standard deviations,
+  with one Gaussian constraint. Zero/absent uncertainty keeps it fixed.
 - W1/W2 are held out unless `use_wise=True`.
+- `extinction=None` fits nonnegative ZGR23 E with an `EdenhoferPrior`;
+  a number fixes E. See [extinction](extinction.md) for map setup and assumptions.
 
 `kind="single"` or `"binary"` returns one result dictionary.
 `kind="both"` returns `single`, `binary`, `delta` and `source_id`.
 Each result includes masses, q, age, metallicity, parallax, model flux,
 components, light ratio, `chi2`, `m2lnl`, `objective`, `n_fit`, `mask`,
-`converged` and `at_bounds`. `objective` includes the parallax constraint;
-`m2lnl` includes the model covariance determinant but not that constraint.
+`converged` and `at_bounds`, plus `extinction_e`, `dust_prior_mean`,
+`dust_prior_sigma` and `dust_prior_penalty`. `objective` includes parallax and
+dust constraints; `m2lnl` includes the model covariance determinant without priors.
 
 ## Plotting
 
@@ -110,4 +115,3 @@ astrometric mass-ratio function directly. Each solution has `kind`, `q`,
 `rank_roots(sed, roots, parallax_mas=None, model=None, **fit_kwargs)` fits
 the SED at each solution and sorts them by the fit objective, with `delta`
 above the best. See [Photocentre orbits](orbit.md).
-

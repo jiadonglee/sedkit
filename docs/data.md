@@ -51,6 +51,8 @@ not converted into calibrated `SED` objects automatically.
 - [WISE photometric system](https://wise2.ipac.caltech.edu/docs/release/allsky/expsup/sec4_4h.html)
 - [PARSEC](http://stev.oapd.inaf.it/cgi-bin/cmd)
 - [J-CAPS source model](https://github.com/jiadonglee/J-Caps)
+- [ZGR23 extinction curve](https://doi.org/10.5281/zenodo.7811871): the bundled
+  `models/extinction_curve.txt` tabulates optical depth per native E.
 
 The compact network, normalization, calibration and model-error assets
 come from J-CAPS v2.1 / its stellar v2.2 fitting route. The PARSEC tables
@@ -58,4 +60,10 @@ are built by `scripts/build_parsec_tracks.py` from CMD 3.8: PARSEC v1.2S,
 YBC bolometric corrections, Gaia DR2 (Evans et al. 2018) + Tycho2 + 2MASS
 Vega magnitudes, no extinction, labels 0 and 1. Their columns are mass,
 logTe, logL, Ks and G; they are stellar evolutionary models, not
-observations. The source code license is retained in LICENSE.
+observations.
+
+2MASS fluxes follow the J-CAPS training convention: catalogue zero points at
+the model wavelengths times 0.98523, 0.98566 and 0.99105 for J, H and Ks.
+AllWISE W1/W2 are converted at the model wavelengths; the training data use
+unWISE fluxes, which lie about 5 per cent lower for the example sources, so
+W1/W2 stay out of the default fit. The source code license is retained in LICENSE.

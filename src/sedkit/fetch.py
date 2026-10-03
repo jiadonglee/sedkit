@@ -12,6 +12,9 @@ from .model import StellarModel
 BANDS = ("J", "H", "Ks", "W1", "W2")
 # Catalogue Vega zero points, in Jy. WISE wavelengths follow the checkpoint.
 ZERO_JY = (1594.0, 1024.0, 666.7, 309.540, 171.787)
+# 2MASS fluxes of the J-CAPS training data, relative to the conversion at the
+# model wavelengths: the model predicts J/H/Ks on this scale.
+TRAINING_SCALE = (0.98523, 0.98566, 0.99105, 1.0, 1.0)
 
 
 def _row_dict(row):
@@ -66,7 +69,7 @@ def _resolve(ra, dec, radius_arcsec):
 
 
 def _photometry(rows, wave):
-    """Catalogue magnitudes -> equivalent F_lambda at nominal wavelengths."""
+    """Catalogue magnitudes -> F_lambda on the model's training scale."""
     flux, error = np.full(5, np.nan), np.full(5, np.nan)
     valid = np.zeros(5, bool)
     metadata = {}
@@ -89,7 +92,7 @@ def _photometry(rows, wave):
             if mag is None or sigma is None:
                 continue
             jy = ZERO_JY[i] * 10**(-0.4 * float(mag))
-            flux[i] = jy * 299792458.0 * 10.0 / (wave[i] * 1000)**2
+            flux[i] = jy * 299792458.0 * 10.0 / (wave[i] * 1000)**2 * TRAINING_SCALE[i]
             error[i] = flux[i] * np.log(10) / 2.5 * float(sigma)
             valid[i] = (unique and point_source and clean[position]
                         and len(quality) > position and quality[position] == "A"

@@ -8,6 +8,8 @@ import numpy as np
 DATA = Path(__file__).parent / "models"
 FLUX_UNIT = "1e-18 W m^-2 nm^-1"
 KS_ZERO_FLAMBDA = 666.7 * 299792458.0 * 10.0 / 2159.0**2
+# Primary Teff range (K) over which the cold and warm model-error terms are blended.
+ERROR_BLEND_K = (3800.0, 4200.0)
 
 
 def _load(path):
@@ -141,10 +143,18 @@ class StellarModel:
     def error_factors(self, prediction, scale=1.0):
         """Shared fractional model error for all components of a system.
 
-        Use the primary's cold/warm error term for both components, matching
-        J-CAPS shared_v21. Returns low-rank columns and diagonal variance.
+        The primary's Teff selects the error term for both components:
+        v2.1_cold below 3800 K, v2.1_warm above 4200 K, and in between
+        the covariance (1-w) C_cold + w C_warm with a smoothstep weight w.
+        Returns low-rank columns and diagonal variance.
         """
-        term = "v2.1_cold" if prediction["teff"][0] < 4000 else "v2.1_warm"
+        u = np.clip((prediction["teff"][0] - ERROR_BLEND_K[0])
+                    / (ERROR_BLEND_K[1] - ERROR_BLEND_K[0]), 0, 1)
+        warm = 10*u**3 - 15*u**4 + 6*u**5
         flux = prediction["flux_10pc"] * scale
-        basis, diagonal = self.errors[term + "/basis"], self.errors[term + "/diag"]
-        return flux[:, None] * basis, (flux * diagonal)**2
+        columns, variance = [], np.zeros_like(flux)
+        for term, weight in (("v2.1_cold", 1 - warm), ("v2.1_warm", warm)):
+            if weight > 0:
+                columns.append(np.sqrt(weight) * flux[:, None] * self.errors[term + "/basis"])
+                variance += weight * (flux * self.errors[term + "/diag"])**2
+        return np.concatenate(columns, axis=1), variance
