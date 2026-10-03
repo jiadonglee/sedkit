@@ -9,6 +9,22 @@ astrometric orbit comes from a faint companion or a hidden near-equal-mass
 twin. The package runs on NumPy and
 SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
 
+## Current fitting capabilities
+
+- **Warm stars:** the bundled IRFM-calibrated dwarf model extends XP and
+  2MASS coverage to about 7500 K. The primary-mass search reaches 2.2 solar
+  masses, with usable masses depending on age, metallicity and component
+  coverage; it is not continuous across every mass range. Warm companions
+  can be confused with stellar age. See [model limits](docs/model.md),
+  [warm-star validation](docs/validation-warm.md) and [notebook 03](examples/03_warm_binaries.ipynb).
+- **Extinction:** E defaults to zero. `extinction=None` fits nonnegative
+  native ZGR23 E with an [Edenhofer 3D dust prior](docs/extinction.md);
+  a numeric `extinction=` fixes E. Attenuation acts on the model flux and
+  covariance, preserving the observed fluxes, errors and fitting mask.
+- **Parallax:** fixed at the catalogue value by default. `fit_parallax=True`
+  fits it within three catalogue standard deviations under a Gaussian
+  constraint. The distance-dependent dust prior follows the trial parallax.
+
 ## Install
 
 ```bash
@@ -42,47 +58,40 @@ Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
 at Gaia's reference epoch. Coordinate lookup requires exactly one Gaia
 match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 
-## Gaia batch downloads
+## Fit extinction and parallax together
+
+Install `pip install -e ".[download,dust,notebook]"` for this tutorial.
+Prepare the Edenhofer posterior-sample map once on a server with enough
+memory; the full map is about 19 GB and is not downloaded by the fit.
 
 ```python
-from sedkit import query_gaia, download_gaia
+from sedkit import EdenhoferPrior
 
-catalogue = query_gaia(
-    "SELECT TOP 100 source_id FROM gaiadr3.gaia_source WHERE parallax > 10",
-    cache_dir="data/nearby/catalogue",
-)
-batches = download_gaia(
-    catalogue["source_id"], products=["XP_CONTINUOUS", "RVS"],
-    cache_dir="data/nearby/products",
-)
+prior = EdenhoferPrior()  # load the existing map once and reuse it
+result = fit(sed, extinction=None, dust_prior=prior, fit_parallax=True)
+print(result["binary"]["extinction_e"], result["binary"]["parallax_mas"])
 ```
 
-The APIs query catalogues asynchronously and download native FITS products
-in batches. Completed batches are reused after interruption; unavailable
-products are reported separately. See [Gaia batch downloads](docs/gaia.md)
-for 300 pc selection, epoch photometry, cache behaviour and return values.
+[Notebook 05](examples/05_extinction_parallax.ipynb) compares fixed E/parallax,
+fitted E at fixed parallax, and jointly fitted E/parallax on the same real
+SB2. It includes fitted parameters, absolute SEDs and input-prior plots.
+The results are constrained best fits, not posterior samples.
+
+## Gaia batch downloads
+
+`query_gaia` queries catalogues asynchronously; `download_gaia` downloads
+native FITS products in batches and resumes completed work. See
+[Gaia batch downloads](docs/gaia.md) for runnable examples, 300 pc selection,
+epoch photometry and cache behaviour.
 
 ## Is a Gaia substellar candidate a hidden twin?
 
-A Gaia photocentre orbit fixes a combination of mass ratio and flux ratio,
-not the mass ratio. The same small orbit is made by a brown dwarf or by a
-near-equal-mass star whose light cancels the photocentre motion.
-`sedkit.orbit` returns both solutions, the brightening each predicts, and
-which one the observed SED prefers:
-
-```python
-from sedkit import download
-from sedkit.orbit import solve_orbit, rank_roots
-roots = solve_orbit(a0_mas=0.6978, parallax_mas=13.913, period_day=339.57, m1=0.686)
-ranked = rank_roots(download("5148853253106611200"), roots, parallax_mas=13.913, fit_parallax=True)
-print([(r["kind"], round(r["q"], 2), round(r["delta"])) for r in ranked])
-# [('dark', 0.06, 0), ('luminous', 0.97, 958)]
-```
-
-On two Gaia DR3 substellar candidates with radial-velocity follow-up, XP and
-2MASS alone choose the luminous solution for the binary and the dark one for
-the star with a confirmed substellar companion
-([details](docs/orbit.md)).
+A Gaia photocentre orbit constrains mass ratio and light ratio together.
+`sedkit.orbit.solve_orbit` finds the faint and luminous solutions;
+`rank_roots` compares their absolute SEDs. XP and 2MASS prefer the luminous
+solution for a followed-up binary and the dark solution for LP 769-9.
+See [the method and worked example](docs/orbit.md) and
+[notebook 02](examples/02_gaia_orbit_twin.ipynb).
 
 ## Examples
 
@@ -92,10 +101,8 @@ Four executed notebooks, run from `examples/`:
   compare single and coeval-binary fits, check q against the RV ratio, and scale up.
 - [02: Gaia orbit, hidden twin](examples/02_gaia_orbit_twin.ipynb): both solutions of
   two astrometric substellar candidates and the one their SEDs prefer.
-- [03: warm primaries](examples/03_warm_binaries.ipynb): mock binaries with 1.2--1.55
-  solar-mass primaries recovered with known and free age, why an older single star mimics
-  a warm companion, 20 Gaia DR3 SB2s at 6800--7400 K against their RV mass ratios and
-  eclipsing-binary masses, and the vertical actions of warm stars within 100 pc.
+- [03: warm primaries](examples/03_warm_binaries.ipynb): binary mocks with known
+  and free age, real SB2 checks, and the warm-star age/companion degeneracy.
 - [05: extinction and parallax priors](examples/05_extinction_parallax.ipynb):
   fit E at fixed distance or jointly with catalogue-constrained parallax;
   compare the SEDs, parameters and input priors on a real SB2.
