@@ -1,0 +1,92 @@
+{
+  "source_id": "858860697467058688",
+  "extinction_unit": "ZGR23 E",
+  "q_rv": 0.8679199346121073,
+  "catalogue_parallax_mas": 10.9766657223696,
+  "ra_deg": 176.07741902262634,
+  "dec_deg": 60.321599713253484,
+  "zero": {
+    "single": {
+      "m1": 0.9404261875758643,
+      "m2": 0.0,
+      "q": 0.0,
+      "age_gyr": 5.0,
+      "feh": 0.0,
+      "parallax_mas": 11.022500315844464,
+      "extinction_e": 0.0,
+      "dust_prior_mean": null,
+      "dust_prior_sigma": null,
+      "dust_prior_penalty": 0.0,
+      "objective": 1455.9014063481816,
+      "m2lnl": 1446.9014063481816,
+      "chi2": 1064.0356392022106,
+      "n_fit": 64,
+      "converged": true,
+      "at_bounds": [
+        "parallax_z"
+      ],
+      "route": "PARSEC+J-CAPS-v2.1"
+    },
+    "binary": {
+      "m1": 0.8625514736534088,
+      "m2": 0.8007815780050637,
+      "q": 0.9283870035179309,
+      "age_gyr": 5.0,
+      "feh": 0.0,
+      "parallax_mas": 10.982611405600732,
+      "extinction_e": 0.0,
+      "dust_prior_mean": null,
+      "dust_prior_sigma": null,
+      "dust_prior_penalty": 0.0,
+      "objective": 463.8140348009331,
+      "m2lnl": 463.66258828841023,
+      "chi2": 82.00924548918087,
+      "n_fit": 64,
+      "converged": true,
+      "at_bounds": [],
+      "route": "PARSEC+J-CAPS-v2.1"
+    },
+    "delta": 992.0873715472485
+  },
+  "dust": {
+    "single": {
+      "m1": 0.943142487758396,
+      "m2": 0.0,
+      "q": 0.0,
+      "age_gyr": 5.0,
+      "feh": 0.0,
+      "parallax_mas": 11.022376608753058,
+      "extinction_e": 0.008533442287013387,
+      "dust_prior_mean": 0.007215225106463056,
+      "dust_prior_sigma": 0.0005147437481264355,
+      "dust_prior_penalty": -8.585375238946018,
+      "objective": 1358.8068504813536,
+      "m2lnl": 1358.440741972312,
+      "chi2": 975.6170461288488,
+      "n_fit": 64,
+      "converged": true,
+      "at_bounds": [],
+      "route": "PARSEC+J-CAPS-v2.1"
+    },
+    "binary": {
+      "m1": 0.8662817568121826,
+      "m2": 0.8006790807206182,
+      "q": 0.9242709712219097,
+      "age_gyr": 5.0,
+      "feh": 0.0,
+      "parallax_mas": 10.981001529840096,
+      "extinction_e": 0.007298383530682408,
+      "dust_prior_mean": 0.007218661462617147,
+      "dust_prior_sigma": 0.000515642318014615,
+      "dust_prior_penalty": -15.116291011853951,
+      "objective": 442.3685085963278,
+      "m2lnl": 457.4042625576667,
+      "chi2": 75.75339984129204,
+      "n_fit": 64,
+      "converged": true,
+      "at_bounds": [],
+      "route": "PARSEC+J-CAPS-v2.1"
+    },
+    "delta": 916.4383418850259
+  }
+}

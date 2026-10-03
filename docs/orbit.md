@@ -27,7 +27,7 @@ for r in roots:
     print(r["kind"], r["q"], r["m2"], r["beta_G"], r["delta_G"], r["delta_Ks"])
 
 sed = download("5148853253106611200")
-for r in rank_roots(sed, roots, parallax_mas=13.913):
+for r in rank_roots(sed, roots, parallax_mas=13.913, fit_parallax=True):
     print(r["kind"], r["q"], r["delta"])
 ```
 
@@ -58,8 +58,8 @@ from downloaded XP and 2MASS photometry.
 
 | Source | Follow-up | Luminous root | Predicted ΔKs | Preferred root | Δ objective |
 | --- | --- | ---: | ---: | --- | ---: |
-| Gaia DR3 1916454200349735680 | near-equal-mass binary | q = 0.99 | 0.72 mag | luminous | 637 |
-| LP 769-9 | substellar companion | q = 0.97 | 0.70 mag | dark | 1118 |
+| Gaia DR3 1916454200349735680 | near-equal-mass binary | q = 0.99 | 0.72 mag | luminous | 630 |
+| LP 769-9 | substellar companion | q = 0.97 | 0.70 mag | dark | 958 |
 
 The binary lies 0.68 mag above the single-star sequence in Ks, as the
 luminous root predicts; LP 769-9 lies 0.15 mag above it. The SED makes the
@@ -71,7 +71,8 @@ same choice from the spectrum alone.
   dwarfs and unresolved triples are not modelled. A spectrum that rejects
   both main-sequence solutions points to a dark or compact companion.
 - Primary mass, age and metallicity are inputs (defaults 5 Gyr, solar);
-  extinction is not modelled. The primary mass enters `A` as `M1^(-1/3)`.
+  `rank_roots` accepts the [extinction fit options](extinction.md).
+  The primary mass enters `A` as `M1^(-1/3)`.
 - `beta_G` comes from the PARSEC G magnitudes of the two components.
   Solutions are interpolated on `q = 0.10--1.00` in steps of 0.01; below the
   lowest supported companion mass the faint solution is the dark root.

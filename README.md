@@ -32,9 +32,10 @@ fig = plot(sed, result, path="sed.png")
 ```
 
 This example fixes age and metallicity. Use `age_gyr=None, feh=None` to fit
-them. Use `kind="single"`, `kind="binary"`, or the default `kind="both"`;
+them. Parallax is fixed by default; `fit_parallax=True` fits it with its
+catalogue Gaussian constraint. Use `kind="single"`, `kind="binary"`, or the default `kind="both"`;
 `q=0.7` fixes the binary mass ratio. `result["delta"]` is the single minus
-binary objective, including the shared parallax constraint. It is a model
+binary objective, including the parallax constraint when fitted. It is a model
 preference diagnostic, not a binary probability.
 
 Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
@@ -73,9 +74,9 @@ which one the observed SED prefers:
 from sedkit import download
 from sedkit.orbit import solve_orbit, rank_roots
 roots = solve_orbit(a0_mas=0.6978, parallax_mas=13.913, period_day=339.57, m1=0.686)
-ranked = rank_roots(download("5148853253106611200"), roots, parallax_mas=13.913)
+ranked = rank_roots(download("5148853253106611200"), roots, parallax_mas=13.913, fit_parallax=True)
 print([(r["kind"], round(r["q"], 2), round(r["delta"])) for r in ranked])
-# [('dark', 0.06, 0), ('luminous', 0.97, 1118)]
+# [('dark', 0.06, 0), ('luminous', 0.97, 958)]
 ```
 
 On two Gaia DR3 substellar candidates with radial-velocity follow-up, XP and
@@ -85,17 +86,28 @@ the star with a confirmed substellar companion
 
 ## Examples
 
-Two executed notebooks, run from `examples/`:
+Four executed notebooks, run from `examples/`:
 
 - [01: fit an observed SED](examples/01_sed_fit.ipynb): download a Gaia DR3 SB2,
   compare single and coeval-binary fits, check q against the RV ratio, and scale up.
 - [02: Gaia orbit, hidden twin](examples/02_gaia_orbit_twin.ipynb): both solutions of
   two astrometric substellar candidates and the one their SEDs prefer.
+- [03: warm primaries](examples/03_warm_binaries.ipynb): mock binaries with 1.2--1.55
+  solar-mass primaries recovered with known and free age, why an older single star mimics
+  a warm companion, 20 Gaia DR3 SB2s at 6800--7400 K against their RV mass ratios and
+  eclipsing-binary masses, and the vertical actions of warm stars within 100 pc.
+- [05: extinction and parallax priors](examples/05_extinction_parallax.ipynb):
+  fit E at fixed distance or jointly with catalogue-constrained parallax;
+  compare the SEDs, parameters and input priors on a real SB2.
+
+[04: extinction prior](examples/04_extinction_prior.py) is a runnable script
+comparing zero-extinction and Edenhofer-prior fits of a real SB2.
 
 ## Documentation
 
 - [API](docs/api.md): observations, predictions and fitting options.
 - [Model and limitations](docs/model.md): physical assumptions and support.
+- [Extinction](docs/extinction.md): fitting E with an Edenhofer 3D dust prior.
 - [Data and provenance](docs/data.md): units, quality masks and cache products.
 - [Gaia batch downloads](docs/gaia.md): catalogue queries and native products.
 - [SPHEREx downloads](docs/spherex.md): append QR2 spectra or import XphereX results.
