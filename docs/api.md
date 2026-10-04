@@ -93,7 +93,8 @@ dust constraints; `m2lnl` includes the model covariance determinant without prio
 ## Plotting
 
 `plot(sed, result=None, path=None, *, axes=None, components=True, title=None)`
-returns a Matplotlib Figure. Save it with `path=` or `fig.savefig(...)`.
+returns a Matplotlib Figure in the blue/coral [sedkit palette](appearance.md).
+Single-star fits are orange and binary fits blue. Save it with `path=` or `fig.savefig(...)`.
 The paper-style upper panel shows linear lambda F_lambda in physical units;
 the lower panel shows ln(F/F_single), or ln(F/F_binary) for a binary-only
 result. Measurement errors are unchanged; log-panel error bars use the
