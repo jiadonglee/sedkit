@@ -4,11 +4,13 @@ import numpy as np
 
 from .model import StellarModel
 
-SINGLE, BINARY, OBS = "#eb6834", "#2a78d6", "#9a9994"
-INK, INK2 = "#0b0b0b", "#52514e"
+SINGLE, BINARY, OBS = "#f9654e", "#024397", "#7e8a99"
+INK, INK2 = "#1e2834", "#586475"
 PAPER_STYLE = {
     "font.size": 10, "axes.labelsize": 10, "axes.titlesize": 10.5,
     "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 9,
+    "figure.facecolor": "white", "axes.facecolor": "white",
+    "axes.titleweight": "bold", "lines.solid_capstyle": "round",
     "font.family": "sans-serif", "axes.spines.top": False,
     "axes.spines.right": False, "axes.edgecolor": INK2,
     "axes.labelcolor": INK, "xtick.color": INK2, "ytick.color": INK2,
@@ -89,9 +91,10 @@ def plot(sed, result=None, path=None, *, axes=None, components=True, title=None)
             _segments(ratio, wave, relative, color=color, ls=ls, lw=1.35, zorder=5)
             ratio.plot(wave[61:66], relative[61:66], "_", ms=8, mew=1.3, color=color, zorder=5)
         if fits and fits[-1]["kind"] == "binary" and components:
-            for component, ls, label in zip(fits[-1]["components"], ("--", ":"), ("primary", "secondary")):
+            for component, ls, label, color in zip(
+                    fits[-1]["components"], ("--", ":"), ("primary", "secondary"), (BINARY, SINGLE)):
                 _segments(ax, wave, wave * component * 1e-15 / unit,
-                          color=INK2, ls=ls, lw=.75, alpha=.65, label=label, zorder=1)
+                          color=color, ls=ls, lw=.75, alpha=.65, label=label, zorder=1)
         if not fits:
             ratio.axhline(0, color=INK2, lw=.7)
             ratio.set_ylabel("No fitted model")

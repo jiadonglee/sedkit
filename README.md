@@ -1,6 +1,7 @@
-# sedkit
-
-Download and fit stellar spectral energy distributions.
+<p align="center">
+  <img src="docs/assets/sedkit-logo.png" width="280" alt="sedkit logo">
+</p>
+<p align="center">Download and fit stellar spectral energy distributions.</p>
 
 sedkit combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
 AllWISE photometry. A compact empirical stellar model predicts absolute
@@ -41,7 +42,7 @@ acquisition, add the `spherex` extra; see [SPHEREx downloads](docs/spherex.md).
 ```python
 from sedkit import download, fit, plot
 
-sed = download("1521154374020165376", cache_dir="data")
+sed = download("858860697467058688", cache_dir="data")
 result = fit(sed, age_gyr=5.0, feh=0.0)
 print(result["binary"]["m1"], result["binary"]["q"])
 fig = plot(sed, result, path="sed.png")
@@ -76,6 +77,17 @@ print(result["binary"]["extinction_e"], result["binary"]["parallax_mas"])
 fitted E at fixed parallax, and jointly fitted E/parallax on the same real
 SB2. It includes fitted parameters, absolute SEDs and input-prior plots.
 The results are constrained best fits, not posterior samples.
+
+![Single and binary SED fits](docs/assets/sed-example.png)
+
+Gaia DR3 SB2 `858860697467058688`: the single-star fit is orange and the
+coeval-binary fit blue, with extinction and parallax constraints.
+[Figure PDF](docs/assets/sed-example.pdf) · [Plotting script](scripts/plot_readme.py).
+
+![Extinction and parallax priors](docs/assets/extinction-parallax-priors.png)
+
+Input priors and best-fit locations; these curves are not posteriors.
+[Figure PDF](docs/assets/extinction-parallax-priors.pdf) · [Plotting script](scripts/plot_readme.py).
 
 ## Gaia batch downloads
 
@@ -121,6 +133,7 @@ comparing zero-extinction and Edenhofer-prior fits of a real SB2.
 - [Photocentre orbits](docs/orbit.md): faint companion or hidden twin.
 - [orblet interface](docs/orblet.md): composing SED, RV and astrometry likelihoods.
 - [Validation](docs/validation.md): installation and example checks.
+- [Visual identity](docs/appearance.md): logo, plotting palette and reproducible homepage figures.
 
 ## Development
 
