@@ -39,6 +39,8 @@ LP 769-9 (958).
 The [warm-star validation](validation-warm.md) records the warm-network,
 cluster, binary-mock and vertical-action checks in
 [notebook 03](../examples/03_warm_binaries.ipynb).
+The [hot-star validation](validation-hot.md) records the hot-route holdout,
+CALSPEC and end-to-end anchor fits and the network seam.
 
 ## Extinction and parallax
 

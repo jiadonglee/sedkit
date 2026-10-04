@@ -18,6 +18,10 @@ SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
   coverage; it is not continuous across every mass range. Warm companions
   can be confused with stellar age. See [model limits](docs/model.md),
   [warm-star validation](docs/validation-warm.md) and [notebook 03](examples/03_warm_binaries.ipynb).
+- **Hot stars:** `StellarModel(hot=True)` extends single and binary fits
+  to 30 kK on XP and 2MASS, with PARSEC ages from 4 Myr and masses to 20
+  solar masses. See the [hot-star route](docs/model.md#hot-star-route) and
+  [hot-star validation](docs/validation-hot.md).
 - **Extinction:** E defaults to zero. `extinction=None` fits nonnegative
   native ZGR23 E with an [Edenhofer 3D dust prior](docs/extinction.md);
   a numeric `extinction=` fixes E. Attenuation acts on the model flux and

@@ -27,7 +27,7 @@ Repository = "https://github.com/jiadonglee/sedkit"
 where = ["src"]
 
 [tool.setuptools.package-data]
-sedkit = ["models/*.npz", "models/*.txt", "models/stellar/*.npz", "models/stellar/*.json"]
+sedkit = ["models/*.npz", "models/*.txt", "models/stellar/*.npz", "models/stellar/*.json", "models/hot/*.npz", "models/hot/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

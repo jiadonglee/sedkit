@@ -40,9 +40,15 @@ pair = model.evaluate(m1=0.75, q=0.8, age_gyr=5, feh=0)
 
 Masses are in solar masses. `q=0` gives one star, `0<q<=1` a binary.
 Unsupported components return `None`. The dictionary contains
-`flux_10pc`, `components`, `masses`, `labels`, `teff`, `M_G`, `beta_g`,
-`a_phot_over_a1`, `age_gyr`, `feh` and `route`.
-Labels are `[Teff, M_Ks, G-Ks, [M/H]]`.
+`flux_10pc`, `components`, `masses`, `labels`, `teff`, `logg`, `radius`,
+`hot_weight`, `M_G`, `beta_g`, `a_phot_over_a1`, `age_gyr`, `feh` and
+`route`. Labels are `[Teff, M_Ks, G-Ks, [M/H]]`; `radius` is in Rsun.
+
+`StellarModel(hot=True)` enables the [hot-star route](model.md#hot-star-route):
+components above 7000 K use the hot table, ages start at 10**6.6 yr and
+primary masses reach 20 solar masses. Channels beyond J/H/Ks are NaN and
+`model.support` marks the predicted channels. `model.predict_hot(teff, logg,
+radius)` evaluates the table directly.
 
 `model.predict_labels(labels)` provides direct four-coordinate prediction.
 `model.in_domain(labels)` checks training coverage. Neither operation
@@ -79,6 +85,9 @@ Reuse a `StellarModel` across sources through `model=`.
   `fit_parallax=True` to fit within three catalogue standard deviations,
   with one Gaussian constraint. Zero/absent uncertainty keeps it fixed.
 - W1/W2 are held out unless `use_wise=True`.
+- The fitting mask keeps only `model.support` channels; with
+  `StellarModel(hot=True)` that is XP and J/H/Ks. Hot-star fits need a
+  young `age_gyr=` or `age_gyr=None`.
 - `extinction=None` fits nonnegative ZGR23 E with an `EdenhoferPrior`;
   a number fixes E. See [extinction](extinction.md) for map setup and assumptions.
 

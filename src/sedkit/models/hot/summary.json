@@ -1,0 +1,99 @@
+{
+  "version": "hot-v3",
+  "source": "J-CAPS hot_emulator_v3_20261004",
+  "error_term": "hot_v3",
+  "support": {
+    "teff": [
+      7000.0,
+      30000.0
+    ],
+    "logg": [
+      3.0,
+      4.75
+    ],
+    "feh": [
+      -0.3,
+      0.3
+    ]
+  },
+  "channels": "XP61 + J/H/Ks (64); W1/W2 and SPHEREx are not predicted",
+  "units": "ln F_lambda at 10 pc for R = 1 Rsun, 1e-18 W m^-2 nm^-1",
+  "grids": "CK04 (Castelli & Kurucz 2003) below 15 kK, TLUSTY BSTAR2006 15-29 kK, solar",
+  "extinction": "ZGR23 E (the sedkit curve) in the calibration",
+  "anchors": "hot anchors (RV-constant and SB1, screened) and J-CAPS 1 kpc IRFM dwarfs at 7000-7500 K",
+  "holdout_median_rms": {
+    "7.5-11.5 kK": {
+      "n": 27,
+      "med_rms_K0": 0.04954124343369613,
+      "med_rms_spline": 0.042123735709981264,
+      "med_rms_channel": 0.019858245298331266,
+      "med_rms_channel_line": 0.018870239344149515,
+      "med_rms_channel_line_cool": 0.01270441812903819
+    },
+    "11.5-15.0 kK": {
+      "n": 10,
+      "med_rms_K0": 0.04667818225225099,
+      "med_rms_spline": 0.03511874587892911,
+      "med_rms_channel": 0.018858519224213666,
+      "med_rms_channel_line": 0.018477474776749957,
+      "med_rms_channel_line_cool": 0.010534562062862044
+    },
+    "15.0-30.0 kK": {
+      "n": 8,
+      "med_rms_K0": 0.04449232480172054,
+      "med_rms_spline": 0.031904777851234016,
+      "med_rms_channel": 0.02291676594042556,
+      "med_rms_channel_line": 0.02000331810862084,
+      "med_rms_channel_line_cool": 0.01193859025304465
+    },
+    "30.0-55.0 kK": {
+      "n": 1,
+      "med_rms_K0": 0.05736781285971969,
+      "med_rms_spline": 0.053697310168929056,
+      "med_rms_channel": 0.048420621231630365,
+      "med_rms_channel_line": 0.05062458890842003,
+      "med_rms_channel_line_cool": 0.03626144530441492
+    },
+    "7.0-7.5 kK": {
+      "n": 86,
+      "med_rms_K0": 0.04303876577450769,
+      "med_rms_spline": 0.034395701886787755,
+      "med_rms_channel": 0.009399021203404119,
+      "med_rms_channel_line": 0.009316609911583264,
+      "med_rms_channel_line_cool": 0.008408258779112027
+    }
+  },
+  "model_error": {
+    "model": "channel_line_cool",
+    "n_stars": 232,
+    "n_components": 3,
+    "scale_sigma": 0.0090519555675402,
+    "scale_from": "rms of CALSPEC hot single-star absolute offsets",
+    "median_sigma_xp_0p4_1um": 0.007325572909837147,
+    "sigma_jhk": [
+      0.0281991804453895,
+      0.041023073046935254,
+      0.04340509352265795
+    ],
+    "split_half_median_chi2_per_dof": 0.4655083441729925,
+    "measurement_only_median_chi2_per_dof": 0.5391000412936565,
+    "in_sample_chi2_per_dof_by_bin": {
+      "7.5-11.5 kK": {
+        "n": 133,
+        "median_chi2_per_dof": 0.47376919454359157
+      },
+      "11.5-15.0 kK": {
+        "n": 52,
+        "median_chi2_per_dof": 0.3725101007689892
+      },
+      "15.0-30.0 kK": {
+        "n": 42,
+        "median_chi2_per_dof": 0.4542401038475533
+      },
+      "30.0-55.0 kK": {
+        "n": 5,
+        "median_chi2_per_dof": 1.7840745678985344
+      }
+    }
+  }
+}

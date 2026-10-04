@@ -9,10 +9,12 @@ Its 168 output channels are absolute fluxes at 10 pc, in
 
 PARSEC maps mass, age and metallicity to Teff, M_Ks and G-Ks. The tables
 are PARSEC v1.2S isochrones at [M/H] -1.0 to +0.5 in 0.1 dex and log age
-8.50 to 10.00 in 0.05 dex, pre-main sequence and main sequence only
+6.60 to 10.00 in 0.05 dex, pre-main sequence and main sequence only
 ([data](data.md)). They are interpolated linearly in mass, log age and
-[M/H]. Each isochrone ends before the overall-contraction hook, and a mass
-is supported up to the lower turn-off of the two neighbouring ages.
+[M/H]. Each isochrone ends before the overall-contraction hook and, above
+its Teff maximum, before the first star with log g < 3, and a mass is
+supported up to the lower terminal mass of the two neighbouring ages. The
+default model uses ages of 0.5 Gyr and older.
 Against PARSEC isochrones at the intermediate ages, for supported stars
 below 1.5 solar masses at [M/H] = -0.5, 0 and +0.3, the 99th-percentile
 differences are at most 15 K in Teff and 0.02 mag in Ks and G.
@@ -38,14 +40,39 @@ The G-band ratio uses the same PARSEC component magnitudes:
 `beta_g = 10**(-0.4 * (M_G[1] - M_G[0]))`. It is model-dependent, rather
 than an independent observation of resolved component light.
 
+## Hot-star route
+
+`StellarModel(hot=True)` adds components hotter than the network. Above
+7000 K a component's flux comes from a channel table: CK04 (Castelli &
+Kurucz 2003) below 15 kK and TLUSTY BSTAR2006 above, solar abundances,
+passed through a forward model of the Gaia XP external calibration and
+tabulated as XP61 and J/H/Ks at 10 pc for R = 1 Rsun. PARSEC supplies Teff,
+log g and radius, and the flux scales as R**2. An empirical correction
+multiplies the table: per channel, `exp(a + W b + s c)`, with W the Balmer
+(H-gamma + H-beta) line-strength index of the synthetic spectrum and s a
+cool-edge weight, 1 at 7000 K falling smoothly to 0 at 9000 K. a and b
+correct mainly the XP operator, not the synthetic spectra; c is set by
+1 kpc IRFM dwarfs at 7000--7500 K, on the Teff scale of the network
+([hot validation](validation-hot.md)).
+
+Over 7000--7498 K, to the end of the network's training range, the
+component flux is a smoothstep-weighted sum of the network and the table. The
+primary's Teff hands the model-error term from v2.1_warm to the hot term
+over the same range. The hot route predicts no W1/W2 or SPHEREx channels,
+so `hot=True` fits use XP and J/H/Ks for every hypothesis, including
+cool-star fits. Ages start at 10**6.6 yr and primary masses reach
+20 solar masses.
+
 ## Limitations
 
 - Fits are exploratory local optima. No posterior uncertainty, calibrated
   binary probability or population inference is provided.
 - Extinction defaults to zero. Use `extinction=None` to fit it with an
   [Edenhofer dust prior](extinction.md), or a number to fix ZGR23 E.
-- Age covers 0.5--10 Gyr, [M/H] -1--0.5. Both stars must lie inside the
-  original network coverage. There is no atmosphere/BD fallback. Coverage
+- Age covers 0.5--10 Gyr (10**6.6 yr--10 Gyr with `hot=True`), [M/H]
+  -1--0.5. Both stars must lie inside the original network coverage or,
+  with `hot=True`, inside the hot support: 7000--30000 K, log g 3--4.75 and
+  [M/H] -0.3--0.3. There is no atmosphere/BD fallback. Coverage
   of sparse ultracool training points is not a validated accuracy range.
 - The stellar network is trained on dwarfs: Gaia stars within 100 pc with
   APOGEE labels and, at 6250--7500 K, 1661 LAMOST/APOGEE dwarfs within
@@ -70,3 +97,13 @@ than an independent observation of resolved component light.
   Catalogue flags are preserved but do not establish a clean binary sample.
 - Fixed age/metallicity experiments are conditional on those choices.
   A matched mock checks the algorithm, not real-data model calibration.
+- The hot table is solar and its correction is calibrated to 30 kK on
+  anchors with spectral-type Teff above 15 kK. Out-of-fold residuals are
+  1.0--1.4 per cent above 9 kK and 1.6 per cent at 7.5--9 kK. In fits of
+  7250--7500 K dwarfs, Teff from the hot side of the seam lies about
+  100 K above IRFM, against 50 K below for the network alone.
+  Rotation, emission, pulsation and chemical peculiarity are not modelled.
+- XP and J/H/Ks alone do not constrain extinction for hot stars: fixed or
+  dust-prior E carries the constraint. In noiseless injections with a
+  Gaussian E prior of width sqrt(0.03**2 + (0.1 E)**2), the 1-sigma Teff
+  width is 0.6--1.0 kK at 15 kK and 1.6--2.8 kK at 25 kK (E = 0--0.6).

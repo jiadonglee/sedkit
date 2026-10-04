@@ -47,6 +47,8 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     Gaussian catalogue constraint shared by hypotheses.
     extinction is fixed ZGR23 E, or None to fit E>=0 with an EdenhoferPrior.
     The dust prior is evaluated at each trial distance under both hypotheses.
+    With StellarModel(hot=True), mass reaches 20 Msun, age 10**6.6 yr, and
+    both hypotheses use the channels the hot route predicts (XP61, J/H/Ks).
     Results are local optima, not posterior samples or binary probabilities.
     """
     if kind not in ("single", "binary", "both"):
@@ -58,7 +60,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     model = StellarModel() if model is None else model
     # Validate fixed age/metallicity before the optimiser enters the model.
     model.labels([0.7], 5.0 if age_gyr is None else age_gyr, 0.0 if feh is None else feh)
-    mask = sed.fit_mask(use_wise)
+    mask = sed.fit_mask(use_wise) & model.support
     if mask.sum() < 4:
         raise ValueError("at least four valid fitting channels are required")
     parallax_free = (fit_parallax and np.isfinite(sed.parallax_error_mas)
@@ -72,6 +74,8 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     if extinction_free and dust_prior is None:
         dust_prior = EdenhoferPrior()
     curve = extinction_curve(model.wavelength_um) if extinction_free or extinction else np.zeros(168)
+    low_mass, high_mass = model.mass_range
+    low_age, high_age = model.age_range_gyr
 
     @lru_cache(maxsize=256)
     def dust_moments(parallax):
@@ -86,10 +90,10 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         return dust_prior.penalty(e, *dust_moments(parallax))
 
     def fit_one(binary):
-        names, bounds = ["ln_m1"], [(np.log(0.08), np.log(2.2))]
+        names, bounds = ["ln_m1"], [(np.log(low_mass), np.log(high_mass))]
         if age_gyr is None:
             names.append("ln_age")
-            bounds.append((np.log(0.5), np.log(10.0)))
+            bounds.append((np.log(low_age), np.log(high_age)))
         if feh is None:
             names.append("feh")
             bounds.append((-1.0, 0.5))
@@ -107,7 +111,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         def unpack(vector):
             values = dict(zip(names, vector))
             return (np.exp(values["ln_m1"]),
-                    float(np.clip(np.exp(values["ln_age"]), 0.5, 10)) if age_gyr is None else age_gyr,
+                    float(np.clip(np.exp(values["ln_age"]), low_age, high_age)) if age_gyr is None else age_gyr,
                     values.get("feh", feh),
                     values.get("q", q) if binary else 0.0,
                     sed.parallax_mas + values["parallax_z"] * sed.parallax_error_mas
@@ -129,12 +133,12 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
             return value + z*z + penalty
 
         starts = []
-        ages = (1.0, 4.0, 9.0) if age_gyr is None else (age_gyr,)
+        ages = ((0.01, 0.05, 0.3) if model.hot else ()) + (1.0, 4.0, 9.0) if age_gyr is None else (age_gyr,)
         metals = (-0.5, 0.0, 0.3) if feh is None else (feh,)
         ratios = (0.3, 0.45, 0.6, 0.75, 0.9, 1.0) if binary and q is None else (q if binary else 0.0,)
         extinctions = np.unique(np.maximum(0, [dust_mean - dust_sigma, dust_mean,
                                               dust_mean + dust_sigma])) if extinction_free else (extinction,)
-        for mass in np.geomspace(0.09, 2.19, 38):
+        for mass in np.geomspace(0.09, 19.9, 64) if model.hot else np.geomspace(0.09, 2.19, 38):
             for age in ages:
                 for metal in metals:
                     for ratio in ratios:
