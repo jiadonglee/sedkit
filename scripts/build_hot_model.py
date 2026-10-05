@@ -1,6 +1,6 @@
 """Build models/hot/ from a J-CAPS hot-emulator run directory.
 
-The run (J-CAPS experiments/hot_emulator_v3_20261004) provides:
+The run (J-CAPS experiments/hot_emulator_v5_20261004) provides:
   out/emulator_table.npz   ln F_lambda at 10 pc for R = 1 Rsun on Teff x log g
                            (61 XP in W m^-2 nm^-1, as the Gaia XP share stores them,
                            and J/H/Ks in 1e-18 W m^-2 nm^-1), the per-channel
@@ -24,8 +24,8 @@ import numpy as np
 
 OUT = Path(__file__).resolve().parents[1] / "src/sedkit/models/hot"
 SUPPORT = {"teff": [7000.0, 30000.0], "logg": [3.0, 4.75], "feh": [-0.3, 0.3]}
-TERM = "hot_v3"
-VERSION = "hot-v3"
+TERM = "hot_v5"
+VERSION = "hot-v5"
 
 
 def main():

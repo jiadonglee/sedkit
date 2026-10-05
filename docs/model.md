@@ -52,7 +52,9 @@ multiplies the table: per channel, `exp(a + W b + s c)`, with W the Balmer
 (H-gamma + H-beta) line-strength index of the synthetic spectrum and s a
 cool-edge weight, 1 at 7000 K falling smoothly to 0 at 9000 K. a and b
 correct mainly the XP operator, not the synthetic spectra; c is set by
-1 kpc IRFM dwarfs at 7000--7500 K, on the Teff scale of the network
+1 kpc IRFM dwarfs at 7000--7500 K held at their IRFM Teff, the PARSEC log g
+of their network fit and the Edenhofer map E, the conditions of a sedkit
+fit, so the table shares the Teff scale of the network at the seam
 ([hot validation](validation-hot.md)).
 
 Over 7000--7498 K, to the end of the network's training range, the
@@ -99,9 +101,19 @@ cool-star fits. Ages start at 10**6.6 yr and primary masses reach
   A matched mock checks the algorithm, not real-data model calibration.
 - The hot table is solar and its correction is calibrated to 30 kK on
   anchors with spectral-type Teff above 15 kK. Out-of-fold residuals are
-  1.0--1.4 per cent above 9 kK and 1.6 per cent at 7.5--9 kK. In fits of
-  7250--7500 K dwarfs, Teff from the hot side of the seam lies about
-  100 K above IRFM, against 50 K below for the network alone.
+  1.1--1.3 per cent above 9 kK and 1.2 per cent at 7.5--9 kK.
+- At the same PARSEC star in 7000--7498 K, the solar table and the
+  metallicity-dependent network differ in XP shape by 0.8 per cent at
+  [M/H] = 0 and 1.6 per cent at -0.3 and +0.3, and in XP level by 0, 2 and
+  4 per cent. Fits of 7000--7500 K dwarfs give Teff 3--21 K above IRFM.
+  The cool-edge correction carries the map E of its calibration dwarfs, so
+  map E errors enter the table at 7000--9000 K. Between 7.5 and 9 kK there
+  is no IRFM-quality Teff reference.
+- With `hot=True`, isochrones with |[M/H]| > 0.3 end at 7000 K, where the
+  network alone reaches 7498 K. The 10**6.6 yr age floor applies to every
+  star: about half of 6250--7000 K field dwarfs fitted with free age reach
+  pre-main-sequence solutions below 0.5 Gyr, with the objective within 2
+  of the network-only fit for 89 per cent of the 481.
   Rotation, emission, pulsation and chemical peculiarity are not modelled.
 - XP and J/H/Ks alone do not constrain extinction for hot stars: fixed or
   dust-prior E carries the constraint. In noiseless injections with a

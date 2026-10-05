@@ -74,11 +74,18 @@ See [orblet](orblet.md) for composing SED, SB2 RV and astrometry likelihoods.
 ## Fitting
 
 `fit(sed, kind="both", model=None, age_gyr=5, feh=0, q=None,
-use_wise=False, fit_parallax=False, extinction=0, dust_prior=None)` uses multi-start Nelder--Mead with a
+use_wise=False, fit_parallax=False, extinction=0, dust_prior=None,
+age_prior=None, logg_prior=None, teff_prior=None)` uses multi-start Nelder--Mead with a
 fixed initial step in each fitted parameter.
 Reuse a `StellarModel` across sources through `model=`.
 
 - Age and metallicity are fixed unless set to `None`.
+- `age_prior=(mean, sigma)` constrains a free age with a Gaussian in
+  log10(age/yr), for example from a host cluster. `logg_prior=(mean, sigma)`
+  constrains the primary's PARSEC log g, for example from Balmer-line
+  spectroscopy, and `teff_prior=(mean, sigma)` the primary's Teff in K, for
+  example from its spectral type. They enter the single and binary
+  objectives alike.
 - Free binary q covers 0.1--1, further restricted by component support.
 - `q=` fixes q for the binary hypothesis.
 - Parallax is fixed at the catalogue value by default. Set
@@ -97,7 +104,9 @@ Each result includes masses, q, age, metallicity, parallax, model flux,
 components, light ratio, `chi2`, `m2lnl`, `objective`, `n_fit`, `mask`,
 `converged` and `at_bounds`, plus `extinction_e`, `dust_prior_mean`,
 `dust_prior_sigma` and `dust_prior_penalty`. `objective` includes parallax and
-dust constraints; `m2lnl` includes the model covariance determinant without priors.
+dust constraints and `label_prior_penalty`, the age, log g and Teff prior terms;
+`logg` is the primary's PARSEC log g. `m2lnl` includes the model covariance
+determinant without priors.
 
 ## Plotting
 

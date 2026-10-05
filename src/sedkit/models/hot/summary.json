@@ -1,7 +1,7 @@
 {
-  "version": "hot-v3",
-  "source": "J-CAPS hot_emulator_v3_20261004",
-  "error_term": "hot_v3",
+  "version": "hot-v5",
+  "source": "J-CAPS hot_emulator_v5_20261004",
+  "error_term": "hot_v5",
   "support": {
     "teff": [
       7000.0,
@@ -25,74 +25,74 @@
     "7.5-11.5 kK": {
       "n": 27,
       "med_rms_K0": 0.04954124343369613,
-      "med_rms_spline": 0.042123735709981264,
-      "med_rms_channel": 0.019858245298331266,
-      "med_rms_channel_line": 0.018870239344149515,
-      "med_rms_channel_line_cool": 0.01270441812903819
+      "med_rms_spline": 0.04107536272269248,
+      "med_rms_channel": 0.019122608279190975,
+      "med_rms_channel_line": 0.016759182919930418,
+      "med_rms_channel_line_cool": 0.012491831554274252
     },
     "11.5-15.0 kK": {
       "n": 10,
       "med_rms_K0": 0.04667818225225099,
-      "med_rms_spline": 0.03511874587892911,
-      "med_rms_channel": 0.018858519224213666,
-      "med_rms_channel_line": 0.018477474776749957,
-      "med_rms_channel_line_cool": 0.010534562062862044
+      "med_rms_spline": 0.03488090041994949,
+      "med_rms_channel": 0.018852962078249515,
+      "med_rms_channel_line": 0.018920618741574295,
+      "med_rms_channel_line_cool": 0.010529392034582393
     },
     "15.0-30.0 kK": {
       "n": 8,
       "med_rms_K0": 0.04449232480172054,
-      "med_rms_spline": 0.031904777851234016,
-      "med_rms_channel": 0.02291676594042556,
-      "med_rms_channel_line": 0.02000331810862084,
-      "med_rms_channel_line_cool": 0.01193859025304465
+      "med_rms_spline": 0.0315588997591241,
+      "med_rms_channel": 0.022170298837381783,
+      "med_rms_channel_line": 0.022224986329673783,
+      "med_rms_channel_line_cool": 0.011960860846690378
     },
     "30.0-55.0 kK": {
       "n": 1,
       "med_rms_K0": 0.05736781285971969,
-      "med_rms_spline": 0.053697310168929056,
-      "med_rms_channel": 0.048420621231630365,
-      "med_rms_channel_line": 0.05062458890842003,
-      "med_rms_channel_line_cool": 0.03626144530441492
+      "med_rms_spline": 0.048757079128953315,
+      "med_rms_channel": 0.04808335915544114,
+      "med_rms_channel_line": 0.047593218648489345,
+      "med_rms_channel_line_cool": 0.03305287738689469
     },
     "7.0-7.5 kK": {
       "n": 86,
-      "med_rms_K0": 0.04303876577450769,
-      "med_rms_spline": 0.034395701886787755,
-      "med_rms_channel": 0.009399021203404119,
-      "med_rms_channel_line": 0.009316609911583264,
-      "med_rms_channel_line_cool": 0.008408258779112027
+      "med_rms_K0": 0.045001388825453084,
+      "med_rms_spline": 0.03457623390105182,
+      "med_rms_channel": 0.009784672343692324,
+      "med_rms_channel_line": 0.009499638588285703,
+      "med_rms_channel_line_cool": 0.00881032045882744
     }
   },
   "model_error": {
     "model": "channel_line_cool",
     "n_stars": 232,
     "n_components": 3,
-    "scale_sigma": 0.0090519555675402,
+    "scale_sigma": 0.00910039375363481,
     "scale_from": "rms of CALSPEC hot single-star absolute offsets",
-    "median_sigma_xp_0p4_1um": 0.007325572909837147,
+    "median_sigma_xp_0p4_1um": 0.007416830194709409,
     "sigma_jhk": [
-      0.0281991804453895,
-      0.041023073046935254,
-      0.04340509352265795
+      0.028688306990905358,
+      0.040715179079712255,
+      0.04296586829869451
     ],
-    "split_half_median_chi2_per_dof": 0.4655083441729925,
-    "measurement_only_median_chi2_per_dof": 0.5391000412936565,
+    "split_half_median_chi2_per_dof": 0.45658527368151486,
+    "measurement_only_median_chi2_per_dof": 0.5310478513860555,
     "in_sample_chi2_per_dof_by_bin": {
       "7.5-11.5 kK": {
         "n": 133,
-        "median_chi2_per_dof": 0.47376919454359157
+        "median_chi2_per_dof": 0.47340953941082675
       },
       "11.5-15.0 kK": {
         "n": 52,
-        "median_chi2_per_dof": 0.3725101007689892
+        "median_chi2_per_dof": 0.3664899444619649
       },
       "15.0-30.0 kK": {
         "n": 42,
-        "median_chi2_per_dof": 0.4542401038475533
+        "median_chi2_per_dof": 0.4514512325363907
       },
       "30.0-55.0 kK": {
         "n": 5,
-        "median_chi2_per_dof": 1.7840745678985344
+        "median_chi2_per_dof": 2.140835193076426
       }
     }
   }

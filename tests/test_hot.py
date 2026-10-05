@@ -65,3 +65,22 @@ def test_hot_mock_fit_recovers_mass_and_age(hot):
     assert result["age_gyr"] == pytest.approx(0.05, rel=0.2)
     assert result["mask"][HOT_CHANNELS:].sum() == 0
     assert np.isfinite(loglike_sed(sed, m1=4.0, age_gyr=0.05, model=hot))
+
+
+def test_label_priors_enter_both_hypotheses(hot):
+    star = hot.evaluate(3.0, 0.7, 0.03, 0)
+    flux = star["flux_10pc"] * 0.25
+    mask = np.zeros(168, bool)
+    mask[:HOT_CHANNELS] = True
+    sed = SED(np.where(mask, flux, np.nan), np.where(mask, 0.02 * flux, np.nan), mask, 50, 0.05)
+    result = fit(sed, "both", model=hot, age_gyr=None, feh=0.0, age_prior=(7.48, 0.1),
+                 logg_prior=(float(star["logg"][0]), 0.1))
+    for kind in ("single", "binary"):
+        r = result[kind]
+        assert r["objective"] == pytest.approx(r["m2lnl"] + r["label_prior_penalty"], abs=1e-6)
+    assert result["binary"]["q"] == pytest.approx(0.7, abs=0.1)
+    assert result["delta"] > 25
+    with pytest.raises(ValueError):
+        fit(sed, "single", model=hot, age_gyr=0.03, age_prior=(7.48, 0.1))
+    teff = fit(sed, "single", model=hot, age_gyr=0.03, feh=0.0, teff_prior=(float(star["teff"][0]), 300.0))
+    assert teff["objective"] == pytest.approx(teff["m2lnl"] + teff["label_prior_penalty"], abs=1e-6)

@@ -63,10 +63,10 @@ log age 6.60--8.45 and 8.50--10.00. Their columns are mass, logTe, logL, Ks
 and G; they are stellar evolutionary models, not observations.
 
 The hot-star assets in `models/hot/` are built by
-`scripts/build_hot_model.py` from the J-CAPS run `hot_emulator_v3_20261004`:
+`scripts/build_hot_model.py` from the J-CAPS run `hot_emulator_v5_20261004`:
 the channel table on Teff 7000--30000 K by log g 3.0--4.75 (CK04 and TLUSTY
 BSTAR2006 through the XP forward model), the per-channel correction with
-its Balmer index and cool-edge weight, and the `hot_v3` model-error term. `summary.json` records
+its Balmer index and cool-edge weight, and the `hot_v5` model-error term. `summary.json` records
 the support box, provenance and validation numbers.
 
 2MASS fluxes follow the J-CAPS training convention: catalogue zero points at
