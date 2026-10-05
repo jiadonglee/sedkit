@@ -69,6 +69,9 @@ cool-star fits. Ages start at 10**6.6 yr and primary masses reach
 
 - Fits are exploratory local optima. No posterior uncertainty, calibrated
   binary probability or population inference is provided.
+- With `hot=True`, Delta measures only the luminosity excess over the
+  single-star model; it does not identify an individual hot binary (see
+  [hot-star validation](validation-hot.md)).
 - Extinction defaults to zero. Use `extinction=None` to fit it with an
   [Edenhofer dust prior](extinction.md), or a number to fix ZGR23 E.
 - Age covers 0.5--10 Gyr (10**6.6 yr--10 Gyr with `hot=True`), [M/H]

@@ -136,3 +136,40 @@ p = 0.002). A 5 per cent spectral-type `teff_prior` barely moves the fits:
 eight late-B stars prefer solutions more than 20 per cent hotter than their
 spectral type, and they form the faint tail of the height distribution.
 
+In 698 Hunt & Reffert clusters (J-CAPS `hot_cluster_truth_large_20261005`;
+3427 B/A members, multiplicity from WDS, SB9, MSC, Chini et al. 2012,
+Kervella et al. 2022 and Gaia NSS), stars with a luminous companion reach
+Delta > 25 more often than stars with none (65 against 44 per cent), but
+Gaia DR3 RV-constant stars with no known companion also reach 43 per cent.
+These false positives come from the width of the fixed-age single-star
+sequence: its faint-side half-width grows from 0.08 mag near the ZAMS to
+0.54 mag at 0.8 of the turnoff Teff, while its ridge sits at the F-member
+zero point. Moving the parallax to the ridge and fitting it
+(`fit_parallax=True`) with the ridge width as its error, one luminosity
+nuisance shared by both hypotheses, gives:
+
+| Turnoff ratio | Luminous companion | RV single | LR, Delta > 25 | LR, Delta <= 25 |
+|---|---:|---:|---:|---:|
+| <= 0.55 | 12/16 | 59/336 | 4.3 | 0.30 |
+| > 0.55 | 7/31 | 56/618 | 2.5 | 0.85 |
+
+For one hot star this means:
+- with free age and photometry only, Delta does not tell a single star
+  from a binary;
+- for a near-ZAMS B/A cluster member (7--13 kK), Delta <= 25 makes a
+  q >~ 0.65 companion unlikely (about 7--11 per cent for a 20--30 per
+  cent prior), while Delta > 25 marks a candidate (about 50--65 per cent)
+  that needs RV or imaging;
+- for evolved members, Delta carries little information;
+- the fitted q does not track the literature q.
+
+Delta adds no information to the luminosity excess. Against the RV
+singles, the luminous-companion stars give a ROC AUC of 0.78 for the
+shared-width Delta and 0.84 for the offset above the ridge near the ZAMS,
+and 0.64 for both in evolved stars. At a fixed excess, Delta is the same
+for both classes. Companions with q >~ 0.5 to a hot primary are themselves
+hot, so XP and J/H/Ks see their light but not their colour. The hot route
+therefore serves single-star Teff, extinction and fixed-age luminosity,
+and its Delta is not a binary test for an individual hot star.
+
+Only 14 RV-constant stars are hotter than 13 kK, and O stars are untested.
