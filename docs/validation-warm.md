@@ -69,3 +69,32 @@ single-star age than by the binary-solution age for stars without a
 `non_single_star` flag (Spearman difference -0.08, 95 per cent interval
 -0.13 to -0.03) and the reverse for the 179 flagged binaries (+0.18, 0.00
 to +0.34).
+
+## F-type cluster members and log g priors
+
+In 494 Hunt & Reffert clusters (J-CAPS `warm_cluster_truth_large_20261005`;
+3702 members at 1.1--1.4 solar masses, multiplicity from WDS, SB9, MSC,
+Kervella et al. 2022, Gaia NSS and Gaia DR3 RV variability), fits with
+`StellarModel(hot=True)` at [M/H] = +0.1 give, at a main-sequence age
+fraction <= 0.4:
+
+| Fit | Luminous companion, Delta > 25 | Gaia RV single, Delta > 25 | LR, Delta > 25 | LR, Delta <= 25 |
+|---|---:|---:|---:|---:|
+| Age free | 18 per cent | 6 per cent | 3.1 | 0.87 |
+| Cluster age, RV-single ridge and shared width | 54 per cent | 20 per cent | 2.7 | 0.58 |
+
+The fixed-age single-star sequence of the RV singles is 0.07--0.11 mag
+wide, so three widths correspond to q >~ 0.75 for a 1.2 solar-mass primary.
+Delta separates the classes no better than the luminosity excess over that
+sequence (ROC AUC 0.68 against 0.72): XP and J/H/Ks do not resolve the
+colour of the cooler companion. A second sequence 0.5--0.8 mag above the
+ridge holds 15 per cent of the RV singles, likely long-period twins that
+Gaia RV does not detect.
+
+In free-age mocks of a 1.2 solar-mass primary with measurement noise only,
+the single-star solution moves by -0.05, -0.13, -0.18 and -0.27 dex in
+log g for q = 0.5, 0.7, 0.85 and 1. A `logg_prior` of 0.1 dex detects
+nothing; 0.05 dex detects about half of the q >= 0.85 binaries; 0.02 dex,
+the precision of asteroseismic log g, detects q >= 0.7. Survey log g values
+derived from the parallax and an isochrone already contain the companion's
+light and are not independent priors.
