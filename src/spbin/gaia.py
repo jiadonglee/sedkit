@@ -11,6 +11,8 @@ from zipfile import ZipFile
 
 import numpy as np
 
+from .data import source_id_int
+
 TAP = {
     "esa": "https://gea.esac.esa.int/tap-server/tap",
     "ari": "https://gaia.ari.uni-heidelberg.de/tap",
@@ -35,22 +37,10 @@ def _bind(directory, settings):
 
 
 def _ids(values):
-    """Reject floating-point IDs before they can silently round."""
+    """Validated, de-duplicated source IDs in input order."""
     if isinstance(values, (str, Integral)):
         values = [values]
-    result = []
-    for value in values:
-        if np.ma.is_masked(value) or isinstance(value, (bool, np.bool_)):
-            raise ValueError("source IDs must be positive integers or decimal strings")
-        if not isinstance(value, (str, Integral)):
-            raise ValueError("source IDs must be integers or strings, never floats")
-        if isinstance(value, str) and not value.isdecimal():
-            raise ValueError("source IDs must be decimal strings")
-        sid = int(value)
-        if not 0 < sid <= np.iinfo(np.int64).max:
-            raise ValueError("source ID is outside the positive int64 range")
-        result.append(sid)
-    return list(dict.fromkeys(result))
+    return list(dict.fromkeys(source_id_int(value) for value in values))
 
 
 def _votable(source):

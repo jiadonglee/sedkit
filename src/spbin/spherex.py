@@ -7,6 +7,8 @@ import subprocess
 
 import numpy as np
 
+from .data import source_id_int
+
 
 def load_spherex(sed, path, *, method=None):
     """Attach an XphereX channel-binned Jy CSV to a copy of an SED.
@@ -60,7 +62,7 @@ def download_spherex(sed, *, cache_dir="data", refresh=False, radius_arcmin=0.8)
     """
     if not sed.source_id:
         raise ValueError("SPHEREx downloads require a Gaia source_id")
-    source_id = str(int(sed.source_id))
+    source_id = str(source_id_int(sed.source_id))
     if not np.isfinite(radius_arcmin) or radius_arcmin <= 0:
         raise ValueError("radius_arcmin must be positive and finite")
     root = Path(cache_dir).expanduser().resolve() / "spherex"

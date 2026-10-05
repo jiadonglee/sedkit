@@ -2,11 +2,24 @@
 
 from dataclasses import dataclass, field, replace
 import json
+from numbers import Integral
 from pathlib import Path
 
 import numpy as np
 
-from .model import FLUX_UNIT, StellarModel
+from .model import FLUX_UNIT, wavelength_um
+
+
+def source_id_int(value):
+    """Gaia source_id as an int; floats and non-decimal strings are rejected."""
+    if (isinstance(value, (bool, np.bool_)) or np.ma.is_masked(value)
+            or not isinstance(value, (str, Integral))):
+        raise ValueError("source IDs must be positive integers or decimal strings, never floats")
+    if isinstance(value, str) and not value.isdecimal():
+        raise ValueError("source IDs must be decimal strings")
+    if not 0 < int(value) <= np.iinfo(np.int64).max:
+        raise ValueError("source ID is outside the positive int64 range")
+    return int(value)
 
 
 @dataclass
@@ -36,7 +49,7 @@ class SED:
 
     @property
     def wavelength_um(self):
-        return StellarModel().wavelength_um
+        return wavelength_um()
 
     def save(self, path):
         """Save measurements and provenance without pickled Python objects."""

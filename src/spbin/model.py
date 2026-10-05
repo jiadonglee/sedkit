@@ -1,5 +1,6 @@
 """Coeval stellar spectra from PARSEC tracks and a compact empirical network."""
 
+from functools import cache
 import json
 from pathlib import Path
 
@@ -23,6 +24,46 @@ SOLAR_TEFF, SOLAR_LOGG = 5772.0, 4.438
 def _load(path):
     with np.load(path, allow_pickle=False) as archive:
         return {key: archive[key] for key in archive.files}
+
+
+def _frozen(arrays):
+    for array in arrays.values():
+        array.setflags(write=False)
+    return arrays
+
+
+@cache
+def _assets():
+    """Bundled model files, read once per process and shared read-only."""
+    directory = DATA / "stellar"
+    tracks = {}
+    for key, value in _load(DATA / "parsec_mh_tracks.npz").items():
+        metallicity, age = map(float, key.split("/"))
+        tracks.setdefault(metallicity, {})[age] = value
+    for by_age in tracks.values():
+        _frozen(by_age)
+    return dict(summary=json.loads((directory / "summary.json").read_text()),
+                norm=_frozen(_load(directory / "normalization.npz")),
+                params=_frozen(_load(directory / "model_params.npz")),
+                calibration=_frozen(_load(directory / "nir_calibration.npz")),
+                errors=_frozen(_load(DATA / "model_error.npz")), tracks=tracks)
+
+
+@cache
+def _hot_assets():
+    return dict(summary=json.loads((DATA / "hot" / "summary.json").read_text()),
+                table=_frozen(_load(DATA / "hot" / "hot_table.npz")),
+                errors=_frozen(_load(DATA / "hot" / "model_error.npz")))
+
+
+@cache
+def wavelength_um():
+    """The 168 channel wavelengths, without building a StellarModel."""
+    norm = _assets()["norm"]
+    wave = np.r_[norm["xp_spectral_wavelength_nm"] / 1000, norm["photometry_wavelength_um"],
+                 norm["spherex_wavelength_um"]]
+    wave.setflags(write=False)
+    return wave
 
 
 def _smoothstep(x):
@@ -79,20 +120,15 @@ class StellarModel:
     """
 
     def __init__(self, hot=False):
-        directory = DATA / "stellar"
-        self.summary = json.loads((directory / "summary.json").read_text())
-        self.norm = _load(directory / "normalization.npz")
-        self.params = _load(directory / "model_params.npz")
-        self.calibration = _load(directory / "nir_calibration.npz")
-        self.tracks = {}
-        for key, value in _load(DATA / "parsec_mh_tracks.npz").items():
-            metallicity, age = map(float, key.split("/"))
-            self.tracks.setdefault(metallicity, {})[age] = value
+        assets = _assets()
+        self.summary = assets["summary"]
+        self.norm = assets["norm"]
+        self.params = assets["params"]
+        self.calibration = assets["calibration"]
+        self.tracks = assets["tracks"]
         self.metals = np.array(sorted(self.tracks))
-        self.errors = _load(DATA / "model_error.npz")
-        self.wavelength_um = np.r_[self.norm["xp_spectral_wavelength_nm"] / 1000,
-                                   self.norm["photometry_wavelength_um"],
-                                   self.norm["spherex_wavelength_um"]]
+        self.errors = dict(assets["errors"])
+        self.wavelength_um = wavelength_um()
         self.channels = np.array([f"XP{i:02d}" for i in range(61)]
                                  + ["J", "H", "Ks", "W1", "W2"]
                                  + [f"SPHEREx{i:03d}" for i in range(102)])
@@ -101,9 +137,10 @@ class StellarModel:
         self.age_range_gyr = (0.5, 10.0)
         self.mass_range = (0.08, 2.2)
         if hot:
-            self.hot_summary = json.loads((DATA / "hot" / "summary.json").read_text())
-            self.hot_table = _load(DATA / "hot" / "hot_table.npz")
-            self.errors.update(_load(DATA / "hot" / "model_error.npz"))
+            hot_assets = _hot_assets()
+            self.hot_summary = hot_assets["summary"]
+            self.hot_table = hot_assets["table"]
+            self.errors.update(hot_assets["errors"])
             self.support[HOT_CHANNELS:] = False
             self.age_range_gyr = (10**(6.6 - 9), 10.0)
             self.mass_range = (0.08, 20.0)

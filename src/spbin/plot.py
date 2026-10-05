@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from .model import StellarModel
+from .model import wavelength_um
 
 SINGLE, BINARY, OBS = "#f9654e", "#024397", "#7e8a99"
 INK, INK2 = "#1e2834", "#586475"
@@ -39,7 +39,7 @@ def plot(sed, result=None, path=None, *, axes=None, components=True, title=None)
     """
     import matplotlib.pyplot as plt
 
-    wave = StellarModel().wavelength_um
+    wave = wavelength_um()
     fits = [] if result is None else (
         [result["single"], result["binary"]] if "binary" in result else [result])
     fitted = fits[-1]["mask"] if fits else sed.fit_mask()

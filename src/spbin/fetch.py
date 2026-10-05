@@ -6,7 +6,7 @@ import warnings
 
 import numpy as np
 
-from .data import SED
+from .data import SED, source_id_int
 from .model import StellarModel
 
 BANDS = ("J", "H", "Ks", "W1", "W2")
@@ -117,7 +117,7 @@ def download(source_id=None, *, ra=None, dec=None, radius_arcsec=2.0,
         if ra is None or dec is None:
             raise ValueError("provide a Gaia source_id or ra and dec")
         source_id = _resolve(ra, dec, radius_arcsec)
-    source_id = str(int(source_id))
+    source_id = str(source_id_int(source_id))
     directory = Path(cache_dir).expanduser() / source_id
     directory.mkdir(parents=True, exist_ok=True)
     output = directory / "sed.npz"

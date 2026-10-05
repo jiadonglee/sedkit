@@ -127,3 +127,23 @@ def test_free_age_moves_away_from_start_node(model):
     fixed = fit(sed, "single", age_gyr=1.7, feh=0.15, model=model)
     assert free["age_gyr"] == pytest.approx(1.7, rel=0.03)
     assert free["objective"] <= fixed["objective"] + 0.01
+
+
+def test_model_assets_and_wavelength_are_shared():
+    first, second = StellarModel(), StellarModel()
+    assert first.norm is second.norm
+    assert first.wavelength_um is second.wavelength_um is SED(
+        np.ones(168), np.ones(168), np.ones(168, bool), 1.0).wavelength_um
+    assert not first.wavelength_um.flags.writeable
+    hot = StellarModel(hot=True)
+    assert set(first.errors) < set(hot.errors)
+
+
+@pytest.mark.parametrize("value", [1.5e18, np.float64(4295806720.0), "12.0", True])
+def test_download_entry_points_reject_non_integer_source_ids(value, tmp_path):
+    from spbin import download, download_spherex
+    with pytest.raises(ValueError):
+        download(value, cache_dir=tmp_path)
+    sed = SED(np.ones(168), np.ones(168), np.ones(168, bool), 1.0, source_id=str(value))
+    with pytest.raises(ValueError):
+        download_spherex(sed, cache_dir=tmp_path)
