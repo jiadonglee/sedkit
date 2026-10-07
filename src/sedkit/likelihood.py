@@ -17,7 +17,8 @@ def loglike_sed(sed, *, m1, q=0.0, age_gyr=5.0, feh=0.0,
     Model covariance and its determinant are included. The constant
     -N/2 log(2pi) is omitted: compare on one shared data mask.
     Unsupported stellar components or nonpositive parallax return -inf.
-    Age/metallicity validation follows StellarModel.evaluate.
+    Age/metallicity validation follows StellarModel.evaluate. The mask keeps
+    only channels the model predicts (XP61 and J/H/Ks with hot=True).
     """
     parallax = sed.parallax_mas if parallax_mas is None else parallax_mas
     if not np.isfinite(parallax) or parallax <= 0:
@@ -28,7 +29,7 @@ def loglike_sed(sed, *, m1, q=0.0, age_gyr=5.0, feh=0.0,
     prediction = model.evaluate(m1, q, age_gyr, feh)
     if prediction is None:
         return -np.inf
-    mask = sed.fit_mask(use_wise=use_wise)
+    mask = sed.fit_mask(use_wise=use_wise) & model.support
     if not mask.any():
         raise ValueError("SED likelihood requires at least one fitted channel")
     attenuation = transmission(model.wavelength_um, extinction) if extinction else 1.0

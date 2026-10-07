@@ -9,10 +9,12 @@ Its 168 output channels are absolute fluxes at 10 pc, in
 
 PARSEC maps mass, age and metallicity to Teff, M_Ks and G-Ks. The tables
 are PARSEC v1.2S isochrones at [M/H] -1.0 to +0.5 in 0.1 dex and log age
-8.50 to 10.00 in 0.05 dex, pre-main sequence and main sequence only
+6.60 to 10.00 in 0.05 dex, pre-main sequence and main sequence only
 ([data](data.md)). They are interpolated linearly in mass, log age and
-[M/H]. Each isochrone ends before the overall-contraction hook, and a mass
-is supported up to the lower turn-off of the two neighbouring ages.
+[M/H]. Each isochrone ends before the overall-contraction hook and, above
+its Teff maximum, before the first star with log g < 3, and a mass is
+supported up to the lower terminal mass of the two neighbouring ages. The
+default model uses ages of 0.5 Gyr and older.
 Against PARSEC isochrones at the intermediate ages, for supported stars
 below 1.5 solar masses at [M/H] = -0.5, 0 and +0.3, the 99th-percentile
 differences are at most 15 K in Teff and 0.02 mag in Ks and G.
@@ -38,14 +40,101 @@ The G-band ratio uses the same PARSEC component magnitudes:
 `beta_g = 10**(-0.4 * (M_G[1] - M_G[0]))`. It is model-dependent, rather
 than an independent observation of resolved component light.
 
+## Hot-star route
+
+`StellarModel(hot=True)` adds components hotter than the network. Above
+7000 K a component's flux comes from a channel table: CK04 (Castelli &
+Kurucz 2003) below 15 kK and TLUSTY BSTAR2006 above, solar abundances,
+passed through a forward model of the Gaia XP external calibration and
+tabulated as XP61 and J/H/Ks at 10 pc for R = 1 Rsun. PARSEC supplies Teff,
+log g and radius, and the flux scales as R**2. An empirical correction
+multiplies the table: per channel, `exp(a + W b + s c)`, with W the Balmer
+(H-gamma + H-beta) line-strength index of the synthetic spectrum and s a
+cool-edge weight, 1 at 7000 K falling smoothly to 0 at 9000 K. a and b
+correct mainly the XP operator, not the synthetic spectra; c is set by
+1 kpc IRFM dwarfs at 7000--7500 K held at their IRFM Teff, the PARSEC log g
+of their network fit and the Edenhofer map E, the conditions of a sedkit
+fit, so the table shares the Teff scale of the network at the seam
+([hot validation](validation-hot.md)).
+
+Over 7000--7498 K, to the end of the network's training range, the
+component flux is a smoothstep-weighted sum of the network and the table. The
+primary's Teff hands the model-error term from v2.1_warm to the hot term
+over the same range. The hot route predicts no W1/W2 or SPHEREx channels,
+so `hot=True` fits use XP and J/H/Ks for every hypothesis, including
+cool-star fits. Ages start at 10**6.6 yr and primary masses reach
+20 solar masses.
+
+## Giant route
+
+`fit_giant_companion` tests a red giant for a hot main-sequence companion,
+the configuration of a stripped giant with a B-star companion. The giant
+is not a PARSEC star: `GiantTemplate` is an empirical flux template in
+Teff, log g and [M/H] with a free scale, built from 76210 APOGEE DR17
+giants with Gaia XP, 2MASS and AllWISE (ASPCAP S/N > 70, SFD
+E(B-V) < 0.1, RV scatter below 1 km/s, RUWE < 1.4). Each training star is
+dereddened by E = 0.86 SFD E(B-V) on the ZGR23 curve; 0.86 is the slope of
+per-star E fitted against SFD. At every node of a 100 K x 0.2 dex x
+0.2 dex grid, a kernel-weighted local-linear regression in the three
+labels gives the template, and the weighted residuals, less the
+measurement variance, give its fractional covariance as six columns plus a
+diagonal. Templates are trilinear between nodes, and the covariance is the
+weighted sum of the eight corner covariances. The grid covers Teff
+3600--6800 K, log g 0--3.8 and [M/H] -2.6 to +0.6 where the kernel holds
+at least 25 effective stars and the template is positive with scatter
+below 30 per cent on every XP channel. Typical template scatter is 4--7
+per cent at 392--402 nm and 3--4 per cent at 440 nm.
+
+The companion is `StellarModel(hot=True)` of mass M2 at 10 Myr and solar
+metallicity, at the parallax; W1/W2 follow the Rayleigh--Jeans
+tail of its Ks flux. Giant and companion share ZGR23 E >= 0 on a curve
+multiplied by (lambda / 0.55 micron)**tilt, with a Gaussian tilt prior
+(default width 0.15, the scatter of free tilts of reddened control
+giants). They share nothing else: no common age and no q <= 1. Label
+priors on the template's APOGEE scale are required. The fit profiles the
+objective, -2 ln L with the template and companion covariances plus the
+priors, over a grid of M2. For each M2, the scale, E and tilt are fitted
+at every template node within 3.5 prior widths, and the best three nodes
+are refined in all six parameters.
+
+With `luminosity=`, the parallax becomes a seventh parameter shared by both
+stars, within 3 sigma of its input value with penalty z^2. The giant's M_Ks
+follows from its scale, the template Ks and the parallax; its luminosity
+from the PARSEC BC_Ks at its labels; its mass from log g and Teff. Gaussian
+walls of 0.1 dex hold the mass in 0.2--10 solar masses. For "parsec", a
+prior from PARSEC v1.2S giants (subgiant branch to TP-AGB, log g < 3.8)
+adds -2 ln(p / p_mode) of M_Ks near the labels:
+
+- Isochrones are at 0.05 dex in log age from 10**7.5 yr and 0.1 dex in
+  [M/H] over -1.0 to +0.5, with a 0.5 dex table outside that range.
+- Points are weighted by the IMF, the linear age width and
+  (age / 1 Gyr)**(4 max(0, -[M/H])), which gives metal-poor isochrones old
+  ages. The exponent is fitted to template training giants with
+  parallax/error > 10.
+- The kernel is 200 K in Teff, 0.12 in log g and 0.15 dex in [M/H].
+- The M_Ks histogram, smoothed by 0.15 mag, is mixed with a uniform floor
+  so that any M_Ks PARSEC produces near the labels costs at most 6.
+- Nodes without PARSEC giants in the kernel (1142 of 6603) carry no M_Ks
+  constraint; there the mass walls alone bound the luminosity.
+
+With `dust_prior=`, E follows the Edenhofer et al. (2023) map at the trial
+distance, with the map width widened by 0.04 in quadrature. Beyond the
+map's 1.25 kpc, E is held above the 1.2 kpc value minus 0.04 by a one-sided
+wall.
+
 ## Limitations
 
 - Fits are exploratory local optima. No posterior uncertainty, calibrated
   binary probability or population inference is provided.
+- With `hot=True`, Delta measures only the luminosity excess over the
+  single-star model; it does not identify an individual hot binary (see
+  [hot-star validation](validation-hot.md)).
 - Extinction defaults to zero. Use `extinction=None` to fit it with an
   [Edenhofer dust prior](extinction.md), or a number to fix ZGR23 E.
-- Age covers 0.5--10 Gyr, [M/H] -1--0.5. Both stars must lie inside the
-  original network coverage. There is no atmosphere/BD fallback. Coverage
+- Age covers 0.5--10 Gyr (10**6.6 yr--10 Gyr with `hot=True`), [M/H]
+  -1--0.5. Both stars must lie inside the original network coverage or,
+  with `hot=True`, inside the hot support: 7000--30000 K, log g 3--4.75 and
+  [M/H] -0.3--0.3. There is no atmosphere/BD fallback. Coverage
   of sparse ultracool training points is not a validated accuracy range.
 - The stellar network is trained on dwarfs: Gaia stars within 100 pc with
   APOGEE labels and, at 6250--7500 K, 1661 LAMOST/APOGEE dwarfs within
@@ -70,3 +159,32 @@ than an independent observation of resolved component light.
   Catalogue flags are preserved but do not establish a clean binary sample.
 - Fixed age/metallicity experiments are conditional on those choices.
   A matched mock checks the algorithm, not real-data model calibration.
+- The hot table is solar and its correction is calibrated to 30 kK on
+  anchors with spectral-type Teff above 15 kK. Out-of-fold residuals are
+  1.1--1.3 per cent above 9 kK and 1.2 per cent at 7.5--9 kK.
+- At the same PARSEC star in 7000--7498 K, the solar table and the
+  metallicity-dependent network differ in XP shape by 0.8 per cent at
+  [M/H] = 0 and 1.6 per cent at -0.3 and +0.3, and in XP level by 0, 2 and
+  4 per cent. Fits of 7000--7500 K dwarfs give Teff 3--21 K above IRFM.
+  The cool-edge correction carries the map E of its calibration dwarfs, so
+  map E errors enter the table at 7000--9000 K. Between 7.5 and 9 kK there
+  is no IRFM-quality Teff reference.
+- With `hot=True`, isochrones with |[M/H]| > 0.3 end at 7000 K, where the
+  network alone reaches 7498 K. The 10**6.6 yr age floor applies to every
+  star: about half of 6250--7000 K field dwarfs fitted with free age reach
+  pre-main-sequence solutions below 0.5 Gyr, with the objective within 2
+  of the network-only fit for 89 per cent of the 481.
+  Rotation, emission, pulsation and chemical peculiarity are not modelled.
+- XP and J/H/Ks alone do not constrain extinction for hot stars: fixed or
+  dust-prior E carries the constraint. In noiseless injections with a
+  Gaussian E prior of width sqrt(0.03**2 + (0.1 E)**2), the 1-sigma Teff
+  width is 0.6--1.0 kK at 15 kK and 1.6--2.8 kK at 25 kK (E = 0--0.6).
+- The giant route uses XP from 392 nm, so the Balmer jump is not used. Its
+  companion is a non-rotating main-sequence star, and a greyer extinction
+  curve also raises the blue end; the tilt prior carries that distinction
+  ([giant validation](validation-giant.md)).
+- The PARSEC M_Ks prior of the giant route sits 0.1--0.17 mag brighter than
+  training giants and controls at [M/H] < -0.5, and outside [M/H] -1.0 to
+  +0.5 its isochrones are 0.5 dex apart in age. `download` stores the Gaia
+  DR3 parallax without the Lindegren et al. (2021) zero point; the validated
+  luminosity fits used corrected parallaxes passed through `parallax=`.

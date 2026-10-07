@@ -58,9 +58,25 @@ The compact network, normalization, calibration and model-error assets
 come from J-CAPS v2.1 / its stellar v2.2 fitting route. The PARSEC tables
 are built by `scripts/build_parsec_tracks.py` from CMD 3.8: PARSEC v1.2S,
 YBC bolometric corrections, Gaia DR2 (Evans et al. 2018) + Tycho2 + 2MASS
-Vega magnitudes, no extinction, labels 0 and 1. Their columns are mass,
-logTe, logL, Ks and G; they are stellar evolutionary models, not
-observations.
+Vega magnitudes, no extinction, labels 0 and 1, requested per [M/H] as
+log age 6.60--8.45 and 8.50--10.00. Their columns are mass, logTe, logL, Ks
+and G; they are stellar evolutionary models, not observations.
+
+The hot-star assets in `models/hot/` are built by
+`scripts/build_hot_model.py` from the J-CAPS run `hot_emulator_v5_20261004`:
+the channel table on Teff 7000--30000 K by log g 3.0--4.75 (CK04 and TLUSTY
+BSTAR2006 through the XP forward model), the per-channel correction with
+its Balmer index and cool-edge weight, and the `hot_v5` model-error term. `summary.json` records
+the support box, provenance and validation numbers.
+
+The giant-route assets in `models/giant/` come from the run
+`giant_grid_20261006`. `scripts/build_giant_model.py` builds the empirical
+template `giant_grid.npz` from APOGEE DR17 giants with Gaia XP, 2MASS and
+AllWISE. `scripts/build_giant_prior.py` builds `parsec_prior.npz` on the same
+grid: the M_Ks density of PARSEC v1.2S giants near each node, with an
+age--metallicity weight fitted to template training giants with precise
+parallaxes, and the PARSEC bolometric correction BC_Ks. `summary.json`
+records both builds.
 
 2MASS fluxes follow the J-CAPS training convention: catalogue zero points at
 the model wavelengths times 0.98523, 0.98566 and 0.99105 for J, H and Ks.

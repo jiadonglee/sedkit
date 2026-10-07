@@ -38,7 +38,8 @@ def neg2_log_likelihood(sed, prediction, model, mask, parallax_mas, transmission
 
 
 def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
-        use_wise=False, fit_parallax=False, extinction=0.0, dust_prior=None):
+        use_wise=False, fit_parallax=False, extinction=0.0, dust_prior=None,
+        age_prior=None, logg_prior=None, teff_prior=None):
     """Fit single/binary/both on one shared observation-derived mask.
 
     Age and metallicity are fixed by default. Pass age_gyr=None and/or
@@ -47,6 +48,12 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     Gaussian catalogue constraint shared by hypotheses.
     extinction is fixed ZGR23 E, or None to fit E>=0 with an EdenhoferPrior.
     The dust prior is evaluated at each trial distance under both hypotheses.
+    With StellarModel(hot=True), mass reaches 20 Msun, age 10**6.6 yr, and
+    both hypotheses use the channels the hot route predicts (XP61, J/H/Ks).
+    age_prior=(mean, sigma) adds a Gaussian constraint on log10(age/yr) to a
+    free age; logg_prior=(mean, sigma) adds one on the primary's PARSEC log g and
+    teff_prior=(mean, sigma) one on the primary's Teff in K.
+    Both enter the objective of each hypothesis in the same way.
     Results are local optima, not posterior samples or binary probabilities.
     """
     if kind not in ("single", "binary", "both"):
@@ -55,10 +62,15 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         raise ValueError("fixed binary q must be 0.1--1")
     if not np.isfinite(sed.parallax_mas) or sed.parallax_mas <= 0:
         raise ValueError("fitting requires a positive measured parallax")
+    for name, prior in (("age_prior", age_prior), ("logg_prior", logg_prior), ("teff_prior", teff_prior)):
+        if prior is not None and (len(prior) != 2 or not np.all(np.isfinite(prior)) or prior[1] <= 0):
+            raise ValueError(f"{name} must be (mean, positive sigma)")
+    if age_prior is not None and age_gyr is not None:
+        raise ValueError("age_prior requires a free age (age_gyr=None)")
     model = StellarModel() if model is None else model
     # Validate fixed age/metallicity before the optimiser enters the model.
     model.labels([0.7], 5.0 if age_gyr is None else age_gyr, 0.0 if feh is None else feh)
-    mask = sed.fit_mask(use_wise)
+    mask = sed.fit_mask(use_wise) & model.support
     if mask.sum() < 4:
         raise ValueError("at least four valid fitting channels are required")
     parallax_free = (fit_parallax and np.isfinite(sed.parallax_error_mas)
@@ -72,6 +84,8 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     if extinction_free and dust_prior is None:
         dust_prior = EdenhoferPrior()
     curve = extinction_curve(model.wavelength_um) if extinction_free or extinction else np.zeros(168)
+    low_mass, high_mass = model.mass_range
+    low_age, high_age = model.age_range_gyr
 
     @lru_cache(maxsize=256)
     def dust_moments(parallax):
@@ -85,11 +99,21 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
             return 0.0
         return dust_prior.penalty(e, *dust_moments(parallax))
 
+    def label_penalty(prediction, age):
+        value = 0.0
+        if age_prior is not None:
+            value += ((np.log10(age) + 9 - age_prior[0]) / age_prior[1])**2
+        if logg_prior is not None:
+            value += ((prediction["logg"][0] - logg_prior[0]) / logg_prior[1])**2
+        if teff_prior is not None:
+            value += ((prediction["teff"][0] - teff_prior[0]) / teff_prior[1])**2
+        return value
+
     def fit_one(binary):
-        names, bounds = ["ln_m1"], [(np.log(0.08), np.log(2.2))]
+        names, bounds = ["ln_m1"], [(np.log(low_mass), np.log(high_mass))]
         if age_gyr is None:
             names.append("ln_age")
-            bounds.append((np.log(0.5), np.log(10.0)))
+            bounds.append((np.log(low_age), np.log(high_age)))
         if feh is None:
             names.append("feh")
             bounds.append((-1.0, 0.5))
@@ -107,7 +131,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         def unpack(vector):
             values = dict(zip(names, vector))
             return (np.exp(values["ln_m1"]),
-                    float(np.clip(np.exp(values["ln_age"]), 0.5, 10)) if age_gyr is None else age_gyr,
+                    float(np.clip(np.exp(values["ln_age"]), low_age, high_age)) if age_gyr is None else age_gyr,
                     values.get("feh", feh),
                     values.get("q", q) if binary else 0.0,
                     sed.parallax_mas + values["parallax_z"] * sed.parallax_error_mas
@@ -126,15 +150,17 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
             attenuation = np.exp(-e * curve)
             value = neg2_log_likelihood(sed, prediction, model, mask, parallax, attenuation)[0]
             z = vector[names.index("parallax_z")] if parallax_free else 0.0
-            return value + z*z + penalty
+            return value + z*z + penalty + label_penalty(prediction, age)
 
         starts = []
-        ages = (1.0, 4.0, 9.0) if age_gyr is None else (age_gyr,)
+        ages = ((0.01, 0.05, 0.3) if model.hot else ()) + (1.0, 4.0, 9.0) if age_gyr is None else (age_gyr,)
+        if age_prior is not None:
+            ages = tuple(a for a in ages + (10**(age_prior[0] - 9),) if low_age <= a <= high_age)
         metals = (-0.5, 0.0, 0.3) if feh is None else (feh,)
         ratios = (0.3, 0.45, 0.6, 0.75, 0.9, 1.0) if binary and q is None else (q if binary else 0.0,)
         extinctions = np.unique(np.maximum(0, [dust_mean - dust_sigma, dust_mean,
                                               dust_mean + dust_sigma])) if extinction_free else (extinction,)
-        for mass in np.geomspace(0.09, 2.19, 38):
+        for mass in np.geomspace(0.09, 19.9, 64) if model.hot else np.geomspace(0.09, 2.19, 38):
             for age in ages:
                 for metal in metals:
                     for ratio in ratios:
@@ -170,6 +196,8 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         return dict(m1=float(mass), m2=float(mass * ratio), q=float(ratio),
                     age_gyr=float(age), feh=float(metal), parallax_mas=float(parallax),
                     extinction_e=float(e), dust_prior_penalty=float(dust_penalty(e, parallax)),
+                    label_prior_penalty=float(label_penalty(prediction, age)),
+                    logg=float(prediction["logg"][0]),
                     dust_prior_mean=None if dust_prior is None else float(dust_moments(parallax)[0]),
                     dust_prior_sigma=None if dust_prior is None else float(dust_moments(parallax)[1]),
                     objective=float(result.fun), m2lnl=value, chi2=chi2,

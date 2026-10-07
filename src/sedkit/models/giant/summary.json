@@ -1,0 +1,47 @@
+{
+  "version": "giant-v1",
+  "source": "giant_grid_20261006",
+  "training": "APOGEE DR17 allStarLite giants: ASPCAP STAR_BAD unset, S/N > 70, VSCATTER <= 1 km/s, SFD E(B-V) < 0.1, Gaia G 7.5-14, RUWE < 1.4, non_single_star = 0, Ks valid; 76210 stars",
+  "labels": "APOGEE DR17 ASPCAP Teff, log g, [M/H]",
+  "dereddening": "E = 0.86 SFD E(B-V) on the ZGR23 curve",
+  "normalisation": "mean flux over 0.55-0.95 micron after dereddening",
+  "kernel": {
+    "width": [
+      80.0,
+      0.15,
+      0.1
+    ],
+    "units": [
+      "K",
+      "dex",
+      "dex"
+    ],
+    "widened_up_to": 3,
+    "min_effective_stars": 25
+  },
+  "covariance": "fractional; 6 eigen-columns plus a diagonal per node, measurement variance removed",
+  "support": "positive template and fractional scatter < 0.3 on XP61; 6603 nodes",
+  "channels": "XP61 + J/H/Ks/W1/W2 (66)",
+  "luminosity_prior": {
+    "source": "giant_grid_20261006 p6_prior2.py, factor fitted by p7_calib.py",
+    "isochrones": "PARSEC v1.2S, 2MASS Ks; logAge from 7.5 in 0.05 dex at [M/H] -1.0 to +0.5 in 0.1 dex, 0.5 dex in logAge outside that range",
+    "points": "label 2-8 (subgiant branch to TP-AGB), log g < 3.8",
+    "weights": "IMF number x linear age width (constant star formation from 10**7.5 yr to 13 Gyr) x [M/H] spacing x (age / 1 Gyr)**(beta * max(0, m0 - [M/H]))",
+    "beta": 4.0,
+    "m0": 0.0,
+    "kernel": {
+      "width": [
+        200.0,
+        0.12,
+        0.15
+      ],
+      "units": [
+        "K",
+        "dex",
+        "dex"
+      ]
+    },
+    "density": "M_Ks histogram in 0.05 mag bins smoothed by 0.15 mag, mixed with a uniform floor over the M_Ks range of the kernel's points padded by 1 mag so that the penalty there is at most 6; beyond the range it rises as (distance / 0.5 mag)**2",
+    "constrained_nodes": 5461
+  }
+}
