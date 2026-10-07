@@ -4,11 +4,108 @@
 <p align="center">Download and fit stellar spectral energy distributions.</p>
 
 sedkit combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
-AllWISE photometry. A compact empirical stellar model predicts absolute
-fluxes for a single star or a coeval binary, and tells whether a Gaia
-astrometric orbit comes from a faint companion or a hidden near-equal-mass
-twin. The package runs on NumPy and
-SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
+AllWISE photometry. Its stellar model is a hybrid SED emulator: a network
+trained on real spectra where stars with good labels exist, synthetic
+atmospheres calibrated on real stars where they do not, and PARSEC stellar
+evolution tying both to mass, age and metallicity. It predicts absolute
+fluxes at the Gaia parallax for a single star or a coeval binary, tests red
+giants for hot companions, and tells whether a Gaia astrometric orbit comes
+from a faint companion or a hidden near-equal-mass twin. The package runs
+on NumPy and SciPy, with no J-CAPS installation, JAX, GPU or separate model
+download.
+
+## How the model is built
+
+The model predicts absolute F_lambda at 10 pc on 168 channels: 61 Gaia XP
+points at 392--992 nm, 2MASS J/H/Ks, WISE W1/W2 and 102 SPHEREx channels,
+in 1e-18 W m^-2 nm^-1. Each part of the HR diagram comes from the source
+best constrained there:
+
+| Stars | Teff | Spectral shape | Absolute flux | Teff scale | Model error, XP 0.4--1 um |
+| --- | --- | --- | --- | --- | --- |
+| Cool dwarfs (M, K, G) | 2800--6250 K | empirical network trained on Gaia stars within 100 pc | PARSEC M_Ks | ASPCAP below 4500 K, IRFM above | 9% below 3800 K, 2% above 4200 K |
+| Warm dwarfs (F, early A) | 6250--7498 K | the same network, extended with 1661 dwarfs within 1 kpc | PARSEC M_Ks | IRFM | 2% |
+| Hot dwarfs (A, B) | 7000--30000 K | CK04 and TLUSTY spectra through the XP forward model, with an empirical correction | PARSEC radius x model surface flux | spectroscopic or spectral type; IRFM at 7000--7500 K | 1.2% |
+| Red giants (`fit_giant_companion`) | 3600--6800 K | empirical template of APOGEE giants | free scale, or a PARSEC M_Ks prior | APOGEE ASPCAP | 3--13% at 392 nm, 3--10% at 442 nm |
+
+### Cool and warm dwarfs: an empirical network
+
+- **Network.** The J-CAPS v2.1 network is a 16-by-16 GELU MLP whose stored
+  weights NumPy evaluates. From Teff, G-Ks and [M/H] it predicts the SED
+  shape relative to Ks on all 168 channels. M_Ks then sets the absolute
+  level: F = shape x F_Ks(0) x 10**(-0.4 M_Ks).
+- **Cool stars.** The training stars are Gaia DR3 dwarfs within 100 pc with
+  APOGEE labels, observed in XP, 2MASS, unWISE and SPHEREx. Teff follows
+  the infrared-flux method (Casagrande et al. 2021) at 4500 K and above and
+  ASPCAP below. Below 3400 K, a three-mode spectral calibration, switched
+  off smoothly between 2800 and 3400 K, corrects the coolest M dwarfs.
+- **Warm stars.** The network was retrained with 1661 LAMOST/APOGEE dwarfs
+  at 6250--7500 K within 1 kpc and Edenhofer et al. (2023) E < 0.05, on the
+  IRFM Teff scale. These stars have no SPHEREx spectra, and 7250--7500 K
+  holds only 137 of them.
+- **Model error.** A fractional covariance (four eigen-columns plus a
+  diagonal) is built from training residuals: a cold term below 3800 K and
+  a warm term above 4200 K, blended in between. No synthetic spectra enter
+  this part, and the network does not extrapolate beyond 2800--7498 K and
+  G-Ks >= 0.51.
+
+### Hot dwarfs: calibrated synthetic spectra
+
+- **Synthetic spectra.** CK04 (Castelli & Kurucz 2003) spectra cover Teff
+  below 15 kK and TLUSTY BSTAR2006 (Lanz & Hubeny 2007) spectra 15--30 kK,
+  both at solar abundance. The two grids differ by about 7 per cent at
+  15 kK, so over 11--15 kK CK04 is moved onto TLUSTY by their 15 kK ratio
+  and the table is continuous.
+- **Table.** A forward model of the Gaia XP external calibration passes
+  each spectrum onto the XP channels, and J/H/Ks are sampled directly. The
+  result is tabulated on Teff 7000--30000 K (250 K steps) by log g 3--4.75
+  (0.05 dex) for R = 1 Rsun at 10 pc.
+- **Empirical correction.** Each channel is multiplied by exp(a + W b + s c):
+  - a is a per-channel offset of the XP operator;
+  - b scales with the Balmer line index W of the synthetic spectrum;
+  - c is a cool-edge term that fades out between 7000 and 9000 K.
+
+  The 192 coefficients are fitted to 186 hot anchors and 348 IRFM dwarfs at
+  7000--7500 K. The anchors are radial-velocity-constant stars and SB1s,
+  without giants, Be or peculiar stars. On 46 held-out anchors and 86 held-out
+  dwarfs, the correction lowers the XP shape rms from 4.6--5.1 to
+  0.9--1.3 per cent; on 10 independent CALSPEC stars, from 4.7 to 1.8 per
+  cent.
+- **Absolute flux.** PARSEC gives Teff, log g and radius, and the flux is
+  the table times R**2. Over 7000--7498 K the network and the table are
+  blended smoothly, with their error terms, so the Teff scale is continuous
+  across the handover.
+- **Coverage.** The hot route predicts no W1/W2 or SPHEREx and is
+  calibrated for |[M/H]| <= 0.3.
+
+### Stellar evolution: PARSEC
+
+- **Isochrones.** PARSEC v1.2S isochrones cover [M/H] -1.0 to +0.5 in
+  0.1 dex and log age 6.6--10.0 in 0.05 dex. They hold the pre-main
+  sequence and main sequence, end before the contraction hook, and are
+  interpolated linearly in mass, log age and [M/H].
+- **What they supply.** For a mass, age and [M/H], PARSEC supplies the
+  network's Teff, M_Ks and G-Ks, and the hot table's Teff, log g and
+  radius.
+- **Binaries.** The two components of a binary share age and [M/H], and
+  their fluxes are added.
+- **Distance.** The observed model is flux_10pc x (parallax / 100 mas)**2,
+  with no free normalisation.
+
+### Red giants: an empirical template
+
+- **Template.** `fit_giant_companion` does not emulate PARSEC giants. Its
+  `GiantTemplate` is built from 76210 APOGEE DR17 giants with Gaia XP, 2MASS
+  and AllWISE, each dereddened by 0.86 SFD E(B-V). A kernel-weighted
+  local-linear regression gives the template and its residual covariance on
+  a 100 K x 0.2 dex x 0.2 dex grid in Teff, log g and [M/H].
+- **Luminosity.** The giant's luminosity is a free scale, or, with
+  `luminosity="parsec"`, it is tied to the fitted parallax by the M_Ks
+  density of PARSEC giants near its labels.
+- **Companion.** The companion is the hot-dwarf model above.
+
+See [model and limitations](docs/model.md) for the full description and
+[data and provenance](docs/data.md) for the build scripts of each asset.
 
 ## Capabilities and scope
 
@@ -249,8 +346,10 @@ pytest -q
 
 ## Credits
 
-The bundled empirical model is extracted from
-[J-CAPS](https://github.com/jiadonglee/J-Caps), using PARSEC stellar tracks.
+The bundled stellar network and hot-star table are extracted from
+[J-CAPS](https://github.com/jiadonglee/J-Caps), using PARSEC stellar tracks,
+CK04 (Castelli & Kurucz 2003) and TLUSTY BSTAR2006 (Lanz & Hubeny 2007)
+model atmospheres. The giant template is built from APOGEE DR17.
 Public XP spectra are calibrated with
 [GaiaXPy](https://gaia-dpci.github.io/GaiaXPy-website/).
 SPHEREx aperture extraction uses [XphereX](https://github.com/jiadonglee/XphereX),
@@ -258,5 +357,6 @@ SPHEREx aperture extraction uses [XphereX](https://github.com/jiadonglee/XphereX
 [SPExPI](https://github.com/fkiwy/spexpi).
 Catalogue data are retrieved through
 [astroquery](https://astroquery.readthedocs.io/en/latest/gaia/gaia.html).
-Please acknowledge Gaia, 2MASS, WISE, PARSEC and J-CAPS when using these
-data and models in research; see [provenance](docs/data.md).
+Please acknowledge Gaia, 2MASS, WISE, APOGEE, PARSEC, CK04, TLUSTY and
+J-CAPS when using these data and models in research; see
+[provenance](docs/data.md).
