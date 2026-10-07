@@ -6,7 +6,9 @@ The numbers below come from that run and from fits with this package.
 
 ## Calibration and holdout
 
-The operator correction was calibrated on 232 hot anchors and 348 dwarfs.
+The calibration sample holds 232 hot anchors and 434 dwarfs; the operator
+correction was fitted to 186 anchors and 348 dwarfs, and the remaining 46
+anchors and 86 dwarfs form the holdout.
 The anchors come from the hot anchor table: radial-velocity-constant stars
 and single-lined binaries, without giants or supergiants, Be and peculiar
 stars, and without stars whose Ks absolute magnitude contradicts a
@@ -14,9 +16,9 @@ main-sequence star at their spectroscopic Teff. The dwarfs are J-CAPS 1 kpc
 IRFM dwarfs at 7000--7500 K with |[Fe/H]| <= 0.3, held to the conditions
 of a sedkit fit: Teff to IRFM (20 K), log g to the PARSEC value of their
 network fit (0.05) and E to the Edenhofer map (0.002). Each star was fitted
-with Teff, log g, E and flux scale under these priors. A random 20 per cent of the
-anchors per Teff bin was held out; the 86 dwarfs of the J-CAPS validation
-split form the dwarf holdout.
+with Teff, log g, E and flux scale under these priors. The anchor holdout is
+a random 20 per cent per Teff bin; the dwarf holdout is the J-CAPS
+validation split.
 
 | Teff (kK) | Holdout stars | Median rms, 0.4--1 um |
 | --- | ---: | ---: |
