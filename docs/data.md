@@ -69,6 +69,15 @@ BSTAR2006 through the XP forward model), the per-channel correction with
 its Balmer index and cool-edge weight, and the `hot_v5` model-error term. `summary.json` records
 the support box, provenance and validation numbers.
 
+The giant-route assets in `models/giant/` come from the run
+`giant_grid_20261006`. `scripts/build_giant_model.py` builds the empirical
+template `giant_grid.npz` from APOGEE DR17 giants with Gaia XP, 2MASS and
+AllWISE. `scripts/build_giant_prior.py` builds `parsec_prior.npz` on the same
+grid: the M_Ks density of PARSEC v1.2S giants near each node, with an
+age--metallicity weight fitted to template training giants with precise
+parallaxes, and the PARSEC bolometric correction BC_Ks. `summary.json`
+records both builds.
+
 2MASS fluxes follow the J-CAPS training convention: catalogue zero points at
 the model wavelengths times 0.98523, 0.98566 and 0.99105 for J, H and Ks.
 AllWISE W1/W2 are converted at the model wavelengths; the training data use

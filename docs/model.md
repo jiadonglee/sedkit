@@ -65,6 +65,63 @@ so `hot=True` fits use XP and J/H/Ks for every hypothesis, including
 cool-star fits. Ages start at 10**6.6 yr and primary masses reach
 20 solar masses.
 
+## Giant route
+
+`fit_giant_companion` tests a red giant for a hot main-sequence companion,
+the configuration of a stripped giant with a B-star companion. The giant
+is not a PARSEC star: `GiantTemplate` is an empirical flux template in
+Teff, log g and [M/H] with a free scale, built from 76210 APOGEE DR17
+giants with Gaia XP, 2MASS and AllWISE (ASPCAP S/N > 70, SFD
+E(B-V) < 0.1, RV scatter below 1 km/s, RUWE < 1.4). Each training star is
+dereddened by E = 0.86 SFD E(B-V) on the ZGR23 curve; 0.86 is the slope of
+per-star E fitted against SFD. At every node of a 100 K x 0.2 dex x
+0.2 dex grid, a kernel-weighted local-linear regression in the three
+labels gives the template, and the weighted residuals, less the
+measurement variance, give its fractional covariance as six columns plus a
+diagonal. Templates are trilinear between nodes, and the covariance is the
+weighted sum of the eight corner covariances. The grid covers Teff
+3600--6800 K, log g 0--3.8 and [M/H] -2.6 to +0.6 where the kernel holds
+at least 25 effective stars and the template is positive with scatter
+below 30 per cent on every XP channel. Typical template scatter is 4--7
+per cent at 392--402 nm and 3--4 per cent at 440 nm.
+
+The companion is `StellarModel(hot=True)` of mass M2 at 10 Myr and solar
+metallicity, at the parallax; W1/W2 follow the Rayleigh--Jeans
+tail of its Ks flux. Giant and companion share ZGR23 E >= 0 on a curve
+multiplied by (lambda / 0.55 micron)**tilt, with a Gaussian tilt prior
+(default width 0.15, the scatter of free tilts of reddened control
+giants). They share nothing else: no common age and no q <= 1. Label
+priors on the template's APOGEE scale are required. The fit profiles the
+objective, -2 ln L with the template and companion covariances plus the
+priors, over a grid of M2. For each M2, the scale, E and tilt are fitted
+at every template node within 3.5 prior widths, and the best three nodes
+are refined in all six parameters.
+
+With `luminosity=`, the parallax becomes a seventh parameter shared by both
+stars, within 3 sigma of its input value with penalty z^2. The giant's M_Ks
+follows from its scale, the template Ks and the parallax; its luminosity
+from the PARSEC BC_Ks at its labels; its mass from log g and Teff. Gaussian
+walls of 0.1 dex hold the mass in 0.2--10 solar masses. For "parsec", a
+prior from PARSEC v1.2S giants (subgiant branch to TP-AGB, log g < 3.8)
+adds -2 ln(p / p_mode) of M_Ks near the labels:
+
+- Isochrones are at 0.05 dex in log age from 10**7.5 yr and 0.1 dex in
+  [M/H] over -1.0 to +0.5, with a 0.5 dex table outside that range.
+- Points are weighted by the IMF, the linear age width and
+  (age / 1 Gyr)**(4 max(0, -[M/H])), which gives metal-poor isochrones old
+  ages. The exponent is fitted to template training giants with
+  parallax/error > 10.
+- The kernel is 200 K in Teff, 0.12 in log g and 0.15 dex in [M/H].
+- The M_Ks histogram, smoothed by 0.15 mag, is mixed with a uniform floor
+  so that any M_Ks PARSEC produces near the labels costs at most 6.
+- Nodes without PARSEC giants in the kernel (1142 of 6603) carry no M_Ks
+  constraint; there the mass walls alone bound the luminosity.
+
+With `dust_prior=`, E follows the Edenhofer et al. (2023) map at the trial
+distance, with the map width widened by 0.04 in quadrature. Beyond the
+map's 1.25 kpc, E is held above the 1.2 kpc value minus 0.04 by a one-sided
+wall.
+
 ## Limitations
 
 - Fits are exploratory local optima. No posterior uncertainty, calibrated
@@ -122,3 +179,12 @@ cool-star fits. Ages start at 10**6.6 yr and primary masses reach
   dust-prior E carries the constraint. In noiseless injections with a
   Gaussian E prior of width sqrt(0.03**2 + (0.1 E)**2), the 1-sigma Teff
   width is 0.6--1.0 kK at 15 kK and 1.6--2.8 kK at 25 kK (E = 0--0.6).
+- The giant route uses XP from 392 nm, so the Balmer jump is not used. Its
+  companion is a non-rotating main-sequence star, and a greyer extinction
+  curve also raises the blue end; the tilt prior carries that distinction
+  ([giant validation](validation-giant.md)).
+- The PARSEC M_Ks prior of the giant route sits 0.1--0.17 mag brighter than
+  training giants and controls at [M/H] < -0.5, and outside [M/H] -1.0 to
+  +0.5 its isochrones are 0.5 dex apart in age. `download` stores the Gaia
+  DR3 parallax without the Lindegren et al. (2021) zero point; the validated
+  luminosity fits used corrected parallaxes passed through `parallax=`.

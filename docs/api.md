@@ -108,6 +108,71 @@ dust constraints and `label_prior_penalty`, the age, log g and Teff prior terms;
 `logg` is the primary's PARSEC log g. `m2lnl` includes the model covariance
 determinant without priors.
 
+## Giants with a hot companion
+
+```python
+from sedkit import download, fit_giant_companion
+sed = download("465986123215151616", cache_dir="data")
+result = fit_giant_companion(sed, teff=(4895, 150), logg=(2.54, 0.3), feh=(-1.22, 0.2),
+                             threshold=10)
+print(result["best_m2"], result["detection"], result["m2_excluded"])
+```
+
+`fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID,
+companion_age_gyr=0.01, extinction_prior=None, tilt_sigma=0.15,
+use_wise=True, template=None, model=None, threshold=None)` fits an
+empirical giant template plus a main-sequence companion of each grid mass
+(1.5--15 solar masses by default) at the catalogue parallax; see the
+[giant route](model.md#giant-route). `teff`, `logg` and `feh` are
+`(mean, sigma)` Gaussian priors on the APOGEE scale; for LAMOST LASP labels
+use widths of about 150 K, 0.3 and 0.2. `extinction_prior=(mean, sigma)`
+constrains E. Channels are XP and J/H/Ks, with W1/W2 unless
+`use_wise=False`. Reuse `GiantTemplate()` and `StellarModel(hot=True)`
+across sources through `template=` and `model=`.
+
+The giant's scale is free by default, so its luminosity is not tied to the
+parallax. Three keywords add that constraint:
+
+- `luminosity="parsec"` fits the parallax within 3 sigma (penalty z^2) and
+  ties the giant's luminosity to it. The PARSEC M_Ks density at the giant's
+  labels enters as a prior, and the implied mass (from M_Ks, BC_Ks, log g and
+  Teff) is held in 0.2--10 solar masses.
+- `luminosity="massfree"` keeps only the mass bounds, which allows a
+  stripped giant.
+- `dust_prior=EdenhoferPrior(...)` adds the map E at the trial distance.
+  Within 1.25 kpc it is Gaussian with width sqrt(sigma^2 + 0.04^2); beyond,
+  E is held above the value at 1.2 kpc minus 0.04. It needs
+  `sed.metadata["ra"]` and `["dec"]` and replaces `extinction_prior`.
+
+`parallax=(mean, sigma)` replaces the SED's parallax and error for both
+stars, for example by a zero-point-corrected or non-single-star parallax;
+`download` stores the uncorrected Gaia DR3 value.
+
+```python
+from sedkit import EdenhoferPrior
+result = fit_giant_companion(sed, teff=(4895, 150), logg=(2.54, 0.3), feh=(-1.22, 0.2),
+                             luminosity="parsec", parallax=(0.374, 0.020),
+                             dust_prior=EdenhoferPrior(), threshold=10)
+```
+
+`result["rows"]` holds one row per mass, M2 = 0 being the giant alone:
+`objective`, its `delta` from the giant alone, its -2 ln L part `minus2lnL`,
+`chi2`, the giant's labels, `extinction_e`, `tilt` and `scale`, and the
+companion's Teff, radius and share of the observed 0.40--0.45 micron flux.
+With `luminosity` or `dust_prior`, rows also hold the fitted `z` and
+`parallax_mas`, the giant's `mks`, `luminosity`, `radius` and `mass`, the map
+`e_map` and `distance_pc`, and the penalties `label_penalty`,
+`luminosity_penalty` (`parsec_penalty` plus `mass_penalty` for "parsec"),
+and `dust_penalty`. `detection` is the objective
+of the giant alone minus the profile minimum and `best_m2` the mass at the
+minimum. With `threshold=t`, `m2_excluded` is the lowest grid mass above
+`best_m2` whose objective exceeds the minimum by more than t. The
+thresholds calibrated on control giants are 10 for the default fit and for
+`luminosity="parsec"` with or without the dust prior, and 11 for
+`luminosity="massfree"` with the dust prior
+([giant validation](validation-giant.md)). `dust_prior=` without
+`luminosity=` has no calibrated threshold.
+
 ## Plotting
 
 `plot(sed, result=None, path=None, *, axes=None, components=True, title=None)`
