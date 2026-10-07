@@ -10,25 +10,123 @@ astrometric orbit comes from a faint companion or a hidden near-equal-mass
 twin. The package runs on NumPy and
 SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
 
-## Current fitting capabilities
+## Capabilities and scope
 
-- **Warm stars:** the bundled IRFM-calibrated dwarf model extends XP and
-  2MASS coverage to about 7500 K. The primary-mass search reaches 2.2 solar
-  masses, with usable masses depending on age, metallicity and component
-  coverage; it is not continuous across every mass range. Warm companions
-  can be confused with stellar age. See [model limits](docs/model.md),
-  [warm-star validation](docs/validation-warm.md) and [notebook 03](examples/03_warm_binaries.ipynb).
-- **Hot stars:** `StellarModel(hot=True)` extends single and binary fits
-  to 30 kK on XP and 2MASS, with PARSEC ages from 4 Myr and masses to 20
-  solar masses. See the [hot-star route](docs/model.md#hot-star-route) and
-  [hot-star validation](docs/validation-hot.md).
-- **Extinction:** E defaults to zero. `extinction=None` fits nonnegative
-  native ZGR23 E with an [Edenhofer 3D dust prior](docs/extinction.md);
-  a numeric `extinction=` fixes E. Attenuation acts on the model flux and
-  covariance, preserving the observed fluxes, errors and fitting mask.
-- **Parallax:** fixed at the catalogue value by default. `fit_parallax=True`
-  fits it within three catalogue standard deviations under a Gaussian
-  constraint. The distance-dependent dust prior follows the trial parallax.
+### Data
+
+- Gaia DR3 XP spectra on 61 channels at 392--992 nm, calibrated with
+  GaiaXPy from the public continuous spectra.
+- 2MASS J/H/Ks and AllWISE W1/W2 from Gaia's best-neighbour tables. A band
+  enters the fit only for a unique point-source match with A-quality
+  photometry. W1/W2 are held out of `fit` by default.
+- Optional SPHEREx QR2 spectra ([SPHEREx downloads](docs/spherex.md)).
+- Gaia G/BP/RP are kept as metadata, not fit channels. No ultraviolet data
+  and no XP below 392 nm enter a fit, so the Balmer jump is not used.
+- Models predict absolute fluxes at the parallax, with no free
+  normalisation. The parallax is fixed at the catalogue value or fitted
+  within three catalogue standard deviations under its Gaussian constraint
+  (`fit_parallax=True` in `fit`, `luminosity=` in `fit_giant_companion`).
+
+### Models
+
+| Entry point | Stars | Support | Hypotheses |
+| --- | --- | --- | --- |
+| `fit` with `StellarModel()` | FGKM dwarfs: empirical J-CAPS network on PARSEC tracks | Teff 2800--7498 K, age 0.5--10 Gyr, [M/H] -1.0 to +0.5; primary mass to 1.5--1.8 solar masses at 0.5--2 Gyr and 1.38 at 3 Gyr (solar [M/H]) | single star, coeval binary |
+| `fit` with `StellarModel(hot=True)` | adds A and B dwarfs: CK04/TLUSTY table with an empirical XP correction | 7000--30000 K, log g 3--4.75, [M/H] -0.3 to +0.3, age from 4 Myr, mass to 20 solar masses; XP and J/H/Ks only | single star, coeval binary |
+| `fit_giant_companion` | red giant (empirical APOGEE template) plus a hot main-sequence companion | giant Teff 3600--6800 K, log g 0--3.8, [M/H] -2.6 to +0.6; companion 1.5--15 solar masses at 10 Myr and solar [M/H] | giant alone, giant plus companion profiled in mass |
+| `orbit.solve_orbit`, `rank_roots` | Gaia photocentre orbits | as `StellarModel()` | faint companion, luminous twin |
+
+Fits stay inside these ranges; the models do not extrapolate.
+See [model and limitations](docs/model.md).
+
+### What the fits measure
+
+Single stars:
+
+- **FGK dwarfs.** Hyades, Praesepe and Coma Ber members at 6000--7500 K
+  fit with chi2/N of 0.7--0.9 at free age, with masses 0.02--0.06 solar
+  masses below the isochrone mass. Free ages come out older than the
+  literature cluster ages (1.0--2.0 against 0.6--0.7 Gyr)
+  ([warm-star validation](docs/validation-warm.md)).
+- **A and B dwarfs.** 44 holdout anchors at 7.5--30 kK fit to 1.2--1.4 per
+  cent in XP shape, with Teff 0.2 kK below to 0.05 kK above the
+  spectroscopic values. XP and J/H/Ks do not constrain extinction for hot
+  stars, so E must be fixed or given a dust prior. The 1-sigma Teff width
+  is then 0.6--1.0 kK at 15 kK and 1.6--2.8 kK at 25 kK
+  ([hot-star validation](docs/validation-hot.md)).
+
+Unresolved coeval binaries. `result["delta"]` is the single-star minus
+binary objective, a model-preference diagnostic rather than a probability:
+
+- **Known age.** In mocks of 1.2--1.55 solar-mass primaries with age and
+  [M/H] fixed at the truth, q >= 0.5 companions give Delta 25--400 and q
+  within 0.03. A Gaia DR3 SB2 gives q = 0.840 against the RV ratio 0.868.
+  For 20 warm SB2s, fits at the RV mass ratio lie within 4 of the best
+  objective.
+- **Free age, warm primaries (1.2--1.6 solar masses).** An older single
+  star reproduces the companion's light: Delta stays below about 15 and q
+  is unconstrained. Detection needs an independent age checked against the
+  same cluster's main sequence, or an asteroseismic log g (0.02 dex
+  detects q >= 0.7). For a 0.8 solar-mass primary with a q = 0.7
+  companion, no single age comes within 449 of the binary objective.
+- **F-type cluster members at the cluster age.** With the parallax moved to
+  the cluster's RV-single sequence, Delta > 25 is 2.7 times more likely for
+  a star with a luminous companion than for an RV-single star. It
+  separates the two classes no better than the height above the cluster
+  sequence.
+- **Hot primaries.** Delta does not identify an individual hot binary. For
+  near-ZAMS B and A cluster members (7--13 kK) fitted the same way, with a
+  20--30 per cent prior binary fraction, Delta <= 25 makes a q >~ 0.65
+  companion unlikely (7--11 per cent). Delta > 25 marks a candidate
+  (50--65 per cent) for RV or imaging follow-up.
+
+Giants with a hot companion:
+
+- **Detection threshold.** `fit_giant_companion` detects a companion that
+  supplies more than about 20 per cent of the 0.40--0.45 micron light: 87
+  per cent of injections at 20--30 per cent, all above 30 per cent, none
+  below 10 per cent. The threshold of 10 lies above every one of 238
+  reddened control giants (maximum 8.8).
+- **Recovery by mass.** Injected 2 and 3 solar-mass companions are
+  detected in 92.9 and 99.2 per cent of cases. On the controls, the fit
+  excludes companions from 2 solar masses upward (median).
+- **Luminosity and dust.** By default the giant's luminosity is a free
+  scale at the catalogue parallax. `luminosity="parsec"` fits the parallax
+  and ties the luminosity to it through a PARSEC M_Ks prior and bounds on
+  the implied mass; `dust_prior=` adds the Edenhofer map E. With both, and
+  zero-point-corrected parallaxes passed through `parallax=`, the threshold
+  stays at 10 and injected 2 solar-mass companions are detected in 97.1 per
+  cent of cases.
+- **Assumptions.** The fit needs Teff, log g and [M/H] priors on the
+  APOGEE scale. Giant and companion share only extinction and, with
+  `luminosity=`, the parallax ([giant validation](docs/validation-giant.md)).
+
+Other measurements:
+
+- **Photocentre orbits.** `solve_orbit` returns the faint-companion and
+  luminous-twin solutions of a Gaia astrometric orbit, and `rank_roots`
+  compares their SEDs ([photocentre orbits](docs/orbit.md)).
+- **Extinction.** E defaults to zero. `extinction=None` fits nonnegative
+  ZGR23 E with an [Edenhofer 3D dust prior](docs/extinction.md) that follows
+  the trial parallax. Distances outside the map have no prior support.
+  A numeric `extinction=` fixes E.
+
+### Not covered
+
+- Giants and subgiants in `fit`: the network is trained on dwarfs, the hot
+  table stops at log g 3, and stars near the turn-off are outside the
+  tables. The giant route models only a hot main-sequence companion.
+- White dwarfs, brown dwarfs and ultracool atmospheres, triples, blends and
+  variable stars.
+- Stars above 30 kK (O stars are untested), hot stars with |[M/H]| > 0.3,
+  supergiants, Be and emission-line stars, chemically peculiar stars and
+  fast rotators.
+- Binaries of different ages, except the giant route.
+- Posterior uncertainties, calibrated binary probabilities and population
+  inference: fits return constrained best fits and objective differences.
+- Correlations between XP channels: GaiaXPy inter-channel covariance is
+  omitted.
+- SPHEREx above about 6400 K: these predictions are extrapolated.
 
 ## Install
 
@@ -137,6 +235,9 @@ comparing zero-extinction and Edenhofer-prior fits of a real SB2.
 - [Photocentre orbits](docs/orbit.md): faint companion or hidden twin.
 - [orblet interface](docs/orblet.md): composing SED, RV and astrometry likelihoods.
 - [Validation](docs/validation.md): installation and example checks.
+- [Warm-star validation](docs/validation-warm.md): warm network, cluster members, binary mocks and log g priors.
+- [Hot-star validation](docs/validation-hot.md): calibration, holdout and CALSPEC checks, binary injections and cluster tests.
+- [Giant validation](docs/validation-giant.md): giant template, controls and injected companions.
 - [Visual identity](docs/appearance.md): logo, plotting palette and reproducible homepage figures.
 
 ## Development
