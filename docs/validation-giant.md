@@ -4,8 +4,9 @@
 were checked on reddened APOGEE control giants, on companions injected into
 them, and on the giant of the earlier twin-template test. The build scripts
 (APOGEE selection, XP from the Garching share, crossmatched photometry,
-template grid) and the fits ran in `giant_grid_20261006`; the asset comes
-from `scripts/build_giant_model.py`.
+template grid) ran in `giant_grid_20261006` and the fits with the packaged
+functions in `giant_review_20261008`; the asset comes from
+`scripts/build_giant_model.py`.
 
 ## Template
 
@@ -243,10 +244,8 @@ On the blue-excess targets (detection, and in brackets its -2 ln L part):
 | TOI-977 | 24.4 | 20.4 (18) | 21.2 (18) | 4--7 |
 | Gaia DR3 206657917727078400 | 14.6 | 17.3 (16) | 14.8 (13) | 2.0--2.5 |
 
-For these four targets the packaged keywords give the same detection,
--2 ln L part, best mass, E, implied mass and dust penalty as the fits
-above to 0.001, and luminosity penalties within 0.002 (the prior is stored
-at float16). The dust prior was evaluated from the map values of those fits.
+The luminosity prior is stored at float16, so its penalties carry about
+0.002 of rounding.
 
 - **J034958.06+433416.6:** alone, the giant needs 0.48 solar masses
   (luminosity penalty 8.5); with the companion, 2.0. At its NSS distance the
