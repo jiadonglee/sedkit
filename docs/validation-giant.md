@@ -38,8 +38,8 @@ mass grid.
 The free tilts have a robust width of 0.14, which sets the default
 `tilt_sigma=0.15`. The largest detection among the controls is 8.8; the 45
 controls with fitted E > 0.4 and tilt below 0.1 reach 6.0 at the 95th
-percentile and 8.7 at most, and the 37 with E <= 0.4 and tilt above 0.1
-reach 8.8.
+percentile and 8.8 at most, and the 37 with E <= 0.4 and tilt above 0.1
+reach 8.7.
 Fitted labels lie within -82/+36 K, -0.17/+0.22 and -0.12/+0.08 dex of
 APOGEE (16th--84th percentile).
 
@@ -61,7 +61,10 @@ mass above the profile minimum; each mass has 238 injections.
 | 8 | 100% | 100% | 100% | 2.1% |
 
 The threshold of 10 is set by the controls, above every one of their
-detections. At that threshold a true companion is excluded in 0.35 per
+detections. The same controls set `tilt_sigma`, so they are the development
+sample of both: the false-positive rate at threshold 10 needs a second,
+independent control set, on which 0 of 238 would bound it below 1.25 per
+cent (95 per cent). At that threshold a true companion is excluded in 0.35 per
 cent of injections, all of them at 8 solar masses, where the 20 Myr
 companion is evolved. The injections use the fitted hot table and PARSEC
 tracks, perturbed only in age and by the modelled error, so this rate
@@ -132,7 +135,7 @@ with the bin's robust scatter (4--22 per cent) as its error. Extinction below
 392 nm continues the ZGR23 curve as a power law. Without the blue channels
 the 71-channel fit reproduces the detections above.
 
-The control detections reach 3.2, 8.8 and 12.4 at the 95th and 99th
+The control detections reach 3.2, 8.8 and 12.3 at the 95th and 99th
 percentiles and the maximum, against 2.1, 6.3 and 8.8 without the blue
 channels; the threshold becomes 14. Injections, as above, at threshold 10
 without and 14 with the blue channels:
@@ -161,11 +164,12 @@ higher control tail cancels their gain in sensitivity.
 ## Extinction against the dust map
 
 The fitted E was compared with the integrated Edenhofer et al. (2023) map at
-the parallax distance. The map reaches 1.25 kpc; beyond it, its value at
-1.2 kpc is a lower limit. For the 20 controls inside the map, E_fit - E_map
-is -0.018 in median (16th--84th percentile -0.051 to +0.029), none beyond
-3 sigma with a 0.03 floor; the 218 beyond it lie 0.011 above the lower limit
-in median. Of the targets inside the map, three agree within 0.04 and
+the parallax distance. The map reaches 1.25 kpc and is queried out to
+1.2 kpc; beyond that, its value at 1.2 kpc is a lower limit. For the 18
+controls inside 1.2 kpc, E_fit - E_map is -0.018 in median (16th--84th
+percentile -0.059 to +0.034), none beyond 3 sigma with a 0.03 floor; the 220
+beyond it lie 0.011 above the lower limit in median. Of the targets inside
+1.2 kpc, three agree within 0.05 and
 J034958.06+433416.6 does not: 0.431 for the giant alone and 0.369 with its
 companion, against 0.528 +- 0.005.
 
@@ -198,7 +202,7 @@ and `dust_prior=` add these terms ([giant route](model.md#giant-route)):
 - **`luminosity="massfree"`:** the implied mass held in 0.2--10 solar
   masses without the PARSEC density, which allows a stripped giant.
 - **`dust_prior=`:** the Edenhofer et al. (2023) E at the trial parallax
-  distance, Gaussian with width sqrt(std^2 + 0.04^2) within 1.25 kpc; beyond
+  distance, Gaussian with width sqrt(std^2 + 0.04^2) within 1.2 kpc; beyond
   it, a one-sided wall below E(1.2 kpc) - 0.04.
 
 Without these keywords the fit is the default one of the sections above.
@@ -215,18 +219,18 @@ M_Ks minus the prior median, for the training giants and the controls:
 
 | Quantity | Default | parsec | parsec + dust | massfree + dust |
 | --- | ---: | ---: | ---: | ---: |
-| Control detection, 95th / 99th percentile / max | 2.1 / 6.3 / 8.8 | 2.2 / 5.5 / 8.9 | 2.2 / 5.6 / 8.9 | 2.1 / 6.7 / 9.7 |
+| Control detection, 95th / 99th percentile / max | 2.1 / 6.3 / 8.8 | 2.2 / 5.6 / 8.9 | 2.2 / 5.5 / 8.9 | 2.1 / 6.7 / 9.1 |
 | Threshold | 10 | 10 | 10 | 11 |
-| Control implied mass, 16 / 50 / 84% (solar masses) | -- | 0.75 / 1.01 / 1.62 | 0.75 / 1.00 / 1.62 | 0.64 / 1.03 / 2.20 |
+| Control implied mass, 16 / 50 / 84% (solar masses) | -- | 0.75 / 1.00 / 1.62 | 0.75 / 1.00 / 1.62 | 0.64 / 1.03 / 2.20 |
 | Detection > threshold at 2 / 3 / 4--8 solar masses | 92.9 / 99.2 / 99.6--100% | -- | 97.1 / 99.6 / 100% | 97.1 / 99.6 / 100% |
 | True companion excluded | 2.1% at 8 | -- | 0 | 0 |
 
-Of the 238 controls, 26 lie within the map's 1.25 kpc, so the PARSEC prior
+Of the 238 controls, 19 lie within the dust prior's 1.2 kpc, so the PARSEC prior
 alone and with the dust prior give nearly the same controls; injections were
 run with the dust prior. The control masses from APOGEE log g are 0.71, 0.97 and 1.55 solar masses at
 the same percentiles. The luminosity penalty of the controls has median 0.5
-and maximum 6.05; inside the map, E_fit - E_map is -0.012 in median
-(16th--84th percentile -0.038 to +0.020). The corrected parallaxes are 3--20
+and maximum 6.05; inside 1.2 kpc, E_fit - E_map is -0.008 in median
+(16th--84th percentile -0.043 to +0.027). The corrected parallaxes are 3--20
 per cent larger than DR3's, so the injected companions are 6--40 per cent
 brighter than in the default-fit injections.
 
@@ -252,9 +256,10 @@ at float16). The dust prior was evaluated from the map values of those fits.
   the giant is a bright giant of 5.3--5.6 solar masses and 3700 solar
   luminosities, which the prior accepts. Its best companion pushes the parallax
   to +2.9 sigma.
-- **Gaia DR3 465986123215151616:** the detection (21--23) comes from the label
-  and luminosity priors, its -2 ln L part being -2.7 to 0; the giant alone
-  implies 16 solar masses.
+- **Gaia DR3 465986123215151616:** the detection (21--23) comes mostly from
+  the label and luminosity priors: its -2 ln L part is -2.7 with `massfree`
+  and 10 with `parsec` and the dust prior; the giant alone implies 16 solar
+  masses.
 - **Label--parallax inconsistent:** the spectroscopic labels and parallaxes
   of Gaia DR3 349395937424834432 (luminosity penalty 9.6 at every M2),
   TYC 2825-1500-1 (7.3) and Gaia DR3 468681885208015104 (6.5) imply giants of
@@ -278,7 +283,11 @@ at float16). The dust prior was evaluated from the map values of those fits.
   are profile optima over a mass grid, not posterior samples.
 - Against UV photometry, the best-fitting companion masses of detected
   excesses are biased high (see Ultraviolet check); detection is confirmed,
-  the mass is not.
+  the mass is not. The UV extension reddens by F99 (R_V = 3.1) at
+  E(B-V) = E. F99 fitted to the ZGR23 curve in the optical has
+  E(B-V) = 0.97--1.02 E and R_V = 2.9--3.1, depending on the matched range
+  (0.44/0.55 micron to 0.40--0.90 micron); it moves the extinction at 0.153
+  and 0.227 micron by -0.26 to +0.33 mag per unit E.
 - By default the fit fixes the parallax and leaves the giant's luminosity
   free; `luminosity=` ties them (see Luminosity and parallax). Its PARSEC
   prior remains 0.1--0.17 mag bright at [M/H] < -0.5, and outside [M/H]

@@ -118,9 +118,9 @@ adds -2 ln(p / p_mode) of M_Ks near the labels:
   constraint; there the mass walls alone bound the luminosity.
 
 With `dust_prior=`, E follows the Edenhofer et al. (2023) map at the trial
-distance, with the map width widened by 0.04 in quadrature. Beyond the
-map's 1.25 kpc, E is held above the 1.2 kpc value minus 0.04 by a one-sided
-wall.
+distance, with the map width widened by 0.04 in quadrature. Beyond
+1.2 kpc, near the map's 1.25 kpc edge, E is held above the 1.2 kpc value
+minus 0.04 by a one-sided wall.
 
 ## Limitations
 
@@ -140,7 +140,9 @@ wall.
   APOGEE labels and, at 6250--7500 K, 1661 LAMOST/APOGEE dwarfs within
   1 kpc at Edenhofer et al. (2023) E < 0.05. Teff follows the IRFM scale at
   4500 K and above and ASPCAP below. Coverage is Teff 2800--7498 K and G-Ks
-  down to 0.51; 7250--7500 K holds only 137 stars. The supported primary
+  down to 0.51, plus a sparse ultracool box at 2313--2929 K and M_Ks
+  8.86--10.58 that holds the lowest PARSEC masses (0.1 solar masses at
+  5 Gyr is 2451 K); 7250--7500 K holds only 137 stars. The supported primary
   mass at solar metallicity reaches 1.5--1.8 solar masses at 0.5--2 Gyr
   and 1.38 at 3 Gyr; 1.4 solar masses at [M/H] = -0.5 (about 8100 K) is
   outside. Stars near the turn-off are outside the tables; gaps and support
@@ -165,7 +167,7 @@ wall.
 - At the same PARSEC star in 7000--7498 K, the solar table and the
   metallicity-dependent network differ in XP shape by 0.8 per cent at
   [M/H] = 0 and 1.6 per cent at -0.3 and +0.3, and in XP level by 0, 2 and
-  4 per cent. Fits of 7000--7500 K dwarfs give Teff 3--21 K above IRFM.
+  4 per cent. Fits of 7000--7500 K dwarfs give Teff 2--21 K above IRFM.
   The cool-edge correction carries the map E of its calibration dwarfs, so
   map E errors enter the table at 7000--9000 K. Between 7.5 and 9 kK there
   is no IRFM-quality Teff reference.

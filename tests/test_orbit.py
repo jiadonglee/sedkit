@@ -41,3 +41,11 @@ def test_rank_roots_on_observed_candidates(model):
         ranked = rank_roots(sed, solve_orbit(*orbit, model=model), parallax_mas=orbit[1], model=model)
         assert ranked[0]["kind"] == best and ranked[0]["delta"] == 0
         assert ranked[1]["delta"] > 100
+        a0_mas, parallax, period, _ = orbit
+        for r in ranked:
+            # the fitted system reproduces the photocentre orbit
+            a0 = parallax * r["m1"]**(1 / 3) * (period / 365.25)**(2 / 3) * amrf(r["q"], r["beta_G"])
+            assert np.isclose(a0, a0_mas, rtol=1e-3)
+            assert np.isclose(r["m1"], r["fit"]["m1"]) and np.isclose(r["m2"], r["q"] * r["m1"])
+            if r["fitted_as"] == "binary":
+                assert np.isclose(r["q"], r["fit"]["q"]) and np.isclose(r["beta_G"], r["fit"]["beta_g"])

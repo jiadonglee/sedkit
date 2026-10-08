@@ -80,6 +80,8 @@ records both builds.
 
 2MASS fluxes follow the J-CAPS training convention: catalogue zero points at
 the model wavelengths times 0.98523, 0.98566 and 0.99105 for J, H and Ks.
+The stellar network anchors PARSEC M_Ks on the same Ks scale, and so does
+the giant route's luminosity.
 AllWISE W1/W2 are converted at the model wavelengths; the training data use
 unWISE fluxes, which lie about 5 per cent lower for the example sources, so
 W1/W2 stay out of the default fit. The source code license is retained in LICENSE.

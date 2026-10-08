@@ -43,7 +43,9 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     """Fit single/binary/both on one shared observation-derived mask.
 
     Age and metallicity are fixed by default. Pass age_gyr=None and/or
-    feh=None to fit them. Binary q is fitted over 0.1--1, or fixed by q=.
+    feh=None to fit them. Binary q is fitted over 0.1--1, fixed by q=, or
+    tied to the other parameters by a callable q(m1, age_gyr, feh, parallax_mas)
+    that returns NaN where no q applies (for example an orbit constraint).
     Parallax is fixed by default; fit_parallax=True fits it with one
     Gaussian catalogue constraint shared by hypotheses.
     extinction is fixed ZGR23 E, or None to fit E>=0 with an EdenhoferPrior.
@@ -58,7 +60,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     """
     if kind not in ("single", "binary", "both"):
         raise ValueError("kind must be single, binary or both")
-    if q is not None and (not np.isfinite(q) or not 0.1 <= q <= 1):
+    if q is not None and not callable(q) and (not np.isfinite(q) or not 0.1 <= q <= 1):
         raise ValueError("fixed binary q must be 0.1--1")
     if not np.isfinite(sed.parallax_mas) or sed.parallax_mas <= 0:
         raise ValueError("fitting requires a positive measured parallax")
@@ -130,16 +132,18 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
 
         def unpack(vector):
             values = dict(zip(names, vector))
-            return (np.exp(values["ln_m1"]),
-                    float(np.clip(np.exp(values["ln_age"]), low_age, high_age)) if age_gyr is None else age_gyr,
-                    values.get("feh", feh),
-                    values.get("q", q) if binary else 0.0,
-                    sed.parallax_mas + values["parallax_z"] * sed.parallax_error_mas
-                    if parallax_free else sed.parallax_mas,
-                    values.get("extinction_e", extinction))
+            mass = np.exp(values["ln_m1"])
+            age = float(np.clip(np.exp(values["ln_age"]), low_age, high_age)) if age_gyr is None else age_gyr
+            metal = values.get("feh", feh)
+            parallax = (sed.parallax_mas + values["parallax_z"] * sed.parallax_error_mas
+                        if parallax_free else sed.parallax_mas)
+            ratio = (q(mass, age, metal, parallax) if callable(q) else values.get("q", q)) if binary else 0.0
+            return mass, age, metal, ratio, parallax, values.get("extinction_e", extinction)
 
         def objective(vector):
             mass, age, metal, ratio, parallax, e = unpack(vector)
+            if not 0 <= ratio <= 1:
+                return 1e30
             prediction = model.evaluate(mass, ratio, age, metal)
             if prediction is None:
                 return 1e30
@@ -157,7 +161,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         if age_prior is not None:
             ages = tuple(a for a in ages + (10**(age_prior[0] - 9),) if low_age <= a <= high_age)
         metals = (-0.5, 0.0, 0.3) if feh is None else (feh,)
-        ratios = (0.3, 0.45, 0.6, 0.75, 0.9, 1.0) if binary and q is None else (q if binary else 0.0,)
+        ratios = (0.3, 0.45, 0.6, 0.75, 0.9, 1.0) if binary and q is None else (None,)
         extinctions = np.unique(np.maximum(0, [dust_mean - dust_sigma, dust_mean,
                                               dust_mean + dust_sigma])) if extinction_free else (extinction,)
         for mass in np.geomspace(0.09, 19.9, 64) if model.hot else np.geomspace(0.09, 2.19, 38):

@@ -36,8 +36,9 @@ MBOL_SUN, LOGG_SUN, TEFF_SUN = 4.74, 4.438, 5772.0
 MASS_RANGE, MASS_WALL_DEX = (0.2, 10.0), 0.1
 # Beyond the PARSEC M_Ks grid the penalty rises as ((distance) / PARSEC_TAIL_MAG)**2.
 PARSEC_TAIL_MAG = 0.5
-# Dust map: width floor inside MAP_LIMIT_PC; beyond it, a one-sided wall below the value at MAP_EDGE_PC.
-MAP_LIMIT_PC, MAP_EDGE_PC = 1250.0, 1200.0
+# Dust map: width floor out to MAP_EDGE_PC, the last distance queried inside the 1.25 kpc map; beyond it,
+# a one-sided wall below the value there.
+MAP_EDGE_PC = 1200.0
 DUST_FLOOR = DUST_WALL = 0.04
 DUST_Z_GRID = np.linspace(-Z_MAX, Z_MAX, 21)
 
@@ -289,7 +290,7 @@ class _LuminosityProblem(_Problem):
         if self.dust is None:
             return dict(dust_penalty=0.0, e_map=np.nan, e_map_sigma=np.nan, distance_pc=distance)
         d = self.dust
-        if distance <= MAP_LIMIT_PC:
+        if distance <= MAP_EDGE_PC:
             mean, sigma = np.interp(z, DUST_Z_GRID, d["mean"]), np.interp(z, DUST_Z_GRID, d["sigma"])
             penalty = ((theta[3] - mean) / np.hypot(sigma, DUST_FLOOR))**2
             return dict(dust_penalty=penalty, e_map=mean, e_map_sigma=sigma, distance_pc=distance)
@@ -370,13 +371,14 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
     zero-point-corrected parallax. luminosity="parsec" or "massfree" fits the parallax within Z_MAX
     sigma (penalty z**2) and ties the giant's luminosity to it: its implied mass is held in MASS_RANGE,
     and "parsec" adds the PARSEC M_Ks prior at its labels. dust_prior=EdenhoferPrior adds the map E at
-    the trial distance (width sqrt(sigma**2 + DUST_FLOOR**2)); beyond MAP_LIMIT_PC, a one-sided wall
-    below the value at MAP_EDGE_PC minus DUST_WALL. It needs sed.metadata["ra"] and ["dec"].
+    the trial distance (width sqrt(sigma**2 + DUST_FLOOR**2)); beyond MAP_EDGE_PC, a one-sided wall
+    below the value there minus DUST_WALL. It needs sed.metadata["ra"] and ["dec"].
 
     Returns rows per M2 (M2 = 0 is the giant alone) with the objective -2 ln L + priors and its
     difference from the giant alone (delta > 0: the companion makes the fit worse), its -2 ln L part,
     the best-fitting parameters, the companion's Teff and its share of the observed flux at
-    0.40-0.45 micron; with luminosity or dust_prior also the fitted parallax, the giant's M_Ks,
+    0.40-0.45 micron, and converged, whether the final optimisation of that mass met its tolerance
+    within its evaluation limit; with luminosity or dust_prior also the fitted parallax, the giant's M_Ks,
     luminosity, radius and mass, the map E and each penalty. With threshold=t, m2_excluded is the lowest
     grid mass above the best-fitting one whose objective exceeds the profile minimum by t (None if no
     grid mass does). Results are local optima.
@@ -445,11 +447,13 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
     # companion fits start each node from its giant-alone solution
     node_starts = {tuple(x[:3]): x[3:] for _, x in inner}
     seeded = [node + (node_starts[tuple(node[0])],) for node in nodes]
-    rows = [dict(m2=0.0, theta=alone.x, objective=float(alone.fun), companion=None)]
+    rows = [dict(m2=0.0, theta=alone.x, objective=float(alone.fun), companion=None,
+                 converged=bool(alone.success))]
     previous = alone.x
     for m2 in m2_grid:
         result, _ = problem.fit(seeded, [previous, alone.x], companions[m2])
-        rows.append(dict(m2=m2, theta=result.x, objective=float(result.fun), companion=companions[m2]))
+        rows.append(dict(m2=m2, theta=result.x, objective=float(result.fun), companion=companions[m2],
+                         converged=bool(result.success)))
         previous = result.x
 
     blue = (wave >= 0.40) & (wave <= 0.45)
@@ -463,6 +467,7 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
         minus2lnl, chi2, giant, total = problem.likelihood(problem.giant(*labels), *th[3:6], c)
         out = dict(
             m2=row["m2"], objective=row["objective"], delta=row["objective"] - rows[0]["objective"],
+            converged=row["converged"],
             minus2lnL=minus2lnl, chi2=chi2, teff=labels[0], logg=th[1], feh=th[2], extinction_e=th[3],
             tilt=th[4], scale=float(np.exp(th[5])),
             m2_teff=np.nan if c is None else c["teff"], m2_radius=np.nan if c is None else c["radius"],

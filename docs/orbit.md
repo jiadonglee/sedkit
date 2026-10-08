@@ -38,10 +38,13 @@ for r in rank_roots(sed, roots, parallax_mas=13.913, fit_parallax=True):
 2. Compare `delta_G` or `delta_Ks` with the height of the star above the
    single-star sequence of a colour--magnitude diagram. A metal-poor primary
    lies below the solar-metallicity sequence and can hide the excess.
-3. `rank_roots` fits the observed SED at each solution, as a binary with
-   `q` fixed at a luminous or faint root and as a single star at a dark root,
-   with the primary refitted. It returns the solutions best first with
-   `delta`, the fit objective above the best one. Use the two-body parallax.
+3. `rank_roots` fits the observed SED along each solution branch: as a
+   binary at a luminous or faint root, with `q` re-solved from the orbit on
+   that branch at every trial primary mass, age, metallicity and parallax,
+   and as a single star at a dark root. The returned `q`, `m1`, `m2`,
+   `beta_G` and brightenings are those of the fitted system, which
+   reproduces the orbit. It returns the solutions best first with `delta`,
+   the fit objective above the best one. Use the two-body parallax.
 
 Command line, for the first check:
 
@@ -58,8 +61,8 @@ from downloaded XP and 2MASS photometry.
 
 | Source | Follow-up | Luminous root | Predicted ΔKs | Preferred root | Δ objective |
 | --- | --- | ---: | ---: | --- | ---: |
-| Gaia DR3 1916454200349735680 | near-equal-mass binary | q = 0.99 | 0.72 mag | luminous | 630 |
-| LP 769-9 | substellar companion | q = 0.97 | 0.70 mag | dark | 958 |
+| Gaia DR3 1916454200349735680 | near-equal-mass binary | q = 0.99 | 0.72 mag | luminous | 659 |
+| LP 769-9 | substellar companion | q = 0.97 | 0.70 mag | dark | 929 |
 
 The binary lies 0.68 mag above the single-star sequence in Ks, as the
 luminous root predicts; LP 769-9 lies 0.15 mag above it. The SED makes the
@@ -73,7 +76,10 @@ same choice from the spectrum alone.
 - Primary mass, age and metallicity are inputs (defaults 5 Gyr, solar);
   `rank_roots` accepts the [extinction fit options](extinction.md).
   The primary mass enters `A` as `M1^(-1/3)`.
-- `beta_G` comes from the PARSEC G magnitudes of the two components.
+- `beta_G` comes from the PARSEC G magnitudes of the two components, on
+  the Gaia DR2 G passband of the bundled tracks and without extinction.
+  A reddened pair of unequal temperature needs the attenuated, passband-
+  integrated G flux ratio instead.
   Solutions are interpolated on `q = 0.10--1.00` in steps of 0.01; below the
   lowest supported companion mass the faint solution is the dark root.
 - `delta` is a model-preference diagnostic, not a probability. It inherits

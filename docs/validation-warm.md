@@ -4,9 +4,10 @@
 
 On 2026-10-02 the bundled network was replaced by the J-CAPS retraining
 with IRFM Teff and 1 kpc dwarfs to 7500 K. NumPy predictions agree with
-the J-CAPS implementation within 2.3e-6 relative flux on six label sets
-from 3000 to 7400 K. Downloaded 2MASS fluxes of four Gaia DR3 sources
-agree with the training data within 2e-6.
+the J-CAPS implementation times the 0.99105 Ks training scale within
+2.3e-6 relative flux on six label sets from 3000 to 7400 K. Downloaded
+2MASS fluxes of four Gaia DR3 sources agree with the training data within
+2e-6.
 
 Single-star fits of Hyades, Praesepe and Coma Ber members with IRFM Teff
 6000--8000 K, at the cluster age and [Fe/H] and with XP and 2MASS
@@ -14,31 +15,31 @@ dereddened by the literature E(B-V), compare with the previous network:
 
 | IRFM Teff (K) | Stars | Isochrone mass | chi2/N previous | chi2/N warm | Fitted minus isochrone mass, warm |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 6000--6500 | 31 | 1.22 | 2.4 | 0.8 | +0.001 |
-| 6500--7000 | 26 | 1.39 | 566 | 1.2 | +0.003 |
-| 7000--7500 | 15 | 1.70 | 3395 | 73 | -0.061 |
-| 7500--8000 | 13 | 1.86 | 4589 | 502 | -0.204 |
+| 6000--6500 | 31 | 1.22 | 2.4 | 0.8 | +0.004 |
+| 6500--7000 | 26 | 1.39 | 566 | 1.3 | +0.005 |
+| 7000--7500 | 15 | 1.70 | 3395 | 81 | -0.061 |
+| 7500--8000 | 13 | 1.86 | 4589 | 520 | -0.204 |
 
 With the age free (0.5--10 Gyr) at the cluster [Fe/H], chi2/N of the warm
-network is 0.69, 0.67, 0.88 and 1.54 in the four bins (previous network
-1.7, 116, 2394, 3894), and the fitted mass lies 0.016, 0.035, 0.056 and
-0.061 solar masses below the isochrone mass. At the cluster age the
+network is 0.68, 0.67, 0.88 and 1.54 in the four bins (previous network
+1.7, 116, 2394, 3894), and the fitted mass lies 0.016, 0.034, 0.054 and
+0.058 solar masses below the isochrone mass. At the cluster age the
 1.4--1.6 solar-mass fits leave a residual slope of about 8 per cent across
 0.4--2.2 um that disappears when the age is free. The free fits prefer
-ages older than the literature values: medians of 1.03, 1.85 and 2.0 Gyr
+ages older than the literature values: medians of 1.03, 1.87 and 2.05 Gyr
 for Praesepe, the Hyades and Coma Ber against 0.70, 0.65 and 0.60 Gyr.
-Their PARSEC Teff lies 7 and 51 K below IRFM at 6000--6500 and 6500--7000 K
+Their PARSEC Teff lies 6 and 51 K below IRFM at 6000--6500 and 6500--7000 K
 and 135 K below at 7000--7500 K. The network reproduces the SED shapes;
 the PARSEC isochrone at the literature cluster age is hotter than these
 stars at their luminosity. An unresolved companion gives the same free-age
 signature (see the [warm-primary notebook](../examples/03_warm_binaries.ipynb)), but freeing the age lowers chi2
 by more than 20 per cent for 19 of 26 stars at 6500--7000 K and all 15 at
-7000--7500 K, with fitted ages within 1.1--1.6 Gyr (interquartile): a
+7000--7500 K, with fitted ages within 1.1--1.7 Gyr (interquartile): a
 common offset rather than a binary subset. Below 7000 K the offset comes
 from the Hyades and Coma Ber; for Praesepe, single-minus-binary objectives
-at the cluster age stay below 2 for 22 of 24 main-sequence members and
-reach 36--491 for members 0.2--0.8 mag above the sequence. Hyades
-main-sequence members give 15--44 (q 0.42--0.56) also with [Fe/H] free,
+at the cluster age stay below 2 for 20 of 24 main-sequence members and
+reach 39--505 for members 0.2--0.8 mag above the sequence. Hyades
+main-sequence members give 17--48 (q 0.43--0.58) also with [Fe/H] free,
 so a known age needs a zero-point check on the same cluster's
 main-sequence stars (J-CAPS experiment `warm_cluster_binary_20261003`).
 At fixed age and parallax the mass follows the luminosity, so the mass
@@ -66,9 +67,9 @@ For 2210 Gaia DR3 warm stars within 100 pc with RVs and G >= 5
 (`examples/warm_jz_100pc.csv`, from the J-CAPS experiment
 `warm_jz_test_20261003`), the vertical action ranks better by the
 single-star age than by the binary-solution age for stars without a
-`non_single_star` flag (Spearman difference -0.08, 95 per cent interval
--0.13 to -0.03) and the reverse for the 179 flagged binaries (+0.18, 0.00
-to +0.34).
+`non_single_star` flag (Spearman difference -0.09, 95 per cent interval
+-0.14 to -0.04) and the reverse for the 179 flagged binaries (+0.20, +0.02
+to +0.35).
 
 ## F-type cluster members and log g priors
 
@@ -80,10 +81,10 @@ fraction <= 0.4:
 
 | Fit | Luminous companion, Delta > 25 | Gaia RV single, Delta > 25 | LR, Delta > 25 | LR, Delta <= 25 |
 |---|---:|---:|---:|---:|
-| Age free | 18 per cent | 6 per cent | 3.1 | 0.87 |
+| Age free | 18 per cent | 6 per cent | 3.2 | 0.87 |
 | Cluster age, RV-single ridge and shared width | 54 per cent | 20 per cent | 2.7 | 0.58 |
 
-The fixed-age single-star sequence of the RV singles is 0.07--0.11 mag
+The fixed-age single-star sequence of the RV singles is 0.08--0.11 mag
 wide, so three widths correspond to q >~ 0.75 for a 1.2 solar-mass primary.
 Delta separates the classes no better than the luminosity excess over that
 sequence (ROC AUC 0.68 against 0.72): XP and J/H/Ks do not resolve the

@@ -87,7 +87,9 @@ Reuse a `StellarModel` across sources through `model=`.
   example from its spectral type. They enter the single and binary
   objectives alike.
 - Free binary q covers 0.1--1, further restricted by component support.
-- `q=` fixes q for the binary hypothesis.
+- `q=` fixes q for the binary hypothesis, or ties it to the fitted
+  parameters through a callable `q(m1, age_gyr, feh, parallax_mas)` that
+  returns NaN where no q applies; `rank_roots` uses this for orbit branches.
 - Parallax is fixed at the catalogue value by default. Set
   `fit_parallax=True` to fit within three catalogue standard deviations,
   with one Gaussian constraint. Zero/absent uncertainty keeps it fixed.
@@ -140,7 +142,7 @@ parallax. Three keywords add that constraint:
 - `luminosity="massfree"` keeps only the mass bounds, which allows a
   stripped giant.
 - `dust_prior=EdenhoferPrior(...)` adds the map E at the trial distance.
-  Within 1.25 kpc it is Gaussian with width sqrt(sigma^2 + 0.04^2); beyond,
+  Within 1.2 kpc it is Gaussian with width sqrt(sigma^2 + 0.04^2); beyond,
   E is held above the value at 1.2 kpc minus 0.04. It needs
   `sed.metadata["ra"]` and `["dec"]` and replaces `extinction_prior`.
 
@@ -158,7 +160,9 @@ result = fit_giant_companion(sed, teff=(4895, 150), logg=(2.54, 0.3), feh=(-1.22
 `result["rows"]` holds one row per mass, M2 = 0 being the giant alone:
 `objective`, its `delta` from the giant alone, its -2 ln L part `minus2lnL`,
 `chi2`, the giant's labels, `extinction_e`, `tilt` and `scale`, and the
-companion's Teff, radius and share of the observed 0.40--0.45 micron flux.
+companion's Teff, radius and share of the observed 0.40--0.45 micron flux,
+and `converged`, whether the final optimisation at that mass met its
+tolerance; a profile point without it is not a reliable minimum.
 With `luminosity` or `dust_prior`, rows also hold the fitted `z` and
 `parallax_mas`, the giant's `mks`, `luminosity`, `radius` and `mass`, the map
 `e_map` and `distance_pc`, and the penalties `label_penalty`,
@@ -195,7 +199,10 @@ The plotting style is scoped to the call; spectra are not normalized.
 feh=0, model=None)` returns the solutions of a Gaia photocentre orbit for a
 coeval main-sequence companion; `solve_amrf(a_obs, m1, ...)` takes the
 astrometric mass-ratio function directly. Each solution has `kind`, `q`,
-`m2`, `beta_G`, `delta_G` and `delta_Ks`.
+`m1`, `m2`, `beta_G`, `delta_G`, `delta_Ks` and `amrf`; `solve_orbit` adds
+the `parallax_mas` it used, which `rank_roots` reads with `amrf` and `m1`.
 `rank_roots(sed, roots, parallax_mas=None, model=None, **fit_kwargs)` fits
-the SED at each solution and sorts them by the fit objective, with `delta`
-above the best. See [Photocentre orbits](orbit.md).
+the SED along each solution branch, with q re-solved from the orbit at every
+trial primary, returns these quantities at the fitted parameters, and sorts
+the solutions by the fit objective, with `delta` above the best. See
+[Photocentre orbits](orbit.md).

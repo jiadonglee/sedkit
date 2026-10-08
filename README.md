@@ -46,8 +46,10 @@ best constrained there:
 - **Model error.** A fractional covariance (four eigen-columns plus a
   diagonal) is built from training residuals: a cold term below 3800 K and
   a warm term above 4200 K, blended in between. No synthetic spectra enter
-  this part, and the network does not extrapolate beyond 2800--7498 K and
-  G-Ks >= 0.51.
+  this part, and the network does not extrapolate beyond its training
+  coverage: 2800--7498 K at G-Ks >= 0.51, plus a sparse ultracool box at
+  2313--2929 K, M_Ks 8.86--10.58, that holds the lowest PARSEC masses
+  (0.1 solar masses at 5 Gyr is 2451 K) without validated accuracy.
 
 ### Hot dwarfs: calibrated synthetic spectra
 
@@ -128,7 +130,7 @@ See [model and limitations](docs/model.md) for the full description and
 
 | Entry point | Stars | Support | Hypotheses |
 | --- | --- | --- | --- |
-| `fit` with `StellarModel()` | FGKM dwarfs: empirical J-CAPS network on PARSEC tracks | Teff 2800--7498 K, age 0.5--10 Gyr, [M/H] -1.0 to +0.5; primary mass to 1.5--1.8 solar masses at 0.5--2 Gyr and 1.38 at 3 Gyr (solar [M/H]) | single star, coeval binary |
+| `fit` with `StellarModel()` | FGKM dwarfs: empirical J-CAPS network on PARSEC tracks | Teff 2800--7498 K (sparse ultracool support to 2313 K), age 0.5--10 Gyr, [M/H] -1.0 to +0.5; primary mass to 1.5--1.8 solar masses at 0.5--2 Gyr and 1.38 at 3 Gyr (solar [M/H]) | single star, coeval binary |
 | `fit` with `StellarModel(hot=True)` | adds A and B dwarfs: CK04/TLUSTY table with an empirical XP correction | 7000--30000 K, log g 3--4.75, [M/H] -0.3 to +0.3, age from 4 Myr, mass to 20 solar masses; XP and J/H/Ks only | single star, coeval binary |
 | `fit_giant_companion` | red giant (empirical APOGEE template) plus a hot main-sequence companion | giant Teff 3600--6800 K, log g 0--3.8, [M/H] -2.6 to +0.6; companion 1.5--15 solar masses at 10 Myr and solar [M/H] | giant alone, giant plus companion profiled in mass |
 | `orbit.solve_orbit`, `rank_roots` | Gaia photocentre orbits | as `StellarModel()` | faint companion, luminous twin |
@@ -141,9 +143,9 @@ See [model and limitations](docs/model.md).
 Single stars:
 
 - **FGK dwarfs.** Hyades, Praesepe and Coma Ber members at 6000--7500 K
-  fit with chi2/N of 0.7--0.9 at free age, with masses 0.02--0.06 solar
+  fit with chi2/N of 0.7--0.9 at free age, with masses 0.02--0.05 solar
   masses below the isochrone mass. Free ages come out older than the
-  literature cluster ages (1.0--2.0 against 0.6--0.7 Gyr)
+  literature cluster ages (1.0--2.1 against 0.6--0.7 Gyr)
   ([warm-star validation](docs/validation-warm.md)).
 - **A and B dwarfs.** 44 holdout anchors at 7.5--30 kK fit to 1.2--1.4 per
   cent in XP shape, with Teff 0.2 kK below to 0.05 kK above the
@@ -183,7 +185,9 @@ Giants with a hot companion:
   supplies more than about 20 per cent of the 0.40--0.45 micron light: 87
   per cent of injections at 20--30 per cent, all above 30 per cent, none
   below 10 per cent. The threshold of 10 lies above every one of 238
-  reddened control giants (maximum 8.8).
+  reddened control giants (maximum 8.8), the sample that also set
+  `tilt_sigma`; its false-positive rate on other giants awaits an
+  independent control set.
 - **Recovery by mass.** Injected 2 and 3 solar-mass companions are
   detected in 92.9 and 99.2 per cent of cases. On the controls, the fit
   excludes companions from 2 solar masses upward (median).

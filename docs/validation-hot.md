@@ -65,11 +65,11 @@ age, their spectroscopic [Fe/H] and the map E, by the network alone and by
 
 | IRFM Teff (K) | Stars | Shape rms, network | Shape rms, hot=True | Fitted minus IRFM Teff, network | Fitted minus IRFM Teff, hot=True |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 7000--7250 | 61 | 1.16% | 1.06% | -16 K | +3 K |
-| 7250--7400 | 21 | 1.42% | 1.02% | -48 K | +21 K |
-| 7400--7500 | 4 | 1.55% | 1.01% | -67 K | +8 K |
+| 7000--7250 | 61 | 1.16% | 1.06% | -16 K | +2 K |
+| 7250--7400 | 21 | 1.41% | 1.02% | -48 K | +21 K |
+| 7400--7500 | 4 | 1.55% | 1.01% | -68 K | +8 K |
 
-Below 7000 K the two models give the same median Teff offsets (+50, +31
+Below 7000 K the two models give the same median Teff offsets (+52, +32
 and +15 K at 6250--6500, 6500--6750 and 6750--7000 K, 481 stars). On the
 86 dwarfs, the table alone, with free flux scale and measurement errors at
 the PARSEC log g of their `hot=True` fits and the map E, gives Teff 4 K
@@ -79,7 +79,7 @@ Teff: one at 7.5--8 kK and seven composites at 8--9 kK.
 At fixed IRFM Teff and log g 4.2, the table alone reproduces these stars
 to 1.0--1.3 per cent and the handover to 1.1--1.3 per cent, against
 1.2--1.9 per cent for the network. At the same PARSEC star at [M/H] = 0,
-the table and the network differ by a common 2 per cent in level and
+the table and the network differ by 1.4 per cent in XP level and
 0.8 per cent in XP shape; at [M/H] = -0.3 and +0.3 the shape difference is
 1.6 per cent.
 
@@ -118,10 +118,10 @@ value: the binary absorbs the age offset, not a companion. Fixed cluster
 ages are therefore not usable until the hot route and the cluster ages
 agree.
 
-The cluster members are about 0.13 mag brighter than the [M/H] = 0 PARSEC
+The cluster members are about 0.14 mag brighter than the [M/H] = 0 PARSEC
 sequence at the cluster age from G to B stars (J-CAPS
 `hot_cluster_zams_20261004`). With the model at [M/H] = +0.1 the
-fixed-age Delta drops (median 16 to 3 for 297 G-to-B members, 33 to 13
+fixed-age Delta drops (median 18 to 4 for 297 G-to-B members, 33 to 13
 for the hot anchors), but eight of 14 RV-constant hot anchors still reach
 Delta > 25 (J-CAPS `hot_cluster_binary_feh_20261004`). At fixed age,
 Delta tracks the height above the cluster's own sequence (rank
@@ -153,7 +153,7 @@ nuisance shared by both hypotheses, gives:
 | Turnoff ratio | Luminous companion | RV single | LR, Delta > 25 | LR, Delta <= 25 |
 |---|---:|---:|---:|---:|
 | <= 0.55 | 12/16 | 59/336 | 4.3 | 0.30 |
-| > 0.55 | 7/31 | 56/618 | 2.5 | 0.85 |
+| > 0.55 | 7/31 | 56/619 | 2.5 | 0.85 |
 
 For one hot star this means:
 - with free age and photometry only, Delta does not tell a single star

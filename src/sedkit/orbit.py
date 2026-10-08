@@ -10,8 +10,9 @@ For a coeval main-sequence companion the stellar model gives beta(q), and
 A(q, beta(q)) rises and then falls towards q = 1, so one orbit usually has
 two solutions: a faint companion (low q, near the dark-companion value) and a
 luminous one (near equal mass). The luminous solution predicts how much
-brighter than a single star the system is; an SED fit at each solution
-decides between them.
+brighter than a single star the system is; an SED fit along each solution
+branch, with q re-solved from the orbit at every trial primary, decides
+between them.
 
     from sedkit.orbit import solve_orbit, rank_roots
     roots = solve_orbit(a0_mas=0.6978, parallax_mas=13.913, period_day=339.57, m1=0.686)
@@ -65,13 +66,52 @@ def _brightening(beta):
     return float(2.5 * np.log10(1 + beta))
 
 
+def _beta_g(model, masses, age_gyr, feh):
+    """PARSEC beta_G of each companion mass to masses[0]; NaN where a star lies outside the model."""
+    labels, physical = model._track(masses, age_gyr, feh)
+    ok = np.isfinite(labels).all(1) & np.isfinite(physical).all(1)
+    weight = model.hot_weight(labels[:, 0])
+    cool, hot = ok & (weight < 1), ok & (weight > 0)
+    ok[cool] &= model.in_domain(labels[cool])
+    if hot.any():
+        ok[hot] &= model.in_hot_domain(labels[hot, 0], physical[hot, 0], feh)
+    mg = labels[:, 1] + labels[:, 2]
+    beta = 10**(-0.4 * (mg[1:] - mg[0]))
+    return np.where(ok[0] & ok[1:], beta, np.nan)
+
+
+def branch_mass_ratio(kind, a_obs, m1, age_gyr=5.0, feh=0.0, model=None, near=None):
+    """q of the given kind ('dark', 'faint' or 'luminous') at A = a_obs; NaN if the branch has none.
+
+    A faint or luminous q is bracketed on Q_GRID and refined on the PARSEC beta_G; with several
+    crossings of one kind, the one closest to near is returned.
+    """
+    if kind == "dark":
+        return dark_mass_ratio(a_obs)
+    model = StellarModel() if model is None else model
+    curve = amrf(Q_GRID, _beta_g(model, m1 * np.r_[1.0, Q_GRID], age_gyr, feh))
+    ok = np.isfinite(curve)
+    if not ok.any():
+        return np.nan
+    peak = Q_GRID[np.nanargmax(curve)]
+    d = curve - a_obs
+    roots = []
+    for j in np.flatnonzero(ok[:-1] & ok[1:] & (np.sign(d[:-1]) != np.sign(d[1:]))):
+        if (Q_GRID[j] >= peak) == (kind == "luminous"):
+            f = lambda q: amrf(q, _beta_g(model, np.array([m1, m1 * q]), age_gyr, feh)[0]) - a_obs
+            roots.append(brentq(f, Q_GRID[j], Q_GRID[j + 1], xtol=1e-6))
+    if not roots:
+        return np.nan
+    return min(roots, key=lambda q: abs(q - (roots[0] if near is None else near)))
+
+
 def solve_amrf(a_obs, m1, age_gyr=5.0, feh=0.0, model=None):
     """Solutions of A(q, beta(q)) = a_obs, faintest first.
 
     Each is a dict with kind ('dark': the beta = 0 root below the model's
     lowest supported q; 'faint': below the maximum of A(q, beta(q));
-    'luminous': above it), q, m2 [Msun], beta_G, and delta_G and delta_Ks,
-    the brightening of the pair over the primary alone in magnitudes.
+    'luminous': above it), q, m1 and m2 [Msun], beta_G, delta_G and delta_Ks,
+    the brightening of the pair over the primary alone in magnitudes, and amrf.
     """
     beta_g, beta_k = locus(m1, age_gyr, feh, model)
     curve = amrf(Q_GRID, beta_g)
@@ -81,8 +121,8 @@ def solve_amrf(a_obs, m1, age_gyr=5.0, feh=0.0, model=None):
     if first is not None and curve[first] > a_obs:
         q = dark_mass_ratio(a_obs)
         if np.isfinite(q) and q < Q_GRID[first]:
-            out.append(dict(kind="dark", q=float(q), m2=float(q * m1), beta_G=0.0,
-                            delta_G=0.0, delta_Ks=0.0))
+            out.append(dict(kind="dark", q=float(q), m1=float(m1), m2=float(q * m1), beta_G=0.0,
+                            delta_G=0.0, delta_Ks=0.0, amrf=float(a_obs)))
     if first is None:
         return out
     peak = Q_GRID[np.nanargmax(curve)]
@@ -92,28 +132,33 @@ def solve_amrf(a_obs, m1, age_gyr=5.0, feh=0.0, model=None):
         q = Q_GRID[j] + w * (Q_GRID[j + 1] - Q_GRID[j])
         bg = beta_g[j] + w * (beta_g[j + 1] - beta_g[j])
         bk = beta_k[j] + w * (beta_k[j + 1] - beta_k[j])
-        out.append(dict(kind="luminous" if q > peak else "faint", q=float(q), m2=float(q * m1),
-                        beta_G=float(bg), delta_G=_brightening(bg), delta_Ks=_brightening(bk)))
+        out.append(dict(kind="luminous" if q > peak else "faint", q=float(q), m1=float(m1),
+                        m2=float(q * m1), beta_G=float(bg), delta_G=_brightening(bg),
+                        delta_Ks=_brightening(bk), amrf=float(a_obs)))
     return out
 
 
 def solve_orbit(a0_mas, parallax_mas, period_day, m1, age_gyr=5.0, feh=0.0, model=None):
     """Solutions for a photocentre orbit; use the parallax of the two-body solution."""
-    return solve_amrf(amrf_observed(a0_mas, parallax_mas, period_day, m1), m1, age_gyr, feh, model)
+    roots = solve_amrf(amrf_observed(a0_mas, parallax_mas, period_day, m1), m1, age_gyr, feh, model)
+    return [dict(r, parallax_mas=float(parallax_mas)) for r in roots]
 
 
 def rank_roots(sed, roots, *, parallax_mas=None, parallax_error_mas=None, model=None, **fit_kwargs):
-    """Fit the SED at each solution and rank them by the fit objective.
+    """Fit the SED along each solution branch and rank the branches by the fit objective.
 
-    A luminous or faint root is fitted as a binary with q fixed at the root
-    and the primary refitted; a dark root, or a root whose companion lies
-    outside the model, as a single star. Pass the parallax of the two-body
-    orbit, which can differ from the single-star catalogue value.
+    The orbit fixes A * M1**(1/3) * parallax. A luminous or faint root is
+    fitted as a binary whose q is re-solved on its branch at every trial
+    primary mass, age, metallicity and parallax, so the fitted pair reproduces
+    the orbit; a dark root, or a root whose companion lies below the model,
+    is fitted as a single star. Pass the parallax of the two-body orbit,
+    which can differ from the single-star catalogue value.
 
-    Returns copies of the roots with the fit and its objective ('fit',
+    Returns copies of the roots with q, m1, m2, beta_G, delta_G, delta_Ks and
+    amrf at the fitted parameters, the fit and its objective ('fit',
     'objective', 'chi2', 'n_fit') and 'delta', the objective above the best
-    root, sorted best first. A delta of order 25 or more between the two
-    branches is a clear choice; a small delta leaves both open.
+    root, sorted best first. A delta of order 25 or more between the two branches is a clear choice;
+    a small delta leaves both open.
     """
     from .fit import fit
 
@@ -124,10 +169,28 @@ def rank_roots(sed, roots, *, parallax_mas=None, parallax_error_mas=None, model=
                       else parallax_error_mas)
     ranked = []
     for root in roots:
+        # A * M1**(1/3) * parallax is fixed by a0 and the period
+        invariant = root["amrf"] * root["m1"]**(1 / 3) * root.get("parallax_mas", sed.parallax_mas)
+
+        def a_obs(m1, parallax):
+            return invariant / (m1**(1 / 3) * parallax)
+
+        def q_branch(m1, age_gyr, feh, parallax, kind=root["kind"], near=root["q"]):
+            return branch_mass_ratio(kind, a_obs(m1, parallax), m1, age_gyr, feh, model, near)
+
         binary = root["kind"] != "dark" and root["q"] >= 0.1
         result = fit(sed, "binary" if binary else "single", model=model,
-                     q=root["q"] if binary else None, **fit_kwargs)
-        ranked.append(dict(root, fitted_as="binary" if binary else "single", fit=result,
+                     q=q_branch if binary else None, **fit_kwargs)
+        m1, a_fit = result["m1"], a_obs(result["m1"], result["parallax_mas"])
+        if binary:
+            parts = result["components"]
+            q, beta = result["q"], result["beta_g"]
+            delta_ks = _brightening(parts[1, KS] / parts[0, KS])
+        else:
+            q, beta, delta_ks = dark_mass_ratio(a_fit), 0.0, 0.0
+        ranked.append(dict(root, q=float(q), m1=float(m1), m2=float(q * m1), beta_G=float(beta),
+                           delta_G=_brightening(beta), delta_Ks=delta_ks, amrf=float(a_fit),
+                           fitted_as="binary" if binary else "single", fit=result,
                            objective=float(result["objective"]), chi2=float(result["chi2"]),
                            n_fit=int(result["n_fit"])))
     best = min((r["objective"] for r in ranked), default=np.nan)
