@@ -345,8 +345,10 @@ class _Problem:
         columns = np.zeros((len(self.y), columns_full.shape[1]))
         columns[:self.n_channel] = np.nan_to_num(columns_full[self.idx]) * att[:, None]
         variance = np.r_[variance_full[self.idx] * att**2, xv]
+        padded = np.full(168, np.nan)
+        padded[:len(obs_full)] = obs_full
         return dict(flux=np.r_[obs_full[self.idx], xf], columns=columns, variance=variance,
-                    coarse=coarse, full=obs_full)
+                    coarse=coarse, full=padded)
 
     def dwarf(self, mass, age, feh, scale, e):
         prediction = self.stellar.evaluate(mass, 0.0, age, feh)
@@ -534,7 +536,7 @@ def _check_prior(name, prior):
 def fit_subdwarf_companion(sed, *, companions=COMPANIONS, tiers=TIERS, model=None, stellar=None, template=None,
                            parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
                            dust_prior=None, subdwarf_prior=None, companion_prior=None, companion_age_gyr=None,
-                           companion_feh=None, companion_mass=None, use_wise=False, use_spherex=True, blue=None,
+                           companion_feh=None, companion_mass=None, use_wise=False, use_spherex=False, blue=None,
                            galex=None):
     """Compare a single FGK star, a single hot subdwarf and a subdwarf with a cool companion.
 
@@ -548,8 +550,8 @@ def fit_subdwarf_companion(sed, *, companions=COMPANIONS, tiers=TIERS, model=Non
     'teff' and 'logg' (subdwarf) or 'teff', 'logg' and 'feh' (companion; 'feh' of a subgiant is its template
     [M/H]); companion_age_gyr, companion_feh and companion_mass fix the dwarf's age, [M/H] and mass (for
     example to profile the objective over companion masses). The data are the masked
-    168 channels (W1/W2 only with use_wise; SPHEREx unless use_spherex=False or a subgiant is considered,
-    which the template does not predict), plus blue=(flux, error) from blue_xp() and galex= from galex().
+    168 channels (W1/W2 only with use_wise; SPHEREx only with use_spherex and without a subgiant, which the
+    template does not predict), plus blue=(flux, error) from blue_xp() and galex= from galex().
     GALEX needs the pure-hydrogen tier, the only one with NUV.
 
     Returns dict(hypotheses={"fgk", "sdb", "sdb+dwarf", "sdb+subgiant"}, delta, preferred, n_fit, mask):

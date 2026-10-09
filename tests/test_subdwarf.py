@@ -97,6 +97,18 @@ def test_composite_is_preferred_and_light_fraction_recovered(sdm, stellar):
     assert abs(h["fractions"]["beta_G"] - truth["hypotheses"]["sdb+dwarf"]["fractions"]["beta_G"]) < 0.03
 
 
+def test_subgiant_companion_drops_spherex_and_reports_fractions(sdm, stellar):
+    sed, _ = _mock(sdm, stellar, (33000.0, 5.7, 0.16, "H"), companion=(1.1, 3.0, 0.0), parallax=2.5)
+    sed.mask[66:] = True
+    sed.flux[66:], sed.error[66:] = 1.0, 0.1
+    r = fit_subdwarf_companion(sed, model=sdm, stellar=stellar, companions=("subgiant",), tiers=("H",),
+                               extinction=0.05, subdwarf_prior=dict(logg=(5.7, 0.1)), use_spherex=True)
+    h = r["hypotheses"]["sdb+subgiant"]
+    assert not r["mask"][66:].any()
+    assert 0 < h["fractions"]["beta_G"] < 1 and np.isnan(h["fractions"]["channels"][66:]).all()
+    assert h["companion"]["radius"] > 0 and 3.2 <= h["companion"]["logg"] <= 3.8
+
+
 def test_inputs_outside_the_route_are_refused(sdm, stellar):
     sed, _ = _mock(sdm, stellar, (31000.0, 5.7, 0.16, "H"))
     galex = {"FUV": (15.0, 0.05, True), "NUV": (15.2, 0.03, True)}
