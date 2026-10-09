@@ -68,6 +68,60 @@ The binary lies 0.68 mag above the single-star sequence in Ks, as the
 luminous root predicts; LP 769-9 lies 0.15 mag above it. The SED makes the
 same choice from the spectrum alone.
 
+## Luminous companions of a different kind
+
+A hot subdwarf with an F, G or K companion is a pair of two luminous
+stars of different ages; neither is on the other's isochrone. With B the
+subdwarf's mass fraction and beta_G its share of the G-band light, the
+photocentre sits at (B - beta_G) r from the barycentre, r pointing from the
+subdwarf to the companion, so
+
+    a0 = a |B - beta_G|,    a = parallax (M_tot P^2)^(1/3),
+    A  = a0 / (parallax P^(2/3)) = M_tot^(1/3) |B - beta_G|.
+
+For B > beta_G the photocentre moves with the companion, for B < beta_G
+with the subdwarf.
+
+```python
+from sedkit.orbit import solve_luminous_pair, branch_from_rv, campbell
+for row in solve_luminous_pair(a0_mas=0.30, parallax_mas=2.0, period_day=800,
+                               m2=1.1, beta=0.45, errors=dict(beta=0.03, a0=0.02)):
+    print(row["branch"], row["m1"], row["B"], row["sigma_m1"], row["dm1_dbeta"])
+```
+
+- `solve_luminous_pair(a0_mas, parallax_mas, period_day, m2, beta, errors=)`
+  returns the subdwarf mass m1 on both branches, `"B>beta"` and
+  `"B<beta"`. On the first, A rises monotonically with m1 and has one root;
+  on the second, A falls from beta m2^(1/3) and has a root only for smaller
+  A. Here m2 is the companion's mass from the SED fit and beta its
+  `fractions["beta_G"]`. `errors` gives one-sigma steps in `a0`,
+  `parallax`, `m2` and `beta`; `sigma_m1` is their quadrature sum and
+  `dm1_dbeta` the sensitivity to beta, 2.3--2.6 for typical sdB + F/G
+  systems.
+- `mass_from_rv(k2_kms, period_day, eccentricity, inclination_deg, m2)`
+  gives m1 from the companion's RV orbit and the astrometric inclination,
+  independent of beta: f = P K2^3 (1 - e^2)^(3/2) / (2 pi G)
+  = (m1 sin i)^3 / M_tot^2.
+- `branch_from_rv(...)` then fixes B and a, and gives beta on each branch,
+  B - a0/a and B + a0/a. A branch is allowed when beta lies in [0, 1]; with
+  the SED beta_G the allowed branch closest to it is chosen, and the
+  difference is the consistency test of the light scale.
+- `solve_dark_companion(a0_mas, parallax_mas, period_day, m1, beta=0)`
+  covers a subdwarf with a companion faint in G (K/M dwarf, white dwarf):
+  the subdwarf is the luminous star, `amrf` with beta = F2/F1 from the SED
+  gives q and the companion mass, and q may exceed 1.
+- `thiele_innes` and `campbell` convert between Thiele--Innes and Campbell
+  elements in the Gaia DR3 convention (0 <= node < 180 degrees).
+
+The phase of the companion's RV curve against the photocentre orbit does
+not choose the branch. A photocentre orbit fixes (omega, node) only up to
+(omega + 180, node + 180): the Thiele--Innes elements are unchanged by that
+flip. "The photocentre follows the companion" and "the photocentre follows
+the subdwarf, with the other node ascending" fit the same astrometry and
+the same single-star RV curve. The branch follows from the masses: the RV
+amplitude and inclination give B without beta, and a0 then gives beta,
+which the SED decides between.
+
 ## Scope
 
 - The companion is a coeval main-sequence star of the bundled model; white

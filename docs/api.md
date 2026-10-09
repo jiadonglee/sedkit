@@ -177,6 +177,64 @@ thresholds calibrated on control giants are 10 for the default fit and for
 ([giant validation](validation-giant.md)). `dust_prior=` without
 `luminosity=` has no calibrated threshold.
 
+## Hot subdwarfs and their companions
+
+```python
+from sedkit import download, EdenhoferPrior
+from sedkit.subdwarf import fit_subdwarf_companion, blue_xp
+sed = download("1601000947085068160", cache_dir="data")
+result = fit_subdwarf_companion(sed, companions=("dwarf", "subgiant"), fit_parallax=True,
+                                dust_prior=EdenhoferPrior(), subdwarf_prior=dict(logg=(5.6, 0.3)))
+best = result["hypotheses"][result["preferred"]]
+print(result["delta"], best["subdwarf"], best["companion"], best["fractions"]["beta_G"])
+```
+
+`fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"),
+tiers=("H", "mid", "He"), model=None, stellar=None, template=None,
+parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
+dust_prior=None, subdwarf_prior=None, companion_prior=None,
+companion_age_gyr=None, companion_feh=None, companion_mass=None,
+use_wise=False, use_spherex=False, blue=None, galex=None)` fits four
+hypotheses on one data vector and returns `hypotheses` (`fgk`, `sdb`,
+`sdb+dwarf`, `sdb+subgiant`), `delta` (each objective minus the lowest),
+`preferred`, `n_fit`, `mask` and the fitted `data`; see the
+[subdwarf route](model.md#subdwarf-route).
+
+- The subdwarf has Teff, log g, a helium tier and a free radius. Each
+  subdwarf hypothesis reports `subdwarf` with `teff`, `logg`, `radius`,
+  `mass` (g R^2 / G), `luminosity`, `tier` and `log_he_h`.
+- The companion is `"dwarf"` (mass, age and [M/H] on PARSEC through the
+  network) or `"subgiant"` (`GiantTemplate` at log g 3.2--3.8 with a free
+  scale). `companions=()` fits the subdwarf alone. `companion_age_gyr`,
+  `companion_feh` and `companion_mass` fix the dwarf's parameters.
+- Parallax: catalogue value by default; `fit_parallax=True` fits it within
+  3 sigma with penalty z^2; `parallax=(mean, sigma)` replaces the SED's.
+- Extinction: a number fixes ZGR23 E; with `extinction=None`, give
+  `extinction_prior=(mean, sigma)` or `dust_prior=EdenhoferPrior()` (needs
+  `sed.metadata["ra"]` and `["dec"]`).
+- `subdwarf_prior` and `companion_prior` are dicts of `(mean, sigma)` on
+  `teff`, `logg` and, for the companion, `feh` (spectroscopic labels such
+  as LAMOST or GSSP).
+- `fractions` holds `beta_G`, `beta_BP`, `beta_RP` (the subdwarf's share of
+  the photon-weighted, reddened passband flux) and `channels`, its share on
+  each of the 168 channels; `coarse` holds both components' 2 nm spectra on
+  the XP channel scale for other windows.
+- `ranges` spans each quantity over the Teff_sd profile within 1 of the
+  minimum; `profile` lists the profile points.
+
+`blue_xp(sed, cache_dir="data")` calibrates XP at 332--382 nm from the
+cached continuous spectrum and returns `(flux, error)` for `blue=`; it is
+validated for single subdwarfs and biases composites
+([validation](validation-subdwarf.md)).
+`galex(sed, cache_dir="data")` returns GALEX GR6/7 AIS FUV and NUV with a
+usable flag (below the count-rate roll-off, no artifact) for `galex=`;
+GALEX needs `tiers=("H",)` and pulls Teff low against spectroscopy, so it
+is for diagnostics. `SubdwarfModel(correction="ab",
+calibration="bundled")` evaluates the table:
+`predict(teff, logg, radius, tier)` returns 10-pc fluxes on the 168
+channels, the blue channels and the 2 nm spectrum, and raises outside a
+tier.
+
 ## Plotting
 
 `plot(sed, result=None, path=None, *, axes=None, components=True, title=None)`

@@ -122,6 +122,74 @@ distance, with the map width widened by 0.04 in quadrature. Beyond
 1.2 kpc, near the map's 1.25 kpc edge, E is held above the 1.2 kpc value
 minus 0.04 by a one-sided wall.
 
+## Subdwarf route
+
+`fit_subdwarf_companion` fits a hot subdwarf and, optionally, a cool
+companion of a different age and evolutionary stage. The subdwarf is a
+Tuebingen TMAP NLTE spectrum ([data](data.md#hot-subdwarf-atmospheres))
+passed through the forward model of the Gaia XP external calibration that
+built the hot table, and tabulated for R = 1 Rsun at 10 pc on Teff x
+log g in three helium tiers:
+
+| Tier | Atmosphere | log(He/H) | Teff | log g |
+| --- | --- | --- | --- | --- |
+| `H` | pure hydrogen | -- | 20--45 kK | 5.0--6.5 |
+| `mid` | H+He+C | -1.9 | 32--45 kK | 5.0--6.5 |
+| `He` | H+He+C | -0.1 | 32--45 kK | 5.0--6.5 |
+
+The `H` tier stands for He-poor subdwarfs (log(He/H) <~ -2): at
+32--45 kK it differs from the `mid` tier by 0.3--0.5 per cent in XP shape
+and 4--6 per cent in surface flux, that is 2--3 per cent in radius. Inputs
+outside a tier are rejected, not extrapolated. Eleven TheoSSA models that
+sit 2--11 per cent off their neighbours are replaced by their log g
+neighbours; node-to-node roughness of up to 1.2 per cent remains in the
+32 kK row of the `He` tier.
+
+Each channel carries the hot-table operator correction (per-channel
+offset and Balmer-index term) and a subdwarf correction exp(a + W b), with
+W the Balmer index of the TMAP spectrum, fitted per channel to 157 single
+subdwarfs of Dawson et al. (2026) at their spectroscopic Teff and log g,
+with Edenhofer E and free radius. It covers XP, J/H/Ks and the six XP
+channels at 332--382 nm; its median size over XP is 1.3 per cent and it
+reaches 5--6 per cent at the XP edges and H-alpha. W1/W2 and SPHEREx are
+the TMAP spectrum averaged over each channel. The model error is the hot
+term on XP and J/H/Ks, 3 per cent on W1/W2 and SPHEREx, 5 per cent on the
+blue XP channels and on GALEX.
+
+The radius is free and the flux scales as R^2 at the parallax; the mass is
+M = g R^2 / G and the luminosity R^2 (Teff / Teff_sun)^4. XP and 2MASS
+constrain log g weakly: without a spectroscopic prior the fit drifts to the
+table edge, so the mass needs a spectroscopic log g. In a composite the
+subdwarf's Teff and radius trade against the companion, and a log g prior
+alone can leave it at 1--1.4 solar masses; `subdwarf_prior` also takes
+`mass` and `radius`.
+
+The companion is a dwarf from `StellarModel()` (PARSEC mass, age and [M/H]
+through the network, supported Teff 2800--7498 K) or a subgiant from
+`GiantTemplate` with log g 3.2--3.8 and a free scale; its luminosity and
+radius follow from its Ks flux, the parallax and the PARSEC BC_Ks, and its
+mass g R^2 / G is held to 0.7--3 solar masses by walls of 0.1 dex. The two
+stars share the parallax and ZGR23 E, nothing else. The single-FGK
+hypothesis is one `StellarModel()` star. All hypotheses use one data
+vector: XP and J/H/Ks (W1/W2 with `use_wise`, SPHEREx with `use_spherex`
+and without the subgiant), plus optional blue XP and GALEX points. Below
+392 nm the extinction curve is Gordon et al. (2023) R_V = 3.1 scaled to
+ZGR23 over 392--550 nm. A companion's flux below 392 nm is a blackbody
+joined to its 392--412 nm flux, with a 50 per cent error.
+
+Light fractions use a 2 nm spectrum of each component on the XP channel
+scale: the channels in 392--992 nm, the model spectrum beyond, joined at
+the edge channels (for the companion a blackbody at its Teff). beta_G,
+beta_BP and beta_RP are the subdwarf's share of the photon-weighted,
+reddened flux in the Gaia DR3 passbands.
+
+The fit profiles the objective over the subdwarf Teff: nodes every 2 kK in
+each tier, every 0.5 kK within 3 kK of the best node, with all other
+parameters refitted at each node, then a free polish. `ranges` spans each
+reported quantity over the profile points and the interpolated crossings
+within 1 of the minimum: a profile interval in Teff, not a marginal
+posterior.
+
 ## Limitations
 
 - Fits are exploratory local optima. No posterior uncertainty, calibrated

@@ -78,6 +78,48 @@ age--metallicity weight fitted to template training giants with precise
 parallaxes, and the PARSEC bolometric correction BC_Ks. `summary.json`
 records both builds.
 
+### Hot-subdwarf atmospheres
+
+A subdwarf table needs Teff 20--45 kK, log g 5--6.5, a helium axis and
+300 nm--5 um, from NLTE or line-blanketed atmospheres. The public grids:
+
+| Grid | Teff (kK) | log g | Helium | Wavelength | Use here |
+| --- | --- | --- | --- | --- | --- |
+| TMAP via TheoSSA (GAVO), pure H | 20--46 in 1 kK | 4.9--6.6 in 0.01 | none | 0.1 nm--40 um | H tier |
+| TMAP via TheoSSA, H+He+C (`HHeC`) | 30--46 in 0.5 kK | 4.9--6.6, irregular | log(He/H) -1.9 to +0.2, 9 values | 115--178 nm and 300 nm--5.5 um | mid and He tiers |
+| TMAP via TheoSSA, H+He (`HHe`) | 30--46 | 4.9--6.2 | mostly log(He/H) = -3.1 | 0.5 nm--5.5 um | not used: one He value |
+| TMAP grids on the SVO service | 20--150 | 4--9 | pure H, or sparse H+He | to 5.5 um or 40 um | duplicates of the above |
+| TLUSTY BSTAR2006 / OSTAR2002 | 15--55 | to 4.75 | solar | UV--IR | below sdB gravities |
+| Husfeld et al. NLTE He-rich | 35--80 | 4--7 | He-rich | optical | starts at 35 kK |
+| CK04 / ATLAS9 | to 50 | to 5.0 | solar, LTE | UV--IR | LTE, log g edge at 5.0 |
+| Koester, Levenhagen (2017) | WD range | 7--9.5 | | | white-dwarf gravities |
+| Published sdB grids (XTgrid, Nemeth et al.) | | | | | spectra fitted per star, no public grid |
+
+The table uses the Tuebingen NLTE Model-Atmosphere Package (TMAP; Werner et
+al. 2003; Rauch & Deetjen 2003) spectra served by TheoSSA (Ringat & Rauch,
+GAVO). TheoSSA holds precomputed H+He models only from 30 kK; below that
+it holds pure hydrogen. The table therefore has three tiers: pure hydrogen
+for He-poor subdwarfs at 20--45 kK, and H+He+C with log(He/H) = -1.9 and
+-0.1 at 32--45 kK (the 30--31.5 kK rows of `HHeC` are incomplete in log g).
+A He-rich subdwarf below 32 kK is outside the table.
+`scripts/build_subdwarf_model.py` selects one model per table node from the
+TheoSSA catalogue (nearest log g within 0.05 dex, the latest computation),
+downloads it from the Tuebingen archive, and reduces it through the hot-table
+XP forward model (`select`, `fetch`, `table` stages). TMAP tabulates F_lambda
+/ pi; the build multiplies by pi and verifies the bolometric flux against
+sigma Teff^4 (0.9 per cent at 30 kK, log g 5.6). The `HHeC` spectra have no
+flux at 178--300 nm, so the He-rich tiers carry no GALEX NUV and no coarse
+spectrum there. `summary.json` lists each tier's helium abundance, model
+count and largest log g step bridged by interpolation.
+
+GALEX FUV and NUV come from the GR6/7 AIS catalogue (Bianchi et al. 2017,
+VizieR II/335). A band enters a fit only below the 10 per cent local
+count-rate roll-off of Morrissey et al. (2007, Table 1), 114 and 303 counts
+per second, AB 13.68 (FUV) and 13.88 (NUV), with artifact flag at most 1;
+the calibration uncertainty, 0.05 and 0.03 mag, is added in quadrature. XP
+below 392 nm is calibrated by GaiaXPy on 332--382 nm from the cached
+continuous spectrum.
+
 2MASS fluxes follow the J-CAPS training convention: catalogue zero points at
 the model wavelengths times 0.98523, 0.98566 and 0.99105 for J, H and Ks.
 The stellar network anchors PARSEC M_Ks on the same Ks scale, and so does
