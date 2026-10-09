@@ -81,7 +81,8 @@ below, against 68 per cent for a one-sigma interval.
 **The spectroscopic scale.** For the 52 stars in both Dawson et al. and
 Luo et al. (2021), Dawson's Teff lie 1.05 kK below Luo's, with 1.07 kK
 scatter. The correction is fitted on Dawson's scale, and so are sedkit Teff:
-80 faint Luo subdwarfs below fit 1.3 kK under Luo's Teff. A spectroscopic
+44 faint Luo subdwarfs (the GALEX sample below) fit 1.3 kK under Luo's
+Teff. A spectroscopic
 Teff prior needs to be on this scale (see item 2).
 
 **The correction.** At their spectroscopic labels the 157 anchors leave a
@@ -122,10 +123,11 @@ of them have a compact-companion RV orbit (Lan 11, Feige 11 and three
 others), the other 17 are RV-variable or constant. Two are also calibration
 anchors. (b) Dawson's 20 sdB+WD and 23 sdB+dM systems in the table box.
 
-**Fit.** As item 1, with `companions=("dwarf",)`, SPHEREx where available,
-then the subdwarf + dwarf objective at fixed companion masses 0.10--0.80
-(5 Gyr, solar [M/H]); the mass limit is the largest mass within 9 of the
-single-subdwarf objective.
+**Fit.** As item 1, with `companions=("dwarf",)` and the default data (XP
+and J/H/Ks), then the subdwarf + dwarf objective at fixed companion masses
+0.10--0.80 (5 Gyr, solar [M/H]); the mass limit is the largest mass within
+9 of the single-subdwarf objective. The same fits with the prestudy's
+SPHEREx spectra are the variant discussed below the table.
 
 **Results, default data (no SPHEREx), Teff free:**
 
@@ -242,11 +244,13 @@ of the A, B, F, G errors. sigma(M_sdB) adds in quadrature the effects of
 a0, parallax, M_c (+-0.1) and beta_G (+-0.03), and is dominated by a0.
 Both orbits have one physical branch, with the photocentre on the subdwarf
 (B < beta_G), and M_sdB within 1 sigma of 0.47. Read the other way, a
-0.47 solar-mass subdwarf requires beta_G = 0.70 and 0.55, within 0.04 of
-the SED values and 1.5--2.3 sigma above the dilution scale of Molina et
-al., where the subdwarf would give 0.57 and 0.32 of the light at
-6000--6260 A. Two systems, a canonical subdwarf mass and the SED companion
-mass make this an indication, not a calibration.
+0.47 solar-mass subdwarf requires beta_G = 0.70 and 0.55 (+-0.06 and
++-0.08 from a0), within 0.04 of the SED values. In the SED fits the
+6000--6260 A share lies 0.04 below beta_G for both stars; with that offset
+Molina's dilution (subdwarf shares 0.57 and 0.32 at 6000--6260 A)
+corresponds to beta_G ~ 0.61 and 0.36, 1.4 and 2.3 sigma below the
+orbit-implied values. Two systems, a canonical subdwarf mass and the SED
+companion mass make this an indication, not a calibration.
 
 For TYC 3871-835-1 (Bal 82800003) Molina's q = 0.545 and the SED companion
 mass (1.22 solar masses) give M_sdB = 0.66 and B = 0.35: with the SED
@@ -377,6 +381,10 @@ detected to 1.5--2 kpc. Over the grid of 0.2--1.55 solar masses and
 - The false-positive threshold (Delta > 25, beta_G > 0.2) was set on the
   same 230 controls it is quoted for; the DR4 detectability map assumes a
   per-transit precision and a detection rule, not a DR4 simulation.
+- The calibration anchors are single by Dawson's classification; no
+  independent infrared-excess screen was applied to them.
+- `ranges` collapses to the best value when the final free fit lies more
+  than 1 below every Teff profile node; it is then not an interval.
 - The DR3 orbit test rests on two systems, a canonical subdwarf mass and
   the SED companion mass; q and K of those systems are not yet published.
 - HW Vir-type close binaries with a reflection effect, the light
