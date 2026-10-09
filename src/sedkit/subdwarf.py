@@ -3,9 +3,9 @@
 The subdwarf is a Tuebingen TMAP spectrum (TheoSSA) in one of three helium tiers, passed through the Gaia XP
 forward model of the hot table and tabulated for R = 1 Rsun at 10 pc. Its radius is free; M = g R**2 / G
 follows from log g. The companion is a sedkit FGKM dwarf (PARSEC mass, age and [M/H] through the J-CAPS
-network), a subgiant from the empirical GiantTemplate (log g 3.2-3.8, free scale), or absent. The stars share
-the parallax and ZGR23 extinction and nothing else. fit_subdwarf_companion compares a single FGK star, a single
-subdwarf and subdwarf + companion on one data vector.
+network), a subgiant from the empirical GiantTemplate (log g 3.2-3.8, free scale with its implied mass held to
+0.7-3 Msun), or absent. The stars share the parallax and ZGR23 extinction and nothing else.
+fit_subdwarf_companion compares a single FGK star, a single subdwarf and subdwarf + companion on one data vector.
 """
 
 import json
@@ -38,6 +38,9 @@ GALEX_BRIGHT = {band: GALEX_ZERO[band] - 2.5 * np.log10(rate) for band, rate in 
 GALEX_CALIBRATION = {"FUV": 0.05, "NUV": 0.03}
 COMPANIONS = ("dwarf", "subgiant")
 SUBGIANT_LOGG = (3.2, 3.8)
+# A subgiant's implied mass g R**2 / G (R from its Ks flux, the parallax and BC_Ks) is held in SUBGIANT_MASS
+# (solar masses) by Gaussian walls of SUBGIANT_WALL_DEX in log10 M.
+SUBGIANT_MASS, SUBGIANT_WALL_DEX = (0.7, 3.0), 0.1
 Z_MAX = 3.0
 # Initial Nelder-Mead steps: Teff_sd/1000, log g_sd, ln R_sd, ln M, ln age, [M/H], Teff_g/100, log g_g,
 # [M/H]_g, ln scale_g, E, z.
@@ -439,7 +442,8 @@ class _Hypothesis:
             sd = p.subdwarf(1000 * v["t"], v["g"], v["lnr"], self.tier, scale, e)
             if sd is None:
                 return None
-            sd.update(teff=1000 * v["t"], logg=v["g"])
+            radius = float(np.exp(v["lnr"]))
+            sd.update(teff=1000 * v["t"], logg=v["g"], radius=radius, mass=physical(1000 * v["t"], v["g"], radius)[0])
             comps.append(sd)
         if self.name in ("fgk", "dwarf"):
             age = np.exp(v["lnage"]) if "lnage" in v else self.age
@@ -463,8 +467,11 @@ class _Hypothesis:
         out = self.components(self.unpack(x, fixed))
         if out is None:
             return np.inf
-        comps, sd, cool, e, z, _ = out
-        return self.p.likelihood(comps)[0] + self.p.nuisance_penalty(e, z) + self.p.label_penalty(sd, cool)
+        comps, sd, cool, e, z, plx = out
+        value = self.p.likelihood(comps)[0] + self.p.nuisance_penalty(e, z) + self.p.label_penalty(sd, cool)
+        if self.name == "subgiant":
+            value += _subgiant_physics(self.p, cool, plx, e)["mass_penalty"]
+        return value
 
     def minimize(self, x0, fixed=None, maxfev=3000):
         free = [n for n in self.names if n not in (fixed or {})]
@@ -494,7 +501,8 @@ def _summary(hyp, v, objective, converged):
         out["companion"] = {k: cool[k] for k in keep if k in cool}
         out["companion"]["kind"] = hyp.name if hyp.name != "fgk" else "dwarf"
         if hyp.name == "subgiant":
-            out["companion"].update(_subgiant_physics(p, cool, plx, e))
+            out["companion"].update({k: v for k, v in _subgiant_physics(p, cool, plx, e).items()
+                                     if k != "mass_penalty"})
     if sd is not None and cool is not None:
         total_coarse = sd["coarse"] + cool["coarse"]
         out["fractions"] = {f"beta_{b}": float(p.sdm.passband(sd["coarse"], b) / p.sdm.passband(total_coarse, b))
@@ -519,7 +527,11 @@ def _subgiant_physics(p, cool, plx, e):
     zero = ZERO_JY[2] * 299792458.0 * 10.0 / (p.sdm.wavelength_um[KS] * 1000)**2 * TRAINING_SCALE[2]
     mks = -2.5 * np.log10(ks_flux / zero) + 5 * np.log10(plx / 100)
     lum = 10**(-0.4 * (mks + bc - MBOL_SUN))
-    return dict(luminosity=float(lum), radius=float(np.sqrt(lum) * (TEFF_SUN / cool["teff"])**2))
+    radius = np.sqrt(lum) * (TEFF_SUN / cool["teff"])**2
+    mass = 10**cool["logg"] * (radius * RSUN_CM)**2 / G_CGS / MSUN_G
+    low, high = np.log10(SUBGIANT_MASS)
+    wall = (max(low - np.log10(mass), 0.0, np.log10(mass) - high) / SUBGIANT_WALL_DEX)**2
+    return dict(luminosity=float(lum), radius=float(radius), mass=float(mass), mass_penalty=float(wall))
 
 
 def _check_prior(name, prior):
@@ -541,14 +553,15 @@ def fit_subdwarf_companion(sed, *, companions=COMPANIONS, tiers=TIERS, model=Non
     """Compare a single FGK star, a single hot subdwarf and a subdwarf with a cool companion.
 
     companions: any of "dwarf" (PARSEC + J-CAPS network) and "subgiant" (GiantTemplate, log g 3.2-3.8, free
-    scale); () fits the subdwarf alone. tiers: helium tiers of the subdwarf table to try ("H" pure hydrogen,
+    scale; its mass g R**2 / G, with R from its Ks flux, the parallax and the PARSEC BC_Ks, is held to
+    SUBGIANT_MASS by walls); () fits the subdwarf alone. tiers: helium tiers of the subdwarf table to try ("H" pure hydrogen,
     "mid" log(He/H) = -1.9, "He" -0.1). The subdwarf has Teff, log g and a free radius; the companion its own
     labels. Both share the parallax, fixed at the catalogue value or, with fit_parallax, fitted within 3 sigma
     with penalty z**2 (parallax=(mean, sigma) replaces the SED's), and ZGR23 E: a number fixes it, None fits
     E >= 0 under extinction_prior=(mean, sigma) or the Edenhofer map at the trial distance (dust_prior;
     sed.metadata needs ra/dec). subdwarf_prior and companion_prior are dicts of (mean, sigma) Gaussians on
-    'teff' and 'logg' (subdwarf) or 'teff', 'logg' and 'feh' (companion; 'feh' of a subgiant is its template
-    [M/H]); companion_age_gyr, companion_feh and companion_mass fix the dwarf's age, [M/H] and mass (for
+    'teff', 'logg', 'radius' and 'mass' (subdwarf; mass = g R**2 / G) or 'teff', 'logg' and 'feh' (companion;
+    'feh' of a subgiant is its template [M/H]); companion_age_gyr, companion_feh and companion_mass fix the dwarf's age, [M/H] and mass (for
     example to profile the objective over companion masses). The data are the masked
     168 channels (W1/W2 only with use_wise; SPHEREx only with use_spherex and without a subgiant, which the
     template does not predict), plus blue=(flux, error) from blue_xp() and galex= from galex().
