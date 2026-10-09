@@ -6,6 +6,8 @@ Three helium tiers, each a table on Teff x log g for R = 1 Rsun at 10 pc:
   He   H+He+C, He mass fraction 0.7575, log(He/H) = -0.10 ("HHeC"), Teff 32-45 kK
 HHeC spectra cover 300 nm - 5.5 um plus 115-178 nm (no NUV). Their log g values are irregular, so each
 Teff row is interpolated linearly in log g onto the table nodes from the nearest models (0.05 dex or closer).
+A few TheoSSA models sit 2-11 per cent off their neighbours in flux; the table stage replaces such isolated
+nodes by their log g neighbours and lists them in summary.json.
 
 Each spectrum passes through the J-CAPS phase-0 forward model of the Gaia XP external calibration
 (transfer.json, the operator of the hot table) on 332-992 nm in 10 nm steps: the 61 sedkit XP channels and
@@ -291,6 +293,34 @@ def _uv_curve():
     return wave, scale * g23(wave * u.nm), scale
 
 
+def _screen(cube, teff_ax, keys, limit=0.01):
+    """Replace isolated outlier models by their log g neighbours, in place.
+
+    A node is an outlier when its mean ln flux over XP departs by more than `limit` from the mean of its
+    two log g neighbours and, with the same sign, by more than limit / 2 from its two Teff neighbours (or
+    its one Teff neighbour at a row end). The worst node is replaced first; the screen repeats until none is
+    left. Returns the replaced (Teff, log g) nodes.
+    """
+    replaced = []
+    while True:
+        mean = np.log(cube["channels"][..., :61]).mean(-1)
+        dg = np.full(mean.shape, 0.0)
+        dg[:, 1:-1] = mean[:, 1:-1] - 0.5 * (mean[:, :-2] + mean[:, 2:])
+        dt = np.full(mean.shape, 0.0)
+        dt[1:-1] = mean[1:-1] - 0.5 * (mean[:-2] + mean[2:])
+        dt[0], dt[-1] = mean[0] - mean[1], mean[-1] - mean[-2]
+        bad = (np.abs(dg) > limit) & (np.sign(dg) == np.sign(dt)) & (np.abs(dt) > limit / 2)
+        if not bad.any():
+            return replaced
+        i, j = np.unravel_index(np.argmax(np.where(bad, np.abs(dg), 0)), bad.shape)
+        for key in keys:
+            if key == "balmer_w":
+                cube[key][i, j] = 0.5 * (cube[key][i, j - 1] + cube[key][i, j + 1])
+            else:
+                cube[key][i, j] = np.sqrt(cube[key][i, j - 1] * cube[key][i, j + 1])
+        replaced.append([float(teff_ax[i]), float(LOGG_AX[j]), round(float(dg[i, j]), 4)])
+
+
 def _missing(coarse):
     """[first, last] centre of the coarse bins missing at any node, or None."""
     bad = COARSE[~np.isfinite(coarse).all(axis=(0, 1))]
@@ -343,6 +373,7 @@ def table(work):
                         cube[key][i, j] = np.exp((1 - w) * np.log(a) + w * np.log(b))
         if not np.isfinite(cube["channels"][..., :64]).all():
             raise RuntimeError(f"tier {tier}: table has holes on XP or J/H/Ks")
+        replaced = _screen(cube, teff_ax, keys)
         w_h = float(np.median([float(r["w_h"]) for r in reduced[tier]]))
         out.update({f"{tier}/teff_ax": teff_ax, f"{tier}/logg_ax": LOGG_AX,
                     f"{tier}/ln_flux": np.log(cube["channels"]).astype(np.float32),
@@ -358,7 +389,8 @@ def table(work):
                                    n_models=len(reduced[tier]), max_logg_offset=float(max(offsets)),
                                    galex_nuv=bool(np.isfinite(cube["pb_NUV"]).all()),
                                    galex_fuv=bool(np.isfinite(cube["pb_FUV"]).all()),
-                                   coarse_missing_nm=_missing(cube["coarse"]))
+                                   coarse_missing_nm=_missing(cube["coarse"]),
+                                   replaced_outliers=replaced)
     uv_wave, uv_curve, uv_scale = _uv_curve()
     with np.load(work / "filters.npz") as f:
         out.update({f"filter/{k}": f[k] for k in f.files})

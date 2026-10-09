@@ -306,14 +306,25 @@ class _Problem:
         att = np.exp(-e * self.curve)
         full = p["flux"] * scale
         f = full[self.idx] * att
-        coarse = p["coarse"] * scale * np.exp(-e * self.sdm.coarse_curve)
+        model_coarse = p["coarse"] * scale * np.exp(-e * self.sdm.coarse_curve)
         blue = p["blue"] * scale * np.exp(-e * self.sdm.blue_curve)
-        xf, xv = self._extras(coarse, blue, BLUE_ERROR, GALEX_ERROR)
+        xf, xv = self._extras(model_coarse, blue, BLUE_ERROR, GALEX_ERROR)
+        coarse = self._channel_coarse(full[:N_XP] * np.exp(-e * self.curve_full[:N_XP]), model_coarse)
         columns = np.zeros((len(self.y), self.sd_basis.shape[1]))
         columns[:self.n_channel] = f[:, None] * self.sd_basis[self.idx]
         variance = np.r_[(f * self.sd_diag[self.idx])**2, xv]
         return dict(flux=np.r_[f, xf], columns=columns, variance=variance, coarse=coarse,
                     full=full * np.exp(-e * self.curve_full), balmer_w=p["balmer_w"])
+
+    def _channel_coarse(self, xp_obs, model_coarse):
+        """Coarse spectrum on the XP channel scale: the channels in 392-992 nm, the model spectrum beyond,
+        joined at the edge channels, so subdwarf and companion fractions compare like with like."""
+        coarse = np.exp(np.interp(self.coarse, self.xp_nm, np.log(np.maximum(xp_obs, 1e-300))))
+        blue, red = self.coarse < self.xp_nm[0], self.coarse > self.xp_nm[-1]
+        edge = np.interp(self.xp_nm[[0, -1]], self.coarse, model_coarse)
+        coarse[blue] = model_coarse[blue] * xp_obs[0] / edge[0]
+        coarse[red] = model_coarse[red] * xp_obs[-1] / edge[1]
+        return coarse
 
     def _cool_coarse(self, xp_obs, teff):
         """Coarse spectrum of a cool star: its XP channels in 392-992 nm, blackbodies at Teff beyond."""
