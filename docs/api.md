@@ -275,7 +275,7 @@ light = whitedwarf_light_limit(sed, masses=[.6, .8, 1.], delta=9.)
 ```
 
 `WhiteDwarfModel(calibration="bundled", hydrogen_layer="thick")` uses
-the WD-specific empirical correction and thick-H C/O cooling relation.
+the empirical absolute single-DA flux calibration and thick-H C/O cooling relation.
 Use `calibration=None` for raw spectra or `hydrogen_layer="thin"` for
 thin-H sensitivity. `predict(teff, mass)` gives 10-pc fluxes;
 `predict(teff, logg=..., radius=...)` uses an independent radius.

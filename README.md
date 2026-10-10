@@ -28,7 +28,7 @@ best constrained there:
 | Warm dwarfs (F, early A) | 6250--7498 K | the same network, extended with 1661 dwarfs within 1 kpc | PARSEC M_Ks | IRFM | 2% |
 | Hot dwarfs (A, B) | 7000--30000 K | CK04 and TLUSTY spectra through the XP forward model, with an empirical correction | PARSEC radius x model surface flux | spectroscopic or spectral type; IRFM at 7000--7500 K | 1.2% |
 | Red giants (`fit_giant_companion`) | 3600--6800 K | empirical template of APOGEE giants | free scale, or a PARSEC M_Ks prior | APOGEE ASPCAP | 3--13% at 392 nm, 3--10% at 442 nm |
-| DA white dwarfs (`fit_whitedwarf_companion`) | 6--80 kK, log g 7--9.5 | Koester LTE spectra through the XP forward model, with a WD-only correction | thick/thin-H C/O cooling tracks, or free WD radius | 297 DESI/Gianninas DA anchors, grouped cross-validation | 5.0% median XP spectrum RMS; hot-WD labels above 40 kK less secure |
+| DA white dwarfs (`fit_whitedwarf_companion`) | 6--80 kK, log g 7--9.5 | Koester spectra calibrated to real single-DA spectral labels and Gaia absolute XP fluxes | thick/thin-H C/O cooling tracks, or free WD radius | 294 calibration stars and 289 independent single DAs | independent Teff bias +1.8%, scatter 3.6%; absolute-flux bias +1.9%, source scatter about 14% |
 | Hot subdwarfs (`fit_subdwarf_companion`) | 20--45 kK, log g 5--6.5 | TMAP NLTE spectra through the XP forward model, with an empirical correction | free radius at the parallax | Dawson et al. (2026) spectroscopy | 1.3% (0.5--1.4% at 0.45--0.9 um) |
 
 ### Cool and warm dwarfs: an empirical network
@@ -148,13 +148,14 @@ See [model and limitations](docs/model.md).
 
 ### What the fits measure
 
-White dwarfs: 297 held-out DA anchors give 1.6% temperature offset and
-3.9% robust scatter with the default cooling relation. A 200-star
-independent FGK control sample has zero detections at the tested XP
-threshold. Real WD+M temperatures scatter by 14.9%; companion subtypes
-and hot-WD temperatures remain less secure. WD light limits give useful
-conditional orbit mass ranges, with the validation and limitations in
-[WD validation](docs/validation-whitedwarf.md).
+White dwarfs: the default emulator is anchored to spectroscopic Teff/log g
+and absolute Gaia fluxes of 294 single DAs. On 289 independent stars,
+with extinction and parallax constraints, the cooling-relation fit gives
+1.8% temperature bias and 3.6% robust scatter. Its absolute-flux bias is
+1.9%, with about 14% source scatter. Masses remain conditional on the
+C/O cooling relation and reference gravity scale. See the
+[single-star calibration](reports/wd_single_scale_20261010/report.md) and
+[composite/orbit benchmarks](docs/validation-whitedwarf.md).
 
 Single stars:
 

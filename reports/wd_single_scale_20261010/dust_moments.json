@@ -1,0 +1,2957 @@
+{
+  "18493721155296768": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "31047257726638592": {
+    "mean": 0.0067829539059242145,
+    "sigma": 0.001256669225171273,
+    "method": "Edenhofer"
+  },
+  "59077760488621184": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "59370127502651264": {
+    "mean": 0.005720398706758216,
+    "sigma": 0.0005647215020925278,
+    "method": "Edenhofer"
+  },
+  "99915890086770176": {
+    "mean": 0.006878651086470608,
+    "sigma": 0.0010307294245334394,
+    "method": "Edenhofer"
+  },
+  "104648944047154432": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "291057843317534464": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "292454841560140032": {
+    "mean": 0.011500622867035494,
+    "sigma": 0.0018810097148528912,
+    "method": "Edenhofer"
+  },
+  "307116824821161088": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "597646245427109376": {
+    "mean": 0.006802362522476694,
+    "sigma": 0.0008027932249261927,
+    "method": "Edenhofer"
+  },
+  "604972428842238080": {
+    "mean": 0.00749427640660301,
+    "sigma": 0.0004986609015948015,
+    "method": "Edenhofer"
+  },
+  "648307961663426048": {
+    "mean": 0.00741354935076511,
+    "sigma": 0.0005395531468043746,
+    "method": "Edenhofer"
+  },
+  "665392383790872192": {
+    "mean": 0.012988587447140926,
+    "sigma": 0.001224387795368965,
+    "method": "Edenhofer"
+  },
+  "708292166410436608": {
+    "mean": 0.008064133189370304,
+    "sigma": 0.0007307337379395069,
+    "method": "Edenhofer"
+  },
+  "710026160671981440": {
+    "mean": 0.010617600837501668,
+    "sigma": 0.0015630070157449756,
+    "method": "Edenhofer"
+  },
+  "710766750855439360": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "720353602808918016": {
+    "mean": 0.008725739075847373,
+    "sigma": 0.0008145046631926311,
+    "method": "Edenhofer"
+  },
+  "730459763934332416": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "731177607588663552": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "742962753035089792": {
+    "mean": 0.0046261075917003675,
+    "sigma": 0.0004228971169939877,
+    "method": "Edenhofer"
+  },
+  "745127553991482368": {
+    "mean": 0.006252465295612074,
+    "sigma": 0.0005695496342849999,
+    "method": "Edenhofer"
+  },
+  "748517142181920768": {
+    "mean": 0.004349497422812389,
+    "sigma": 0.0005631658889706271,
+    "method": "Edenhofer"
+  },
+  "762814371050472448": {
+    "mean": 0.005201032979383717,
+    "sigma": 0.0005803267359239519,
+    "method": "Edenhofer"
+  },
+  "764086604787758208": {
+    "mean": 0.005081561605053857,
+    "sigma": 0.0004169687901660879,
+    "method": "Edenhofer"
+  },
+  "767026050340888064": {
+    "mean": 0.005921280534866512,
+    "sigma": 0.000373023222367506,
+    "method": "Edenhofer"
+  },
+  "768139786900195456": {
+    "mean": 0.0053384622735557635,
+    "sigma": 0.0006569437472207836,
+    "method": "Edenhofer"
+  },
+  "783880704600816000": {
+    "mean": 0.0053019912561037726,
+    "sigma": 0.00035383740015686285,
+    "method": "Edenhofer"
+  },
+  "789339608048607232": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "790014605097236224": {
+    "mean": 0.008040645909702786,
+    "sigma": 0.0005674956346998233,
+    "method": "Edenhofer"
+  },
+  "791138993175412480": {
+    "mean": 0.008036349694868586,
+    "sigma": 0.0005897738647525499,
+    "method": "Edenhofer"
+  },
+  "793309222967482368": {
+    "mean": 0.005852050225842752,
+    "sigma": 0.0007091185212862941,
+    "method": "Edenhofer"
+  },
+  "820105214691139584": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "820542992117501952": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "834234385783616640": {
+    "mean": 0.00591869338209822,
+    "sigma": 0.000669835914207267,
+    "method": "Edenhofer"
+  },
+  "836410319296579712": {
+    "mean": 0.005800631600416558,
+    "sigma": 0.0006864341622134935,
+    "method": "Edenhofer"
+  },
+  "838295294542456448": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "840622479622035712": {
+    "mean": 0.006572371748339102,
+    "sigma": 0.00042438118603090307,
+    "method": "Edenhofer"
+  },
+  "842958082837662080": {
+    "mean": 0.006072354174308647,
+    "sigma": 0.0006018346289024551,
+    "method": "Edenhofer"
+  },
+  "854393484803051776": {
+    "mean": 0.005783142345120478,
+    "sigma": 0.000524605087036735,
+    "method": "Edenhofer"
+  },
+  "861050512312844672": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "904376149529962880": {
+    "mean": 0.01832620928427399,
+    "sigma": 0.0011725628940343835,
+    "method": "Edenhofer"
+  },
+  "921804126089222784": {
+    "mean": 0.0069451220413594104,
+    "sigma": 0.000766921998108065,
+    "method": "Edenhofer"
+  },
+  "1022470261063639808": {
+    "mean": 0.006853357361739532,
+    "sigma": 0.0007363160627519518,
+    "method": "Edenhofer"
+  },
+  "1044784918268692224": {
+    "mean": 0.005663816768930928,
+    "sigma": 0.0004334007074063975,
+    "method": "Edenhofer"
+  },
+  "1053211437944753024": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1055273537642488576": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1062257081450709632": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1070600145618332160": {
+    "mean": 0.005608517173539491,
+    "sigma": 0.0005484027952445247,
+    "method": "Edenhofer"
+  },
+  "1071510262072374400": {
+    "mean": 0.005304830334326283,
+    "sigma": 0.0007581372094856752,
+    "method": "Edenhofer"
+  },
+  "1073988187620042112": {
+    "mean": 0.005306124205449614,
+    "sigma": 0.0007723051496156305,
+    "method": "Edenhofer"
+  },
+  "1075215414395152640": {
+    "mean": 0.0062676104967309375,
+    "sigma": 0.0004187741285770647,
+    "method": "Edenhofer"
+  },
+  "1075673567146680576": {
+    "mean": 0.005301403599068034,
+    "sigma": 0.0004881488635248915,
+    "method": "Edenhofer"
+  },
+  "1077107326013713280": {
+    "mean": 0.005134442118379243,
+    "sigma": 0.0005402630930280589,
+    "method": "Edenhofer"
+  },
+  "1079787355542320256": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1090742064769027072": {
+    "mean": 0.0075705979265309935,
+    "sigma": 0.0007665634552418419,
+    "method": "Edenhofer"
+  },
+  "1091658198472977920": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1120102942239867264": {
+    "mean": 0.005870705647015026,
+    "sigma": 0.0006393645071765576,
+    "method": "Edenhofer"
+  },
+  "1145020139172129536": {
+    "mean": 0.007163076860838654,
+    "sigma": 0.0009108382950346305,
+    "method": "Edenhofer"
+  },
+  "1154004081179409920": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1161215296909017728": {
+    "mean": 0.005307285013703825,
+    "sigma": 0.0006501806839814226,
+    "method": "Edenhofer"
+  },
+  "1165354855109711232": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1188119762325721600": {
+    "mean": 0.005309080589547634,
+    "sigma": 0.00036289555835484377,
+    "method": "Edenhofer"
+  },
+  "1192764133804981376": {
+    "mean": 0.002053495291739565,
+    "sigma": 0.00027222322189168643,
+    "method": "Edenhofer"
+  },
+  "1198632983274798336": {
+    "mean": 0.0020559386723883024,
+    "sigma": 0.00024646822234122156,
+    "method": "Edenhofer"
+  },
+  "1202826348825240832": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1209640499120458752": {
+    "mean": 0.0031639709965425203,
+    "sigma": 0.00030638508839096425,
+    "method": "Edenhofer"
+  },
+  "1222150059528734464": {
+    "mean": 0.004277206730077958,
+    "sigma": 0.0005170948084740877,
+    "method": "Edenhofer"
+  },
+  "1228266814506156928": {
+    "mean": 0.004280179491730034,
+    "sigma": 0.001118927257062089,
+    "method": "Edenhofer"
+  },
+  "1261751715280478848": {
+    "mean": 0.003009119063986784,
+    "sigma": 0.0005874303680850646,
+    "method": "Edenhofer"
+  },
+  "1276054682231244160": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1276688069644366592": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1276884950945386752": {
+    "mean": 0.007478224789642077,
+    "sigma": 0.00042552154091246775,
+    "method": "Edenhofer"
+  },
+  "1281410781322153216": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1282448170543051648": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1288658006059681408": {
+    "mean": 0.008352318116645047,
+    "sigma": 0.0005976476713029056,
+    "method": "Edenhofer"
+  },
+  "1289986903300047744": {
+    "mean": 0.005961082878310352,
+    "sigma": 0.00036462250131853686,
+    "method": "Edenhofer"
+  },
+  "1309675239543737216": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1325192612786286080": {
+    "mean": 0.0033533834180002916,
+    "sigma": 0.00020576381494408756,
+    "method": "Edenhofer"
+  },
+  "1325292217371985024": {
+    "mean": 0.004858375788127406,
+    "sigma": 0.00018148840631292663,
+    "method": "Edenhofer"
+  },
+  "1331894033078063488": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1334638379741833728": {
+    "mean": 0.007928592005299032,
+    "sigma": 0.0006062359091988167,
+    "method": "Edenhofer"
+  },
+  "1334770870892758912": {
+    "mean": 0.010302573038091675,
+    "sigma": 0.0007013123913904208,
+    "method": "Edenhofer"
+  },
+  "1336712848946493952": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1345826975706503680": {
+    "mean": 0.02005622152944808,
+    "sigma": 0.0007914707997828897,
+    "method": "Edenhofer"
+  },
+  "1351486711809893888": {
+    "mean": 0.008864060668920058,
+    "sigma": 0.0011759030335929837,
+    "method": "Edenhofer"
+  },
+  "1352571723628352512": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1370654257498865536": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1371872413302877568": {
+    "mean": 0.007335200441528268,
+    "sigma": 0.0007410341311641112,
+    "method": "Edenhofer"
+  },
+  "1376326912864142336": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1384866854036828032": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1384982332821602560": {
+    "mean": 0.006666346094127712,
+    "sigma": 0.0006506769088670447,
+    "method": "Edenhofer"
+  },
+  "1387655524762487552": {
+    "mean": 0.009956181774802566,
+    "sigma": 0.0007033452153749561,
+    "method": "Edenhofer"
+  },
+  "1408135749896103936": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1425130935485979520": {
+    "mean": 0.006553441953480707,
+    "sigma": 0.00032409525214846963,
+    "method": "Edenhofer"
+  },
+  "1432420624562923520": {
+    "mean": 0.018587553718607767,
+    "sigma": 0.001317419209627646,
+    "method": "Edenhofer"
+  },
+  "1435977686413453056": {
+    "mean": 0.021967058143470875,
+    "sigma": 0.001491591395041912,
+    "method": "Edenhofer"
+  },
+  "1456903763514134272": {
+    "mean": 0.006310304479994334,
+    "sigma": 0.0005279798206151628,
+    "method": "Edenhofer"
+  },
+  "1458024268941320064": {
+    "mean": 0.00834772584096579,
+    "sigma": 0.001124934486033817,
+    "method": "Edenhofer"
+  },
+  "1460293317343353344": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1461833904932026368": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1464134289414972288": {
+    "mean": 0.005665713257499676,
+    "sigma": 0.0005837774755796888,
+    "method": "Edenhofer"
+  },
+  "1469189191046042112": {
+    "mean": 0.007891928489335355,
+    "sigma": 0.0007947717791381715,
+    "method": "Edenhofer"
+  },
+  "1470081444731625728": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1470849350522703488": {
+    "mean": 0.007564286596023344,
+    "sigma": 0.000787161471408189,
+    "method": "Edenhofer"
+  },
+  "1472114647889153920": {
+    "mean": 0.007084847459380053,
+    "sigma": 0.0006409507688584788,
+    "method": "Edenhofer"
+  },
+  "1472401586064123904": {
+    "mean": 0.006280096986963972,
+    "sigma": 0.0006918886914129285,
+    "method": "Edenhofer"
+  },
+  "1477612029933470080": {
+    "mean": 0.006957090627189994,
+    "sigma": 0.0006763365233637472,
+    "method": "Edenhofer"
+  },
+  "1478363619145920640": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1481311753417900160": {
+    "mean": 0.008056938966268084,
+    "sigma": 0.0004982590440511111,
+    "method": "Edenhofer"
+  },
+  "1488904946359359488": {
+    "mean": 0.00923869578270836,
+    "sigma": 0.000701720545920729,
+    "method": "Edenhofer"
+  },
+  "1498271376679465600": {
+    "mean": 0.00774254049316456,
+    "sigma": 0.0006580036089216265,
+    "method": "Edenhofer"
+  },
+  "1504365454235966848": {
+    "mean": 0.007120139924443973,
+    "sigma": 0.000541431674549288,
+    "method": "Edenhofer"
+  },
+  "1534778323816310912": {
+    "mean": 0.005748142067232857,
+    "sigma": 0.00047351068437231827,
+    "method": "Edenhofer"
+  },
+  "1537401449322419200": {
+    "mean": 0.004957748434696895,
+    "sigma": 0.0002989487184817823,
+    "method": "Edenhofer"
+  },
+  "1543723709905857792": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1549208138324951936": {
+    "mean": 0.007004997143975171,
+    "sigma": 0.00047967064891771987,
+    "method": "Edenhofer"
+  },
+  "1551062778220116992": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1551929124663349632": {
+    "mean": 0.007089494733898253,
+    "sigma": 0.00062767227886561,
+    "method": "Edenhofer"
+  },
+  "1571109898850692608": {
+    "mean": 0.0076123604580240175,
+    "sigma": 0.0008184917926195619,
+    "method": "Edenhofer"
+  },
+  "1573121554156399872": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1575107070293783296": {
+    "mean": 0.006568352487669379,
+    "sigma": 0.0005398057838096019,
+    "method": "Edenhofer"
+  },
+  "1577900791900994688": {
+    "mean": 0.007139236820743004,
+    "sigma": 0.0005422162896566921,
+    "method": "Edenhofer"
+  },
+  "1578748858964566400": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1583023618437189504": {
+    "mean": 0.007372156759820461,
+    "sigma": 0.000452806948660456,
+    "method": "Edenhofer"
+  },
+  "1593473346884952448": {
+    "mean": 0.007729632326544499,
+    "sigma": 0.0007116843565101645,
+    "method": "Edenhofer"
+  },
+  "1599195548992459008": {
+    "mean": 0.008316236129731263,
+    "sigma": 0.0006057398717512354,
+    "method": "Edenhofer"
+  },
+  "1600172155835980800": {
+    "mean": 0.008108362913849991,
+    "sigma": 0.000528695313719204,
+    "method": "Edenhofer"
+  },
+  "1608061254844374784": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1622697949337226112": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1631669453120152192": {
+    "mean": 0.009817861287631147,
+    "sigma": 0.0005080132165419481,
+    "method": "Edenhofer"
+  },
+  "1638563322306634368": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1643814211883928320": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1658578797618935680": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1674438320840981376": {
+    "mean": 0.007091813789234455,
+    "sigma": 0.0004014821382711673,
+    "method": "Edenhofer"
+  },
+  "1682022481467013504": {
+    "mean": 0.007982076789654216,
+    "sigma": 0.0005250198668121633,
+    "method": "Edenhofer"
+  },
+  "1685171001732519808": {
+    "mean": 0.006879523071614134,
+    "sigma": 0.00034593378642070567,
+    "method": "Edenhofer"
+  },
+  "1686708050268594944": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1692021543289085184": {
+    "mean": 0.006106279354669091,
+    "sigma": 0.0005646181713061565,
+    "method": "Edenhofer"
+  },
+  "1697790612080870144": {
+    "mean": 0.010993510476811108,
+    "sigma": 0.0005955406022319236,
+    "method": "Edenhofer"
+  },
+  "1702877532691158656": {
+    "mean": 0.011104531752557904,
+    "sigma": 0.0010012826005618394,
+    "method": "Edenhofer"
+  },
+  "1717665659142919168": {
+    "mean": 0.007378953388818217,
+    "sigma": 0.0006321289341076522,
+    "method": "Edenhofer"
+  },
+  "1718367869115590528": {
+    "mean": 0.006474233979159357,
+    "sigma": 0.00042774008727745807,
+    "method": "Edenhofer"
+  },
+  "2315346161227820032": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2334079090586541440": {
+    "mean": 0.006878838765312971,
+    "sigma": 0.001123049668557661,
+    "method": "Edenhofer"
+  },
+  "2336189396997071616": {
+    "mean": 0.006500491040441681,
+    "sigma": 0.00031257874976993265,
+    "method": "Edenhofer"
+  },
+  "2338275136195124864": {
+    "mean": 0.008977353535858719,
+    "sigma": 0.001437668136261574,
+    "method": "Edenhofer"
+  },
+  "2345431719942784768": {
+    "mean": 0.012361630724058418,
+    "sigma": 0.0009085590358195092,
+    "method": "Edenhofer"
+  },
+  "2354670057156360576": {
+    "mean": 0.00769522965629672,
+    "sigma": 0.000660970328523651,
+    "method": "Edenhofer"
+  },
+  "2361264618662161920": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2372473658671416960": {
+    "mean": 0.008820073501499886,
+    "sigma": 0.000981932971908976,
+    "method": "Edenhofer"
+  },
+  "2382502441666663168": {
+    "mean": 0.009147900582056992,
+    "sigma": 0.001523609122293846,
+    "method": "Edenhofer"
+  },
+  "2393546245693497728": {
+    "mean": 0.006817403591204555,
+    "sigma": 0.0010411495611437913,
+    "method": "Edenhofer"
+  },
+  "2394715198352621696": {
+    "mean": 0.00656990517876882,
+    "sigma": 0.0007814541155306945,
+    "method": "Edenhofer"
+  },
+  "2395444208921491456": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2414099622710507904": {
+    "mean": 0.006897243495718315,
+    "sigma": 0.0009161119673367667,
+    "method": "Edenhofer"
+  },
+  "2416481783371550976": {
+    "mean": 0.006564286494559865,
+    "sigma": 0.0006183803677234605,
+    "method": "Edenhofer"
+  },
+  "2454507602744210432": {
+    "mean": 0.008138082670048946,
+    "sigma": 0.0009867292761992473,
+    "method": "Edenhofer"
+  },
+  "2480731779699826176": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2486660926220785920": {
+    "mean": 0.010391898482947652,
+    "sigma": 0.0006990670648849625,
+    "method": "Edenhofer"
+  },
+  "2488960249844340352": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2489533370280291584": {
+    "mean": 0.009602596118046907,
+    "sigma": 0.0006279322149617765,
+    "method": "Edenhofer"
+  },
+  "2490695859013226240": {
+    "mean": 0.007809781969230912,
+    "sigma": 0.0005709463226161955,
+    "method": "Edenhofer"
+  },
+  "2502097283492466560": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2516322146457318144": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2521867808229983744": {
+    "mean": 0.0071777152333621285,
+    "sigma": 0.0007535920200138537,
+    "method": "Edenhofer"
+  },
+  "2525337076653338240": {
+    "mean": 0.007774270951277917,
+    "sigma": 0.0009963995075297034,
+    "method": "Edenhofer"
+  },
+  "2542961560852591744": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2576468559232835456": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2581380077674117120": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2612155476855186176": {
+    "mean": 0.007288583931846359,
+    "sigma": 0.00111867932933449,
+    "method": "Edenhofer"
+  },
+  "2661500871515095680": {
+    "mean": 0.0167366325359161,
+    "sigma": 0.0014584392703146317,
+    "method": "Edenhofer"
+  },
+  "2693940725141960192": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2709363196787375488": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2734319087081051264": {
+    "mean": 0.01103830870404967,
+    "sigma": 0.001668480247058015,
+    "method": "Edenhofer"
+  },
+  "2756675044691990272": {
+    "mean": 0.023982088215220774,
+    "sigma": 0.0025442263219780984,
+    "method": "Edenhofer"
+  },
+  "2789398778477164672": {
+    "mean": 0.009045431585861916,
+    "sigma": 0.001216965050909432,
+    "method": "Edenhofer"
+  },
+  "2810585920868186240": {
+    "mean": 0.010635972343105453,
+    "sigma": 0.0011451943327218965,
+    "method": "Edenhofer"
+  },
+  "2811363550466857344": {
+    "mean": 0.011359288171101135,
+    "sigma": 0.001340661758139147,
+    "method": "Edenhofer"
+  },
+  "2811882073278282496": {
+    "mean": 0.009925445331948177,
+    "sigma": 0.001420637447833406,
+    "method": "Edenhofer"
+  },
+  "2814942392095501952": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "2825795087259417984": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3195919254111315712": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3249740657527506048": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3251244858154433536": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3251748915515143296": {
+    "mean": 0.0026623313874098425,
+    "sigma": 0.0003424958398692418,
+    "method": "Edenhofer"
+  },
+  "3262366899304566272": {
+    "mean": 0.0036097044391284728,
+    "sigma": 0.0006019450036035179,
+    "method": "Edenhofer"
+  },
+  "3301217592917972864": {
+    "mean": 0.006093461808060453,
+    "sigma": 0.000904826004959826,
+    "method": "Edenhofer"
+  },
+  "3302846072717868416": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3474544434121450496": {
+    "mean": 0.009415795650067123,
+    "sigma": 0.0015711004614823458,
+    "method": "Edenhofer"
+  },
+  "3491050989871968768": {
+    "mean": 0.006649213447735579,
+    "sigma": 0.0006369176395774865,
+    "method": "Edenhofer"
+  },
+  "3523347735187987072": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3528847870307147136": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3540018805367474816": {
+    "mean": 0.005313117628946041,
+    "sigma": 0.000383498788819686,
+    "method": "Edenhofer"
+  },
+  "3557394009663078912": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3557764648160770176": {
+    "mean": 0.004330516902142884,
+    "sigma": 0.000623131281612844,
+    "method": "Edenhofer"
+  },
+  "3564376149017654272": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3586028453547223552": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3603920565746668032": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3607725941130742528": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3626022634955198592": {
+    "mean": 0.005244918340276226,
+    "sigma": 0.0005742210179807007,
+    "method": "Edenhofer"
+  },
+  "3630035787972473600": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3647875570291353344": {
+    "mean": 0.006880415178317945,
+    "sigma": 0.0008342542760758952,
+    "method": "Edenhofer"
+  },
+  "3650552739370519680": {
+    "mean": 0.006436683683512588,
+    "sigma": 0.000991113730481109,
+    "method": "Edenhofer"
+  },
+  "3651305423799211008": {
+    "mean": 0.010688596741549072,
+    "sigma": 0.0012124880341785331,
+    "method": "Edenhofer"
+  },
+  "3653562656746977792": {
+    "mean": 0.009681171032423578,
+    "sigma": 0.0012662782766233252,
+    "method": "Edenhofer"
+  },
+  "3653928313083020416": {
+    "mean": 0.0060783912387141386,
+    "sigma": 0.0009196420866189865,
+    "method": "Edenhofer"
+  },
+  "3659914737283635840": {
+    "mean": 0.007277644456694453,
+    "sigma": 0.0005376947742395586,
+    "method": "Edenhofer"
+  },
+  "3671751946324947584": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3683519503881169920": {
+    "mean": 0.007691047078970988,
+    "sigma": 0.0012721857829280565,
+    "method": "Edenhofer"
+  },
+  "3692337037379978112": {
+    "mean": 0.009383625038587702,
+    "sigma": 0.0008826280726776956,
+    "method": "Edenhofer"
+  },
+  "3695495693769418112": {
+    "mean": 0.006045579194466618,
+    "sigma": 0.0011074931490643472,
+    "method": "Edenhofer"
+  },
+  "3698872156539379968": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3701701509194344576": {
+    "mean": 0.006821963012007885,
+    "sigma": 0.0007969644783836656,
+    "method": "Edenhofer"
+  },
+  "3705070756419217408": {
+    "mean": 0.011539999159236378,
+    "sigma": 0.0006900954195505312,
+    "method": "Edenhofer"
+  },
+  "3712812452150011648": {
+    "mean": 0.009115761258867266,
+    "sigma": 0.001301007656265724,
+    "method": "Edenhofer"
+  },
+  "3735279494794280448": {
+    "mean": 0.0071588859859583985,
+    "sigma": 0.0008903491586508693,
+    "method": "Edenhofer"
+  },
+  "3754712881779364992": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3767515389014753152": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3788194488314248832": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3793132257595347200": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3804239558419007744": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3825160133663597440": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3829366074878263168": {
+    "mean": 0.01498877132510494,
+    "sigma": 0.0016687663889712922,
+    "method": "Edenhofer"
+  },
+  "3830623164560911872": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3834721387994870784": {
+    "mean": 0.008528353433760355,
+    "sigma": 0.0005703460864503298,
+    "method": "Edenhofer"
+  },
+  "3836605980989228928": {
+    "mean": 0.008060931097969688,
+    "sigma": 0.0008640478491549807,
+    "method": "Edenhofer"
+  },
+  "3853660510143027200": {
+    "mean": 0.007881001464238287,
+    "sigma": 0.0010425460048239475,
+    "method": "Edenhofer"
+  },
+  "3855631797052747136": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3860381618565361024": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3862830334039617408": {
+    "mean": 0.007062877339503975,
+    "sigma": 0.001408802869520042,
+    "method": "Edenhofer"
+  },
+  "3883746133280920448": {
+    "mean": 0.008519677283906534,
+    "sigma": 0.0012474286135659945,
+    "method": "Edenhofer"
+  },
+  "3888723386196630784": {
+    "mean": 0.008178181164556507,
+    "sigma": 0.0011869915374314152,
+    "method": "Edenhofer"
+  },
+  "3910382871911470848": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3937174946624964224": {
+    "mean": 0.0052469220964245665,
+    "sigma": 0.0004273571138526155,
+    "method": "Edenhofer"
+  },
+  "3940955205038857728": {
+    "mean": 0.004459182721548409,
+    "sigma": 0.0005127911634002091,
+    "method": "Edenhofer"
+  },
+  "3944400490365194368": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "3953720569396712320": {
+    "mean": 0.004266122249403111,
+    "sigma": 0.0005676531093320412,
+    "method": "Edenhofer"
+  },
+  "3961972747760766720": {
+    "mean": 0.005613239932851421,
+    "sigma": 0.0003198415651250443,
+    "method": "Edenhofer"
+  },
+  "3970767638191849984": {
+    "mean": 0.004107701978913769,
+    "sigma": 0.0006056815473680559,
+    "method": "Edenhofer"
+  },
+  "3974868644764927744": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4007991157673846144": {
+    "mean": 0.005684399720286276,
+    "sigma": 0.000643109804251809,
+    "method": "Edenhofer"
+  },
+  "4016204440813547520": {
+    "mean": 0.006361208723743944,
+    "sigma": 0.000580972358633339,
+    "method": "Edenhofer"
+  },
+  "4016670251491467520": {
+    "mean": 0.006598935883748024,
+    "sigma": 0.0003497990027006952,
+    "method": "Edenhofer"
+  },
+  "4019392852735219840": {
+    "mean": 0.006310462080676254,
+    "sigma": 0.0005391065249517509,
+    "method": "Edenhofer"
+  },
+  "4019458647338779648": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4021565827014024576": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4024374774280462976": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4031828157446980608": {
+    "mean": 0.0069909277649451785,
+    "sigma": 0.0005385601259681016,
+    "method": "Edenhofer"
+  },
+  "4032338708799508096": {
+    "mean": 0.0068563124272733415,
+    "sigma": 0.0007713045671467823,
+    "method": "Edenhofer"
+  },
+  "4347700805681797120": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4426435871273922560": {
+    "mean": 0.004496539915994565,
+    "sigma": 0.0008182932816800653,
+    "method": "Edenhofer"
+  },
+  "4457170451083163392": {
+    "mean": 0.0026893334041159906,
+    "sigma": 0.0003902242118784848,
+    "method": "Edenhofer"
+  },
+  "4460086458999242368": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4462895505049732608": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4465105351622152704": {
+    "mean": 0.0022885464090320047,
+    "sigma": 0.0002912327659809321,
+    "method": "Edenhofer"
+  },
+  "4622856957782901504": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4646535078125821568": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4876689387538123008": {
+    "mean": 0.004810480233995906,
+    "sigma": 0.0002927598767235076,
+    "method": "Edenhofer"
+  },
+  "4916033933669148160": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4922382445088509312": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4962193390308361728": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "4978793541987799040": {
+    "mean": 0.007540216913288603,
+    "sigma": 0.0006373946721234859,
+    "method": "Edenhofer"
+  },
+  "5006486048001153792": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "5014009353235167744": {
+    "mean": 0.006568817220857867,
+    "sigma": 0.0007109219718721817,
+    "method": "Edenhofer"
+  },
+  "5020146620982523008": {
+    "mean": 0.008392332695623143,
+    "sigma": 0.0007687993922990595,
+    "method": "Edenhofer"
+  },
+  "5034051079388141696": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "5037875455706805504": {
+    "mean": 0.007950787790707623,
+    "sigma": 0.0007509421958001222,
+    "method": "Edenhofer"
+  },
+  "5043926824108837376": {
+    "mean": 0.010315614067926493,
+    "sigma": 0.0005978329026753382,
+    "method": "Edenhofer"
+  },
+  "5063539946887524864": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "5122528470836031232": {
+    "mean": 0.006539496037877272,
+    "sigma": 0.0009159961341503986,
+    "method": "Edenhofer"
+  },
+  "5132580858972702976": {
+    "mean": 0.005709246417756033,
+    "sigma": 0.0011517155551962963,
+    "method": "Edenhofer"
+  },
+  "5148232991109667328": {
+    "mean": 0.006059722193228557,
+    "sigma": 0.000884661789422954,
+    "method": "Edenhofer"
+  },
+  "5170668766392712448": {
+    "mean": 0.007392325111226069,
+    "sigma": 0.0005401002258373939,
+    "method": "Edenhofer"
+  },
+  "5187346124402986752": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "5740410334419524864": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6182345731690327808": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6182607385393358848": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6194788080147917824": {
+    "mean": 0.007473636197755331,
+    "sigma": 0.0006584024073201185,
+    "method": "Edenhofer"
+  },
+  "6259147585259050496": {
+    "mean": 0.010281469756668335,
+    "sigma": 0.001533906183432813,
+    "method": "Edenhofer"
+  },
+  "6265082680310200448": {
+    "mean": 0.018846274850854567,
+    "sigma": 0.002721971829907023,
+    "method": "Edenhofer"
+  },
+  "6319913126159509888": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6329975474323929600": {
+    "mean": 0.009222513819274445,
+    "sigma": 0.001113349116146098,
+    "method": "Edenhofer"
+  },
+  "6377952874656471552": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6394241555306538240": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6422236358302245248": {
+    "mean": 0.005198658970732676,
+    "sigma": 0.0008339072341456379,
+    "method": "Edenhofer"
+  },
+  "6424566979354709248": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6443328221136801920": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6450625198774637056": {
+    "mean": 0.006780100063769587,
+    "sigma": 0.0009118161871215327,
+    "method": "Edenhofer"
+  },
+  "6468623688724871808": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6504527691174533120": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6514042654346344704": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6560067493827212544": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6616313457820826496": {
+    "mean": 0.006181843030267808,
+    "sigma": 0.0006394935748399087,
+    "method": "Edenhofer"
+  },
+  "6679362959252072832": {
+    "mean": 0.008654740522707814,
+    "sigma": 0.0010270707292604092,
+    "method": "Edenhofer"
+  },
+  "6791907526363085952": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6857295585945072128": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "6857939315643803776": {
+    "mean": 0.0,
+    "sigma": 0.005,
+    "method": "local E=0 prior inside the map inner radius"
+  },
+  "1068931460633216": {
+    "mean": 0.007286757997521812,
+    "sigma": 0.0006256722108875137,
+    "method": "Edenhofer"
+  },
+  "15207693216816512": {
+    "mean": 0.01021786799651109,
+    "sigma": 0.0018285070111223954,
+    "method": "Edenhofer"
+  },
+  "33554517899463040": {
+    "mean": 0.008666829434290538,
+    "sigma": 0.0014707125891905526,
+    "method": "Edenhofer"
+  },
+  "103219785089409152": {
+    "mean": 0.024596422768453252,
+    "sigma": 0.002290306015143476,
+    "method": "Edenhofer"
+  },
+  "103291111611179520": {
+    "mean": 0.008342115427412007,
+    "sigma": 0.0009359359913610195,
+    "method": "Edenhofer"
+  },
+  "127461130263859328": {
+    "mean": 0.008839043453154132,
+    "sigma": 0.0008738989828344134,
+    "method": "Edenhofer"
+  },
+  "295923938184701312": {
+    "mean": 0.019937630623157395,
+    "sigma": 0.0016382798649252372,
+    "method": "Edenhofer"
+  },
+  "307372225052233984": {
+    "mean": 0.01850523572442733,
+    "sigma": 0.002446955902692583,
+    "method": "Edenhofer"
+  },
+  "361416691890856704": {
+    "mean": 0.023154694727654187,
+    "sigma": 0.0014964351266555551,
+    "method": "Edenhofer"
+  },
+  "607984785759304192": {
+    "mean": 0.0054535460088668405,
+    "sigma": 0.0006947762934091858,
+    "method": "Edenhofer"
+  },
+  "630770819920096640": {
+    "mean": 0.007170077411732156,
+    "sigma": 0.001071481060970819,
+    "method": "Edenhofer"
+  },
+  "632366829767058816": {
+    "mean": 0.008004183212388816,
+    "sigma": 0.0005031939140681716,
+    "method": "Edenhofer"
+  },
+  "636092524918137216": {
+    "mean": 0.009791823330976447,
+    "sigma": 0.0006032921622148896,
+    "method": "Edenhofer"
+  },
+  "637744712937476608": {
+    "mean": 0.011456187189511314,
+    "sigma": 0.0008551256987040827,
+    "method": "Edenhofer"
+  },
+  "641223189770370176": {
+    "mean": 0.007390742948021073,
+    "sigma": 0.0010588715879570384,
+    "method": "Edenhofer"
+  },
+  "643362912412710528": {
+    "mean": 0.013615551906714306,
+    "sigma": 0.001152928443826917,
+    "method": "Edenhofer"
+  },
+  "660409908193185024": {
+    "mean": 0.011183783338723085,
+    "sigma": 0.000774201142913841,
+    "method": "Edenhofer"
+  },
+  "661160294816776448": {
+    "mean": 0.012509640520266242,
+    "sigma": 0.0007455072226956293,
+    "method": "Edenhofer"
+  },
+  "661403729265999616": {
+    "mean": 0.011801735838959616,
+    "sigma": 0.000505967962766806,
+    "method": "Edenhofer"
+  },
+  "696155447825938304": {
+    "mean": 0.007579373408720921,
+    "sigma": 0.0005211358363875434,
+    "method": "Edenhofer"
+  },
+  "696535294732371072": {
+    "mean": 0.007084055594029469,
+    "sigma": 0.0005440443439122888,
+    "method": "Edenhofer"
+  },
+  "698442603809726848": {
+    "mean": 0.01580498652257987,
+    "sigma": 0.0016522476080705999,
+    "method": "Edenhofer"
+  },
+  "698582825902231168": {
+    "mean": 0.014359049418493454,
+    "sigma": 0.00091283015890826,
+    "method": "Edenhofer"
+  },
+  "700785177756357632": {
+    "mean": 0.01154192234658945,
+    "sigma": 0.0006732157935966977,
+    "method": "Edenhofer"
+  },
+  "709168747759337600": {
+    "mean": 0.011994695334830462,
+    "sigma": 0.0009858878631014178,
+    "method": "Edenhofer"
+  },
+  "710357702083176064": {
+    "mean": 0.009788839207223515,
+    "sigma": 0.0007837133515632659,
+    "method": "Edenhofer"
+  },
+  "710882031689674496": {
+    "mean": 0.01184391430638324,
+    "sigma": 0.001458949484420382,
+    "method": "Edenhofer"
+  },
+  "713272777989543040": {
+    "mean": 0.009318861943495939,
+    "sigma": 0.000750442925701816,
+    "method": "Edenhofer"
+  },
+  "716563551868468864": {
+    "mean": 0.011963121339812192,
+    "sigma": 0.0010884174452379988,
+    "method": "Edenhofer"
+  },
+  "719804323735049984": {
+    "mean": 0.009714688675244497,
+    "sigma": 0.0011503990735439922,
+    "method": "Edenhofer"
+  },
+  "727052480479252736": {
+    "mean": 0.0158455228059027,
+    "sigma": 0.0008071539778400341,
+    "method": "Edenhofer"
+  },
+  "742595825389509376": {
+    "mean": 0.006147763461018547,
+    "sigma": 0.0007144383239971475,
+    "method": "Edenhofer"
+  },
+  "743044739666490880": {
+    "mean": 0.005547547718711483,
+    "sigma": 0.0004147255348857635,
+    "method": "Edenhofer"
+  },
+  "764786753181005184": {
+    "mean": 0.0054985908910634845,
+    "sigma": 0.0003317531429947314,
+    "method": "Edenhofer"
+  },
+  "765527789653725696": {
+    "mean": 0.0050789747326160815,
+    "sigma": 0.0005378088115510664,
+    "method": "Edenhofer"
+  },
+  "790242715102094208": {
+    "mean": 0.007683406723940328,
+    "sigma": 0.00020028106616876785,
+    "method": "Edenhofer"
+  },
+  "792305261477064704": {
+    "mean": 0.007568436296346323,
+    "sigma": 0.0003903767645597305,
+    "method": "Edenhofer"
+  },
+  "793258297540348416": {
+    "mean": 0.007137224646816171,
+    "sigma": 0.0005597694365185788,
+    "method": "Edenhofer"
+  },
+  "794958245595862272": {
+    "mean": 0.005960068712848504,
+    "sigma": 0.0002468810329088006,
+    "method": "Edenhofer"
+  },
+  "802299925252613376": {
+    "mean": 0.006698197885512316,
+    "sigma": 0.0005585757940729274,
+    "method": "Edenhofer"
+  },
+  "804169064957527552": {
+    "mean": 0.007019934613029935,
+    "sigma": 0.0003627555532751284,
+    "method": "Edenhofer"
+  },
+  "808682663268345472": {
+    "mean": 0.00688618810445769,
+    "sigma": 0.0004474821811523326,
+    "method": "Edenhofer"
+  },
+  "810889967220390912": {
+    "mean": 0.008135731649147965,
+    "sigma": 0.0009483921106501708,
+    "method": "Edenhofer"
+  },
+  "831399913529054336": {
+    "mean": 0.007565677745990399,
+    "sigma": 0.0005343901481013631,
+    "method": "Edenhofer"
+  },
+  "832620092260455680": {
+    "mean": 0.007359036790589457,
+    "sigma": 0.000393007845693278,
+    "method": "Edenhofer"
+  },
+  "837299583685045632": {
+    "mean": 0.005908542800671341,
+    "sigma": 0.0006183186233602602,
+    "method": "Edenhofer"
+  },
+  "840715624576683648": {
+    "mean": 0.007043885724346084,
+    "sigma": 0.00047215359341241865,
+    "method": "Edenhofer"
+  },
+  "841240022903959808": {
+    "mean": 0.006688433814608423,
+    "sigma": 0.0003343223317259554,
+    "method": "Edenhofer"
+  },
+  "841590492234968576": {
+    "mean": 0.007023256355200457,
+    "sigma": 0.00048222380563967725,
+    "method": "Edenhofer"
+  },
+  "841710137139836928": {
+    "mean": 0.00702009717719852,
+    "sigma": 0.0003777678807307448,
+    "method": "Edenhofer"
+  },
+  "842063488393853568": {
+    "mean": 0.00700930620920531,
+    "sigma": 0.0005194273637724604,
+    "method": "Edenhofer"
+  },
+  "842157565357087744": {
+    "mean": 0.0073786235032630735,
+    "sigma": 0.0005116814006576254,
+    "method": "Edenhofer"
+  },
+  "845000421390430080": {
+    "mean": 0.007207586728484059,
+    "sigma": 0.0005513181406960802,
+    "method": "Edenhofer"
+  },
+  "850146827299032704": {
+    "mean": 0.007503028695884837,
+    "sigma": 0.0009014203755221764,
+    "method": "Edenhofer"
+  },
+  "908175305800794752": {
+    "mean": 0.008116368994238572,
+    "sigma": 0.000411471226837921,
+    "method": "Edenhofer"
+  },
+  "910001899563870592": {
+    "mean": 0.014015821950312377,
+    "sigma": 0.0008035110294235887,
+    "method": "Edenhofer"
+  },
+  "910370480767122304": {
+    "mean": 0.012470871377830239,
+    "sigma": 0.001023537653342883,
+    "method": "Edenhofer"
+  },
+  "914867861280728704": {
+    "mean": 0.0096871565282379,
+    "sigma": 0.0011990669027561022,
+    "method": "Edenhofer"
+  },
+  "921142705421100288": {
+    "mean": 0.009378389933882429,
+    "sigma": 0.0009868459825676174,
+    "method": "Edenhofer"
+  },
+  "921929264256208384": {
+    "mean": 0.008977111537483061,
+    "sigma": 0.0007779409387240939,
+    "method": "Edenhofer"
+  },
+  "1029081452683108480": {
+    "mean": 0.0088878585668725,
+    "sigma": 0.0013548236510309106,
+    "method": "Edenhofer"
+  },
+  "1042510578466999808": {
+    "mean": 0.008266932801000926,
+    "sigma": 0.0007582321963288449,
+    "method": "Edenhofer"
+  },
+  "1043114618370678784": {
+    "mean": 0.007375285831886379,
+    "sigma": 0.0006773592076124457,
+    "method": "Edenhofer"
+  },
+  "1061491202882735104": {
+    "mean": 0.007040181211517221,
+    "sigma": 0.00024623363106291866,
+    "method": "Edenhofer"
+  },
+  "1067968670695929088": {
+    "mean": 0.005549196455167381,
+    "sigma": 0.0002966362265198724,
+    "method": "Edenhofer"
+  },
+  "1070555477959634560": {
+    "mean": 0.005768943790179907,
+    "sigma": 0.0004367149646422429,
+    "method": "Edenhofer"
+  },
+  "1071286477096420480": {
+    "mean": 0.005829250044662316,
+    "sigma": 0.00036173649198837266,
+    "method": "Edenhofer"
+  },
+  "1073804496162795520": {
+    "mean": 0.005297503642374139,
+    "sigma": 0.0005355252973537272,
+    "method": "Edenhofer"
+  },
+  "1074013923063975680": {
+    "mean": 0.005252777480576363,
+    "sigma": 0.00046757648739857374,
+    "method": "Edenhofer"
+  },
+  "1074309034561399168": {
+    "mean": 0.0057572394615172705,
+    "sigma": 0.00043951842800500927,
+    "method": "Edenhofer"
+  },
+  "1079389469772223872": {
+    "mean": 0.0068384134050769,
+    "sigma": 0.0006500248287029987,
+    "method": "Edenhofer"
+  },
+  "1079404583761590528": {
+    "mean": 0.006905620174224207,
+    "sigma": 0.0006902385143010136,
+    "method": "Edenhofer"
+  },
+  "1079696405314092160": {
+    "mean": 0.006850707606665227,
+    "sigma": 0.0007733872832318868,
+    "method": "Edenhofer"
+  },
+  "1130335581563940480": {
+    "mean": 0.005936916688323721,
+    "sigma": 0.0005564120852150329,
+    "method": "Edenhofer"
+  },
+  "1134423252262096896": {
+    "mean": 0.005840006474446556,
+    "sigma": 0.0006946465425534849,
+    "method": "Edenhofer"
+  },
+  "1191779830379112192": {
+    "mean": 0.004805305957069715,
+    "sigma": 0.0007482100316614365,
+    "method": "Edenhofer"
+  },
+  "1200193804452943232": {
+    "mean": 0.0062631719741103875,
+    "sigma": 0.0005728486971507042,
+    "method": "Edenhofer"
+  },
+  "1201692541880618624": {
+    "mean": 0.011489762682292662,
+    "sigma": 0.0008651226929473732,
+    "method": "Edenhofer"
+  },
+  "1203302879738515328": {
+    "mean": 0.05683415213158169,
+    "sigma": 0.003797581087651872,
+    "method": "Edenhofer"
+  },
+  "1204677754606267264": {
+    "mean": 0.005468412160323178,
+    "sigma": 0.00048620669545412646,
+    "method": "Edenhofer"
+  },
+  "1227001444126009728": {
+    "mean": 0.009082856943335585,
+    "sigma": 0.0008140738343017797,
+    "method": "Edenhofer"
+  },
+  "1228034370876113536": {
+    "mean": 0.009537880167863897,
+    "sigma": 0.0006832558377479145,
+    "method": "Edenhofer"
+  },
+  "1228284539836304000": {
+    "mean": 0.008184241373963319,
+    "sigma": 0.0011263433541993013,
+    "method": "Edenhofer"
+  },
+  "1232053429473003008": {
+    "mean": 0.009345901896880634,
+    "sigma": 0.00034945518660874905,
+    "method": "Edenhofer"
+  },
+  "1232157191587273216": {
+    "mean": 0.007416498102308648,
+    "sigma": 0.0008324207043671889,
+    "method": "Edenhofer"
+  },
+  "1233014608793947776": {
+    "mean": 0.008235833169657364,
+    "sigma": 0.00043563289653505,
+    "method": "Edenhofer"
+  },
+  "1234313883645608960": {
+    "mean": 0.007138107031404029,
+    "sigma": 0.0009427504927653054,
+    "method": "Edenhofer"
+  },
+  "1250733028226855040": {
+    "mean": 0.012497465852585888,
+    "sigma": 0.0007589900070726917,
+    "method": "Edenhofer"
+  },
+  "1253031630294811136": {
+    "mean": 0.015030350914409163,
+    "sigma": 0.0007402570622195615,
+    "method": "Edenhofer"
+  },
+  "1261923724426167168": {
+    "mean": 0.011180365127915362,
+    "sigma": 0.0008911764718262821,
+    "method": "Edenhofer"
+  },
+  "1272905612205451904": {
+    "mean": 0.0199651317367862,
+    "sigma": 0.0010535020368400354,
+    "method": "Edenhofer"
+  },
+  "1275803134584652032": {
+    "mean": 0.01076664846983854,
+    "sigma": 0.0006302675041010609,
+    "method": "Edenhofer"
+  },
+  "1277239646524263808": {
+    "mean": 0.011894193656124838,
+    "sigma": 0.0007432095894760248,
+    "method": "Edenhofer"
+  },
+  "1285605521261175552": {
+    "mean": 0.009764782888650245,
+    "sigma": 0.000516978661326233,
+    "method": "Edenhofer"
+  },
+  "1303425340573568640": {
+    "mean": 0.021693097354354724,
+    "sigma": 0.0011416845919321936,
+    "method": "Edenhofer"
+  },
+  "1314559953092226688": {
+    "mean": 0.009708878292560697,
+    "sigma": 0.0007363028849418221,
+    "method": "Edenhofer"
+  },
+  "1321747774137208448": {
+    "mean": 0.017968714056276796,
+    "sigma": 0.0010049025063723037,
+    "method": "Edenhofer"
+  },
+  "1326768895848096128": {
+    "mean": 0.00886318970721505,
+    "sigma": 0.00044655040102977453,
+    "method": "Edenhofer"
+  },
+  "1327577144269234176": {
+    "mean": 0.00971184575525418,
+    "sigma": 0.0005937679205350087,
+    "method": "Edenhofer"
+  },
+  "1333000210495500672": {
+    "mean": 0.006963745665620444,
+    "sigma": 0.0003786613059341623,
+    "method": "Edenhofer"
+  },
+  "1356434445415005184": {
+    "mean": 0.007237530808183356,
+    "sigma": 0.0003934542996294381,
+    "method": "Edenhofer"
+  },
+  "1378788856838621312": {
+    "mean": 0.011319897395825776,
+    "sigma": 0.0002527992917534939,
+    "method": "Edenhofer"
+  },
+  "1381843815535682688": {
+    "mean": 0.00818338358207434,
+    "sigma": 0.0004581151156379799,
+    "method": "Edenhofer"
+  },
+  "1382375154530149248": {
+    "mean": 0.006774983502970247,
+    "sigma": 0.0003659700527536693,
+    "method": "Edenhofer"
+  },
+  "1383574545621613184": {
+    "mean": 0.009633648941439503,
+    "sigma": 0.00039854244125600325,
+    "method": "Edenhofer"
+  },
+  "1385066209239285504": {
+    "mean": 0.007285725787413361,
+    "sigma": 0.0002369215810144987,
+    "method": "Edenhofer"
+  },
+  "1385162244707678720": {
+    "mean": 0.007856034815456511,
+    "sigma": 0.0005653845886036389,
+    "method": "Edenhofer"
+  },
+  "1391260647296049024": {
+    "mean": 0.014796876514395341,
+    "sigma": 0.0007481962541563757,
+    "method": "Edenhofer"
+  },
+  "1392255675254628096": {
+    "mean": 0.014551614076212553,
+    "sigma": 0.0005247432328671774,
+    "method": "Edenhofer"
+  },
+  "1393580449327149568": {
+    "mean": 0.015043986551066478,
+    "sigma": 0.0008454879662568075,
+    "method": "Edenhofer"
+  },
+  "1393977922780947456": {
+    "mean": 0.015011335302998098,
+    "sigma": 0.0006972965785084896,
+    "method": "Edenhofer"
+  },
+  "1402147706492229120": {
+    "mean": 0.00830624622586817,
+    "sigma": 0.00042358844385898144,
+    "method": "Edenhofer"
+  },
+  "1406186384499720704": {
+    "mean": 0.008414127481085195,
+    "sigma": 0.000358243420759113,
+    "method": "Edenhofer"
+  },
+  "1424446970534319104": {
+    "mean": 0.006735205635915759,
+    "sigma": 0.0006483040278760299,
+    "method": "Edenhofer"
+  },
+  "1428807320116837504": {
+    "mean": 0.006339224220698489,
+    "sigma": 0.0006034465002894402,
+    "method": "Edenhofer"
+  },
+  "1429699543738613888": {
+    "mean": 0.0068834314699553,
+    "sigma": 0.0007219986121299988,
+    "method": "Edenhofer"
+  },
+  "1439997393549713664": {
+    "mean": 0.010705754045124702,
+    "sigma": 0.000864415381496479,
+    "method": "Edenhofer"
+  },
+  "1440758225532172032": {
+    "mean": 0.01119713260565891,
+    "sigma": 0.0009022460940888591,
+    "method": "Edenhofer"
+  },
+  "1449296792314951808": {
+    "mean": 0.007898938734647608,
+    "sigma": 0.0005815692728428167,
+    "method": "Edenhofer"
+  },
+  "1456719591018731264": {
+    "mean": 0.009243540367651413,
+    "sigma": 0.0003965416358813706,
+    "method": "Edenhofer"
+  },
+  "1460301456304990464": {
+    "mean": 0.005448708098848368,
+    "sigma": 0.00043614416169410186,
+    "method": "Edenhofer"
+  },
+  "1460767992832014976": {
+    "mean": 0.007123438488562949,
+    "sigma": 0.00032741293558553403,
+    "method": "Edenhofer"
+  },
+  "1461264284893352704": {
+    "mean": 0.006602823807730414,
+    "sigma": 0.0004109033831932151,
+    "method": "Edenhofer"
+  },
+  "1465827704824690176": {
+    "mean": 0.008980955605552496,
+    "sigma": 0.00046051720453706266,
+    "method": "Edenhofer"
+  },
+  "1466118804824748160": {
+    "mean": 0.007352541194238393,
+    "sigma": 0.0006393161932237781,
+    "method": "Edenhofer"
+  },
+  "1466818918853524992": {
+    "mean": 0.007775409992965495,
+    "sigma": 0.0008043227881843145,
+    "method": "Edenhofer"
+  },
+  "1477398797692204032": {
+    "mean": 0.010105455537392572,
+    "sigma": 0.00036649648632369373,
+    "method": "Edenhofer"
+  },
+  "1477571558456787456": {
+    "mean": 0.010879750910148348,
+    "sigma": 0.000514917377489127,
+    "method": "Edenhofer"
+  },
+  "1477624468158558848": {
+    "mean": 0.01020149881034855,
+    "sigma": 0.0004253405007707238,
+    "method": "Edenhofer"
+  },
+  "1477699819064923904": {
+    "mean": 0.01059451271322145,
+    "sigma": 0.0004130421264874141,
+    "method": "Edenhofer"
+  },
+  "1477707996682310656": {
+    "mean": 0.010237242277585717,
+    "sigma": 0.00045934181228482056,
+    "method": "Edenhofer"
+  },
+  "1479511096971183872": {
+    "mean": 0.007263560022041018,
+    "sigma": 0.0004342072589308119,
+    "method": "Edenhofer"
+  },
+  "1479878363916169344": {
+    "mean": 0.008466079959172479,
+    "sigma": 0.0005053250753347942,
+    "method": "Edenhofer"
+  },
+  "1480557969477795200": {
+    "mean": 0.009564073043244628,
+    "sigma": 0.0003911932130206164,
+    "method": "Edenhofer"
+  },
+  "1492517013856091264": {
+    "mean": 0.009368526881036615,
+    "sigma": 0.0005689312462192434,
+    "method": "Edenhofer"
+  },
+  "1497145992168434048": {
+    "mean": 0.008572579037013497,
+    "sigma": 0.0005756653156786634,
+    "method": "Edenhofer"
+  },
+  "1517760529518658560": {
+    "mean": 0.007814246773885059,
+    "sigma": 0.0003104926640694063,
+    "method": "Edenhofer"
+  },
+  "1532756940408129792": {
+    "mean": 0.00756365392562434,
+    "sigma": 0.0005091913394280607,
+    "method": "Edenhofer"
+  },
+  "1539240932275710720": {
+    "mean": 0.006516375157995223,
+    "sigma": 0.0004535525912626806,
+    "method": "Edenhofer"
+  },
+  "1542038296017032320": {
+    "mean": 0.0073106790879539545,
+    "sigma": 0.0003417334310739095,
+    "method": "Edenhofer"
+  },
+  "1543778685487865856": {
+    "mean": 0.00761473449081336,
+    "sigma": 0.000480049533206778,
+    "method": "Edenhofer"
+  },
+  "1549084615065854720": {
+    "mean": 0.007611702980614903,
+    "sigma": 0.0002941090011062425,
+    "method": "Edenhofer"
+  },
+  "1555179177955997440": {
+    "mean": 0.0077091552213093975,
+    "sigma": 0.000513526176053777,
+    "method": "Edenhofer"
+  },
+  "1558603916157835136": {
+    "mean": 0.007278577575182428,
+    "sigma": 0.0007181801289850389,
+    "method": "Edenhofer"
+  },
+  "1558875358090987520": {
+    "mean": 0.007079005772633759,
+    "sigma": 0.0005991773565797539,
+    "method": "Edenhofer"
+  },
+  "1559995863518817408": {
+    "mean": 0.00715101855048401,
+    "sigma": 0.0004523178916118307,
+    "method": "Edenhofer"
+  },
+  "1564189229068309376": {
+    "mean": 0.008083181740044314,
+    "sigma": 0.00041478180599029146,
+    "method": "Edenhofer"
+  },
+  "1570995515281629568": {
+    "mean": 0.00824535284920854,
+    "sigma": 0.0005222286416543262,
+    "method": "Edenhofer"
+  },
+  "1572889389701360384": {
+    "mean": 0.008186272747573881,
+    "sigma": 0.00047901128872341437,
+    "method": "Edenhofer"
+  },
+  "1573773839429866880": {
+    "mean": 0.007351870160505365,
+    "sigma": 0.000635532191988879,
+    "method": "Edenhofer"
+  },
+  "1576821930476727552": {
+    "mean": 0.007023334311977435,
+    "sigma": 0.0004912947173543684,
+    "method": "Edenhofer"
+  },
+  "1577341685942384768": {
+    "mean": 0.006867243503154946,
+    "sigma": 0.0005138088184529685,
+    "method": "Edenhofer"
+  },
+  "1580775946088032128": {
+    "mean": 0.00719754712438949,
+    "sigma": 0.0005517251682711087,
+    "method": "Edenhofer"
+  },
+  "1581078517944145280": {
+    "mean": 0.007399727935541146,
+    "sigma": 0.00046383560100711973,
+    "method": "Edenhofer"
+  },
+  "1583745722699375744": {
+    "mean": 0.0074541402278017884,
+    "sigma": 0.0007360420061512115,
+    "method": "Edenhofer"
+  },
+  "1599634185412296064": {
+    "mean": 0.008831315776778365,
+    "sigma": 0.00045621359946822237,
+    "method": "Edenhofer"
+  },
+  "1600636802578005248": {
+    "mean": 0.007871149049670989,
+    "sigma": 0.000247901802198168,
+    "method": "Edenhofer"
+  },
+  "1604732620831168384": {
+    "mean": 0.006963056305981166,
+    "sigma": 0.0008676884472601811,
+    "method": "Edenhofer"
+  },
+  "1605290897859598464": {
+    "mean": 0.006605097483960271,
+    "sigma": 0.0005351223207234597,
+    "method": "Edenhofer"
+  },
+  "1606580521919520768": {
+    "mean": 0.00764645928380592,
+    "sigma": 0.0006295406966800183,
+    "method": "Edenhofer"
+  },
+  "1606753179605063936": {
+    "mean": 0.006939768536545403,
+    "sigma": 0.000526986125084334,
+    "method": "Edenhofer"
+  },
+  "1607993944116951168": {
+    "mean": 0.006994258170509304,
+    "sigma": 0.0005075330321945003,
+    "method": "Edenhofer"
+  },
+  "1621317271970503680": {
+    "mean": 0.006915891602011337,
+    "sigma": 0.000500618012524067,
+    "method": "Edenhofer"
+  },
+  "1624507268736224256": {
+    "mean": 0.008135780328937093,
+    "sigma": 0.000870572504154954,
+    "method": "Edenhofer"
+  },
+  "1629292579563565696": {
+    "mean": 0.008157088898618782,
+    "sigma": 0.00032966216909154317,
+    "method": "Edenhofer"
+  },
+  "1630553139579970688": {
+    "mean": 0.01072248598230059,
+    "sigma": 0.0008704373211998313,
+    "method": "Edenhofer"
+  },
+  "1633462172472479616": {
+    "mean": 0.01183928665528685,
+    "sigma": 0.0004637553767094679,
+    "method": "Edenhofer"
+  },
+  "1643656569403912448": {
+    "mean": 0.012666619963571707,
+    "sigma": 0.000562763386346045,
+    "method": "Edenhofer"
+  },
+  "1647899786638013312": {
+    "mean": 0.012598627059862174,
+    "sigma": 0.0006802099444945291,
+    "method": "Edenhofer"
+  },
+  "1648851933643976448": {
+    "mean": 0.011494814907373899,
+    "sigma": 0.00045539936325558153,
+    "method": "Edenhofer"
+  },
+  "1653413253336301056": {
+    "mean": 0.012154625741744219,
+    "sigma": 0.0007882950252383237,
+    "method": "Edenhofer"
+  },
+  "1656577205419191808": {
+    "mean": 0.010995637196191841,
+    "sigma": 0.001135641788922936,
+    "method": "Edenhofer"
+  },
+  "1668623557893273728": {
+    "mean": 0.007066644182533715,
+    "sigma": 0.0005862497760056934,
+    "method": "Edenhofer"
+  },
+  "1673998756707990784": {
+    "mean": 0.007357063211730412,
+    "sigma": 0.0002930943092237635,
+    "method": "Edenhofer"
+  },
+  "1674958389840474496": {
+    "mean": 0.0070075686414933286,
+    "sigma": 0.00036009260744164094,
+    "method": "Edenhofer"
+  },
+  "1691797792673239168": {
+    "mean": 0.006150889320768046,
+    "sigma": 0.0006212748231448238,
+    "method": "Edenhofer"
+  },
+  "1692036416760332672": {
+    "mean": 0.006398957683625423,
+    "sigma": 0.00046373946412597795,
+    "method": "Edenhofer"
+  },
+  "1692571024225196544": {
+    "mean": 0.006845805071038939,
+    "sigma": 0.0007435236118915508,
+    "method": "Edenhofer"
+  },
+  "1694001896874399488": {
+    "mean": 0.008609378631397763,
+    "sigma": 0.001044066893369584,
+    "method": "Edenhofer"
+  },
+  "1700385695745023360": {
+    "mean": 0.00856054299005331,
+    "sigma": 0.0005659149702752479,
+    "method": "Edenhofer"
+  },
+  "1715405162018807296": {
+    "mean": 0.007795530538799034,
+    "sigma": 0.0007536849647518576,
+    "method": "Edenhofer"
+  },
+  "1718888930252002688": {
+    "mean": 0.007816208797603653,
+    "sigma": 0.0005531970661090783,
+    "method": "Edenhofer"
+  },
+  "2364272573237917952": {
+    "mean": 0.006841270440121078,
+    "sigma": 0.0004637772624663791,
+    "method": "Edenhofer"
+  },
+  "2364311331022888704": {
+    "mean": 0.006947218437158211,
+    "sigma": 0.0007729792136248129,
+    "method": "Edenhofer"
+  },
+  "2388347308040329216": {
+    "mean": 0.011365564250733845,
+    "sigma": 0.001590839280684304,
+    "method": "Edenhofer"
+  },
+  "2390640129086674560": {
+    "mean": 0.011094324562657193,
+    "sigma": 0.0011210590135262819,
+    "method": "Edenhofer"
+  },
+  "2423844216310164864": {
+    "mean": 0.008213530487052893,
+    "sigma": 0.0007068432112460917,
+    "method": "Edenhofer"
+  },
+  "2442099751463686528": {
+    "mean": 0.010817103035983149,
+    "sigma": 0.0008583769243503077,
+    "method": "Edenhofer"
+  },
+  "2456122476087944960": {
+    "mean": 0.007891225330841153,
+    "sigma": 0.0004890291324309912,
+    "method": "Edenhofer"
+  },
+  "2468060664104501376": {
+    "mean": 0.00782526597637023,
+    "sigma": 0.0004339718680525569,
+    "method": "Edenhofer"
+  },
+  "2488754366292015744": {
+    "mean": 0.01063588107825446,
+    "sigma": 0.0005325608700659451,
+    "method": "Edenhofer"
+  },
+  "2496203007814276608": {
+    "mean": 0.009543180824663485,
+    "sigma": 0.0007550807838965027,
+    "method": "Edenhofer"
+  },
+  "2497234448505140352": {
+    "mean": 0.007168090150036191,
+    "sigma": 0.00044006592769922913,
+    "method": "Edenhofer"
+  },
+  "2504608013999340416": {
+    "mean": 0.00931863236644079,
+    "sigma": 0.0008612883426960007,
+    "method": "Edenhofer"
+  },
+  "2567944320460595840": {
+    "mean": 0.00983218263545268,
+    "sigma": 0.001079771806272656,
+    "method": "Edenhofer"
+  },
+  "2612442135856683648": {
+    "mean": 0.010795750826229654,
+    "sigma": 0.0013257062207658776,
+    "method": "Edenhofer"
+  },
+  "2664365374183501312": {
+    "mean": 0.018685841479499078,
+    "sigma": 0.0012553855841004084,
+    "method": "Edenhofer"
+  },
+  "2670147461020069632": {
+    "mean": 0.013617300532194558,
+    "sigma": 0.0007635223733675274,
+    "method": "Edenhofer"
+  },
+  "2691277330022787712": {
+    "mean": 0.02447170657751703,
+    "sigma": 0.0014477223341374764,
+    "method": "Edenhofer"
+  },
+  "2721868041314138240": {
+    "mean": 0.015034289796127505,
+    "sigma": 0.001263734991006409,
+    "method": "Edenhofer"
+  },
+  "2731501687319341568": {
+    "mean": 0.010671786014005485,
+    "sigma": 0.0011620616249404237,
+    "method": "Edenhofer"
+  },
+  "2731502443233585280": {
+    "mean": 0.010696997688436042,
+    "sigma": 0.001163201612076072,
+    "method": "Edenhofer"
+  },
+  "2745545753636701184": {
+    "mean": 0.00980069241650117,
+    "sigma": 0.0012442002465923917,
+    "method": "Edenhofer"
+  },
+  "2747611250653031040": {
+    "mean": 0.00898070994859934,
+    "sigma": 0.000897383352379295,
+    "method": "Edenhofer"
+  },
+  "2753405887385092352": {
+    "mean": 0.0077372978133255915,
+    "sigma": 0.0010371334653265436,
+    "method": "Edenhofer"
+  },
+  "2762034992078869760": {
+    "mean": 0.014088108972104956,
+    "sigma": 0.00098745255090763,
+    "method": "Edenhofer"
+  },
+  "2772948126020805376": {
+    "mean": 0.008433908007635391,
+    "sigma": 0.000982873412064191,
+    "method": "Edenhofer"
+  },
+  "2815944352131513088": {
+    "mean": 0.009183395756555272,
+    "sigma": 0.0011174547791907427,
+    "method": "Edenhofer"
+  },
+  "2856883709813783296": {
+    "mean": 0.008069925836351294,
+    "sigma": 0.0002631336268713413,
+    "method": "Edenhofer"
+  },
+  "2859951106737135488": {
+    "mean": 0.00930254251492509,
+    "sigma": 0.000528723636617962,
+    "method": "Edenhofer"
+  },
+  "3258317294901181440": {
+    "mean": 0.004085344934205831,
+    "sigma": 0.0007113781796199157,
+    "method": "Edenhofer"
+  },
+  "3263696071424152704": {
+    "mean": 0.0045594213872137725,
+    "sigma": 0.00037245277186098437,
+    "method": "Edenhofer"
+  },
+  "3270918350990573184": {
+    "mean": 0.010526708843387028,
+    "sigma": 0.0012350697675585106,
+    "method": "Edenhofer"
+  },
+  "3273625554777257472": {
+    "mean": 0.006367552223996004,
+    "sigma": 0.0012545935722721537,
+    "method": "Edenhofer"
+  },
+  "3470463802872604032": {
+    "mean": 0.01826306344467694,
+    "sigma": 0.0017260965107549963,
+    "method": "Edenhofer"
+  },
+  "3480134832273157760": {
+    "mean": 0.016051440789645485,
+    "sigma": 0.0013404213599591019,
+    "method": "Edenhofer"
+  },
+  "3520554563336868608": {
+    "mean": 0.0065990938795005725,
+    "sigma": 0.001033696598046918,
+    "method": "Edenhofer"
+  },
+  "3522398478696160512": {
+    "mean": 0.01854767672108577,
+    "sigma": 0.0011554114391159112,
+    "method": "Edenhofer"
+  },
+  "3528008496258850560": {
+    "mean": 0.007564895963921026,
+    "sigma": 0.000599943209507013,
+    "method": "Edenhofer"
+  },
+  "3569231970322760448": {
+    "mean": 0.006727895513879478,
+    "sigma": 0.0007648048294628722,
+    "method": "Edenhofer"
+  },
+  "3580269997617903616": {
+    "mean": 0.014299892397603979,
+    "sigma": 0.0006068898824426214,
+    "method": "Edenhofer"
+  },
+  "3602612142613922688": {
+    "mean": 0.010371058145511714,
+    "sigma": 0.0014695816982320021,
+    "method": "Edenhofer"
+  },
+  "3628421666247974016": {
+    "mean": 0.005117787619515209,
+    "sigma": 0.0005301036333058262,
+    "method": "Edenhofer"
+  },
+  "3651184550535258496": {
+    "mean": 0.015900916959955783,
+    "sigma": 0.0015575756804917355,
+    "method": "Edenhofer"
+  },
+  "3652712008409585664": {
+    "mean": 0.02517060223670382,
+    "sigma": 0.001360516890069844,
+    "method": "Edenhofer"
+  },
+  "3653068731213124480": {
+    "mean": 0.02184844971329193,
+    "sigma": 0.0017860076297662852,
+    "method": "Edenhofer"
+  },
+  "3653586296246976128": {
+    "mean": 0.016508316552869117,
+    "sigma": 0.001223877026345772,
+    "method": "Edenhofer"
+  },
+  "3655968280814366208": {
+    "mean": 0.01664693299298602,
+    "sigma": 0.0009052283641067007,
+    "method": "Edenhofer"
+  },
+  "3660248993113873920": {
+    "mean": 0.011587060488208104,
+    "sigma": 0.000996622181945317,
+    "method": "Edenhofer"
+  },
+  "3668820064209618176": {
+    "mean": 0.019110399016317798,
+    "sigma": 0.0010900325985338838,
+    "method": "Edenhofer"
+  },
+  "3671309629117479424": {
+    "mean": 0.011896611836036955,
+    "sigma": 0.0011431093135821234,
+    "method": "Edenhofer"
+  },
+  "3671982392794432128": {
+    "mean": 0.013128013960347925,
+    "sigma": 0.0010915970077548204,
+    "method": "Edenhofer"
+  },
+  "3672116052177396864": {
+    "mean": 0.008102516985181723,
+    "sigma": 0.0007830739913192242,
+    "method": "Edenhofer"
+  },
+  "3672430203264708736": {
+    "mean": 0.012128878940602036,
+    "sigma": 0.0008956665009798709,
+    "method": "Edenhofer"
+  },
+  "3672464739097327616": {
+    "mean": 0.00989129239522296,
+    "sigma": 0.0005665730058383089,
+    "method": "Edenhofer"
+  },
+  "3672509333742601344": {
+    "mean": 0.010728711469143353,
+    "sigma": 0.0006704163002867527,
+    "method": "Edenhofer"
+  },
+  "3679487830964457984": {
+    "mean": 0.006558237929235049,
+    "sigma": 0.0003389836242662881,
+    "method": "Edenhofer"
+  },
+  "3691137160956555392": {
+    "mean": 0.010029678587787414,
+    "sigma": 0.0003487877807716097,
+    "method": "Edenhofer"
+  },
+  "3698443858103779328": {
+    "mean": 0.011825864366263213,
+    "sigma": 0.0003959211976399764,
+    "method": "Edenhofer"
+  },
+  "3698642045074898560": {
+    "mean": 0.009594039804705837,
+    "sigma": 0.0005359204447022615,
+    "method": "Edenhofer"
+  },
+  "3711571099227239680": {
+    "mean": 0.006704086274053097,
+    "sigma": 0.0008014633540187359,
+    "method": "Edenhofer"
+  },
+  "3728966476985207936": {
+    "mean": 0.011984686505104316,
+    "sigma": 0.0008439423974319615,
+    "method": "Edenhofer"
+  },
+  "3745268523572692480": {
+    "mean": 0.008622665944345338,
+    "sigma": 0.000996832385119314,
+    "method": "Edenhofer"
+  },
+  "3767353790870322944": {
+    "mean": 0.008738251557329763,
+    "sigma": 0.0008357406946324824,
+    "method": "Edenhofer"
+  },
+  "3779037205721914240": {
+    "mean": 0.009043543107243477,
+    "sigma": 0.001668017514682679,
+    "method": "Edenhofer"
+  },
+  "3787451081014802304": {
+    "mean": 0.004947327011836783,
+    "sigma": 0.000660157177046592,
+    "method": "Edenhofer"
+  },
+  "3829167922266733440": {
+    "mean": 0.014230344152319727,
+    "sigma": 0.0028131714079750957,
+    "method": "Edenhofer"
+  },
+  "3830027087524718976": {
+    "mean": 0.016632994611082624,
+    "sigma": 0.0024028848186840234,
+    "method": "Edenhofer"
+  },
+  "3833194887898568320": {
+    "mean": 0.016396099974249994,
+    "sigma": 0.002687936926618825,
+    "method": "Edenhofer"
+  },
+  "3834519765050176640": {
+    "mean": 0.009315233321695971,
+    "sigma": 0.0005394702288892765,
+    "method": "Edenhofer"
+  },
+  "3843303175034188544": {
+    "mean": 0.006908080395036888,
+    "sigma": 0.0007929396888870705,
+    "method": "Edenhofer"
+  },
+  "3843734359685754880": {
+    "mean": 0.007328601004048831,
+    "sigma": 0.0007589088185240231,
+    "method": "Edenhofer"
+  },
+  "3848482905592950016": {
+    "mean": 0.008720038946139022,
+    "sigma": 0.0007333662479276654,
+    "method": "Edenhofer"
+  },
+  "3849176633005242624": {
+    "mean": 0.009831187592807959,
+    "sigma": 0.0011837334627766364,
+    "method": "Edenhofer"
+  },
+  "3862040300575181184": {
+    "mean": 0.011049136975892535,
+    "sigma": 0.0009060535805358804,
+    "method": "Edenhofer"
+  },
+  "3883615188318129536": {
+    "mean": 0.008431399433010031,
+    "sigma": 0.0011644632295426435,
+    "method": "Edenhofer"
+  },
+  "3931446491043126784": {
+    "mean": 0.005983335607430866,
+    "sigma": 0.0007639657315292312,
+    "method": "Edenhofer"
+  },
+  "3937020705758349952": {
+    "mean": 0.006589206448192921,
+    "sigma": 0.000538912539609255,
+    "method": "Edenhofer"
+  },
+  "3938163231482433280": {
+    "mean": 0.010467295658724765,
+    "sigma": 0.0007047995049253978,
+    "method": "Edenhofer"
+  },
+  "3938762293520648448": {
+    "mean": 0.01055678695614917,
+    "sigma": 0.0005273211730168228,
+    "method": "Edenhofer"
+  },
+  "3956176053739681664": {
+    "mean": 0.004957442762475846,
+    "sigma": 0.0005881309556663653,
+    "method": "Edenhofer"
+  },
+  "3956679252108368384": {
+    "mean": 0.005618184133233634,
+    "sigma": 0.0006869864348041947,
+    "method": "Edenhofer"
+  },
+  "3957098608418977152": {
+    "mean": 0.005150462988908232,
+    "sigma": 0.0004450418964650771,
+    "method": "Edenhofer"
+  },
+  "3957439461319984640": {
+    "mean": 0.005347330748945262,
+    "sigma": 0.00038518584886206654,
+    "method": "Edenhofer"
+  },
+  "3957483712366860288": {
+    "mean": 0.005282209220650181,
+    "sigma": 0.00044954683899611374,
+    "method": "Edenhofer"
+  },
+  "3958571163726655360": {
+    "mean": 0.006468038240447818,
+    "sigma": 0.0005285878562856776,
+    "method": "Edenhofer"
+  },
+  "3962291842355447936": {
+    "mean": 0.006041491509094887,
+    "sigma": 0.000376543869274278,
+    "method": "Edenhofer"
+  },
+  "4016714025798014464": {
+    "mean": 0.007246818713005848,
+    "sigma": 0.00041310872757558726,
+    "method": "Edenhofer"
+  },
+  "4016793572887550976": {
+    "mean": 0.007658183334918068,
+    "sigma": 0.0004561114123767506,
+    "method": "Edenhofer"
+  },
+  "4420242631507777920": {
+    "mean": 0.03291460912501102,
+    "sigma": 0.0012424267971776364,
+    "method": "Edenhofer"
+  },
+  "4437271867601913472": {
+    "mean": 0.02643960040450399,
+    "sigma": 0.001327648582953295,
+    "method": "Edenhofer"
+  },
+  "4447202622266019072": {
+    "mean": 0.008787075694857982,
+    "sigma": 0.0010925264273877037,
+    "method": "Edenhofer"
+  },
+  "4458552292383838464": {
+    "mean": 0.01882889921973381,
+    "sigma": 0.000941283576434739,
+    "method": "Edenhofer"
+  },
+  "4463466804419970304": {
+    "mean": 0.014351478699300984,
+    "sigma": 0.0011212057316118901,
+    "method": "Edenhofer"
+  },
+  "4561345157726039680": {
+    "mean": 0.007851284579980642,
+    "sigma": 0.0010526697146022097,
+    "method": "Edenhofer"
+  },
+  "4734298439852277376": {
+    "mean": 0.01230717959373836,
+    "sigma": 0.0006734345606535867,
+    "method": "Edenhofer"
+  },
+  "5035978214034036480": {
+    "mean": 0.010262223618361578,
+    "sigma": 0.0008206248478210237,
+    "method": "Edenhofer"
+  },
+  "5039471431194302336": {
+    "mean": 0.008206617006684833,
+    "sigma": 0.0004892905090009786,
+    "method": "Edenhofer"
+  },
+  "5039976072671500928": {
+    "mean": 0.010056719234487513,
+    "sigma": 0.0009295812610921447,
+    "method": "Edenhofer"
+  },
+  "5169373404256201472": {
+    "mean": 0.005371019990192308,
+    "sigma": 0.0006260852033258609,
+    "method": "Edenhofer"
+  },
+  "6195269769319451904": {
+    "mean": 0.021831588592917575,
+    "sigma": 0.0018836329168085827,
+    "method": "Edenhofer"
+  },
+  "6223132497775520512": {
+    "mean": 0.02590183210352887,
+    "sigma": 0.0024182492703694147,
+    "method": "Edenhofer"
+  },
+  "6258473687716336256": {
+    "mean": 0.06229812824220015,
+    "sigma": 0.0029404460482310825,
+    "method": "Edenhofer"
+  },
+  "6272562623549966208": {
+    "mean": 0.030844672613915297,
+    "sigma": 0.0017800067298110217,
+    "method": "Edenhofer"
+  },
+  "6304590503913422464": {
+    "mean": 0.029471110168886122,
+    "sigma": 0.0011858111234932546,
+    "method": "Edenhofer"
+  },
+  "6305900675097580800": {
+    "mean": 0.042389509366269694,
+    "sigma": 0.0036869373485875724,
+    "method": "Edenhofer"
+  },
+  "6332172027974304512": {
+    "mean": 0.020836753173572132,
+    "sigma": 0.001017855803867516,
+    "method": "Edenhofer"
+  },
+  "6337563994341063936": {
+    "mean": 0.05845845469681862,
+    "sigma": 0.002126886926466817,
+    "method": "Edenhofer"
+  },
+  "6560416588769150976": {
+    "mean": 0.0055665457113436975,
+    "sigma": 0.0006897247682950392,
+    "method": "Edenhofer"
+  },
+  "6583681533257898752": {
+    "mean": 0.008183349717324742,
+    "sigma": 0.0004606542411863015,
+    "method": "Edenhofer"
+  },
+  "6589423148617705856": {
+    "mean": 0.007058486800225709,
+    "sigma": 0.0007321755001264467,
+    "method": "Edenhofer"
+  },
+  "6667323341287601024": {
+    "mean": 0.00946408968582528,
+    "sigma": 0.0008302598537490722,
+    "method": "Edenhofer"
+  },
+  "6808699474099687808": {
+    "mean": 0.008919683411309847,
+    "sigma": 0.0009882194328344849,
+    "method": "Edenhofer"
+  },
+  "6861773037812569600": {
+    "mean": 0.030165124863654327,
+    "sigma": 0.0017624798165592648,
+    "method": "Edenhofer"
+  }
+}

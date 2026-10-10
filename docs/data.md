@@ -151,7 +151,7 @@ The Bédard et al. (2020) thick-hydrogen cooling sequences tabulate radius
 in cm and age in years. At 10000 K and 0.6 solar masses, interpolation in
 the inspected sequence gives R = 0.012830 solar radii and age = 0.633 Gyr;
 the tabulated log g agrees with G M / R^2. The atmosphere table and public
-WD fitting API are still under development.
+WD fitting API use these tabulated physical relations.
 
 Sources: [SVO Koester grid](https://svo2.cab.inta-csic.es/theory/newov2/index.php?models=koester2),
 [Bédard cooling sequences](https://www.astro.umontreal.ca/~bergeron/CoolingModels/),
@@ -161,9 +161,15 @@ Sources: [SVO Koester grid](https://svo2.cab.inta-csic.es/theory/newov2/index.ph
 
 The complete table supports 123 of the 168 channels and has no replaced
 outlier nodes. `scripts/build_whitedwarf_model.py` builds the atmosphere
-and thick/thin-H cooling tables. The bundled XP correction uses 297 local
-DA anchors; raw catalogues and validation spectra stay in `data/whitedwarf/`.
-The UV passband correction uses a separate 71-source DA subset.
+and thick/thin-H cooling tables. The bundled XP correction retains the
+absolute flux of 294 spectroscopic DESI/Gianninas single-DA anchors within
+100 pc. Another 289 supported stars at 100--150 pc form an independent
+comparison. Native Edenhofer moments are cached with the anchor lists;
+stars inside the map's inner radius use a local E=0 +/- 0.005 prior.
+The UV passband correction uses 71 single DAs on the same absolute scale.
+Raw catalogues and XP spectra stay in `data/whitedwarf/`; the
+[calibration recipe and exact samples](../reports/wd_single_scale_20261010/report.md)
+are saved with the report.
 See [WD fitting](whitedwarf.md) for model and passband conventions.
 
 The orbit validation uses [Yamaguchi et al. (2024)](https://arxiv.org/html/2405.06020v1)

@@ -5,6 +5,13 @@ light envelopes for photocentre-orbit calculations. Validation below
 uses the bundled Koester DA table and Bédard C/O-core cooling tracks.
 The criteria were recorded before fitting in the WD plan.
 
+The current bundled emulator's absolute single-star scale is described in
+the [single-DA calibration report](../reports/wd_single_scale_20261010/report.md):
+294 training stars and 289 independent stars, with spectral labels, Gaia
+parallax and native extinction. The combined benchmarks below use the
+[shape-reference calibration](../reports/wd_single_scale_20261010/reference_shape_calibration.npz).
+Their composite-detection threshold is specific to that calibration.
+
 ![DA, control, composite and orbit comparisons](../reports/wd_plan_20261010/validation.png)
 
 ## Anchors and availability

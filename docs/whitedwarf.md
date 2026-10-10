@@ -44,17 +44,21 @@ XP61, J/H/Ks and 59 short SPHEREx channels are supported.
 W1/W2 and the longer SPHEREx channels are masked.
 SPHEREx is included only with `use_spherex=True`.
 
-The default `WhiteDwarfModel()` applies a WD-only `exp(a + W b)`
-shape correction and empirical diagonal model error. W uses the DA
-Balmer width, with a maximum of 10.4357 nm. It inherits no hot-star
-or sdB correction. `WhiteDwarfModel(calibration=None)` uses raw spectra.
+The default `WhiteDwarfModel()` calibrates spectral shape and absolute
+XP flux to 294 real single DAs, using their spectroscopic Teff/log g,
+Gaia parallax and native Edenhofer extinction. The correction is linear
+between seven knots in log Teff, with a linear gravity term. Source
+normalizations are retained. The error model separates a correlated
+absolute-scale term from diagonal spectral-shape scatter. It inherits
+no hot-star or sdB correction. `WhiteDwarfModel(calibration=None)` uses raw spectra.
 `WhiteDwarfModel(hydrogen_layer="thin")` selects the thin-H cooling
 tracks for a direct sensitivity comparison; the default is thick H.
 
 Optional `blue=(flux6, error6)` supplies XP at 332--382 nm, in SED flux
 units. Optional `galex={"FUV": (AB_mag, mag_error, usable), ...}`
 adds FUV/NUV measurements. The bundled UV passband correction and
-model errors come from 71 local DA anchors at 6.8--41.4 kK. They affect
+model errors come from 71 local DA anchors at 6.8--41.4 kK on the same
+absolute single-star scale. They affect
 GALEX predictions, not the returned coarse continuum. Outside this
 temperature range, the UV likelihood uses an adopted fractional model-error
 floor of 0.5. GALEX is absent
@@ -66,8 +70,19 @@ including the model covariance determinant. `chi2` and `minus2lnL`
 are also returned. `preferred` names the smallest objective;
 `detection_statistic` is the composite improvement over the better
 single-star model. This statistic is a diagnostic, not a probability.
-The XP-only validation used a threshold of 55 fixed on its training
-controls; changing the data, error model or priors changes its scope.
+The shape-reference model's XP-only control comparison used a threshold
+of 55. The absolute-scale model needs its own composite-detection
+calibration; changing the model, data or priors changes that threshold's scope.
+
+On 289 independent single DAs at 100--150 pc, the M–R fit gives
++1.76% Teff bias and 3.62% robust scatter; absolute XP normalization
+has +1.90% median bias and about 14% source scatter. These fits use
+native extinction priors and catalogue parallax constraints.
+The calibration labels cover 6003--56800 K and log g 7.37--9.26.
+Only six training and eight independent stars exceed 40 kK;
+their temperature and normalization precision is weaker. The atmospheric
+table's wider domain does not establish empirical precision there.
+See the [single-DA scale report](../reports/wd_single_scale_20261010/report.md).
 
 For a detected WD+dwarf composite, `photocentre` reports the WD as star 1,
 the dwarf as star 2, and the signed coefficient `B_WD-beta_G` along the
@@ -137,8 +152,8 @@ light = whitedwarf_light_limit(
 ```
 
 The bound compares the cap with `WD_UV * exp(-3*sigma_model)`;
-`sigma_model` is the bundled UV fractional-error term (0.127 FUV,
-0.149 NUV), with an adopted log-flux floor of 0.5 outside the empirically
+`sigma_model` is the bundled UV fractional-error term (0.116 FUV,
+0.151 NUV), with an adopted log-flux floor of 0.5 outside the empirically
 tested 6812--41430 K range. This is a conservative model allowance,
 not calibrated probability coverage. A missing GALEX measurement supplies
 no bound; catalogue absence is not a measured nondetection.

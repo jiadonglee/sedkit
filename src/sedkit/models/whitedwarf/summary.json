@@ -19,6 +19,18 @@
   "replaced_outliers": [],
   "calibrated": true,
   "supported_channels": 123,
-  "calibration": "WD-only exp(a + W b), source-grouped five-fold validation on 297 local DA anchors",
-  "uv_calibration": "71 low-proper-motion local DA anchors, 6812--41430 K; constant FUV/NUV passband correction"
+  "calibration": "Absolute single-DA scale: robust log-Teff spline plus linear logg, spectral labels and Gaia parallax",
+  "uv_calibration": "71 real single DAs, absolute FUV/NUV passband factors at spectral labels, cooling radius, Gaia parallax and native extinction",
+  "calibration_anchors": 294,
+  "calibration_holdout": 289,
+  "empirical_teff_range": [
+    6003.0,
+    56800.0
+  ],
+  "empirical_logg_range": [
+    7.37,
+    9.260000228881836
+  ],
+  "calibration_report": "reports/wd_single_scale_20261010/summary.json",
+  "model_error": "Temperature-dependent correlated absolute scale plus diagonal spectral shape"
 }

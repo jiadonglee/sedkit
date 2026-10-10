@@ -19,7 +19,8 @@ class WhiteDwarfModel:
 
     No hot-star or subdwarf correction is applied. calibration=None uses
     raw spectra; 'bundled' or a dict supplies a WD-only correction/error.
-    The bundled WD correction and thick hydrogen are the defaults.
+    The bundled optical calibration follows real single-DA spectral
+    labels and Gaia absolute fluxes. Thick hydrogen is the default.
     Unsupported infrared channels are NaN. Mass is in solar masses,
     radius in solar radii, temperatures in K and cooling ages in Gyr.
     """
@@ -94,6 +95,15 @@ class WhiteDwarfModel:
             c = self.calibration
             correction = c["a"] + w * c["b"]
             blue_correction = c["blue_a"] + w * c["blue_b"]
+            if "teff_knots" in c:
+                knots = np.log(c["teff_knots"])
+                x = np.clip(np.log(teff), knots[0], knots[-1])
+                i = min(np.searchsorted(knots, x, side="right") - 1, len(knots) - 2)
+                fraction = (x - knots[i]) / (knots[i + 1] - knots[i])
+                correction += ((1 - fraction) * c["teff_flux"][i] + fraction * c["teff_flux"][i + 1]
+                               + (logg - 8.) * c["logg_flux"])
+                blue_correction += ((1 - fraction) * c["teff_blue"][i] + fraction * c["teff_blue"][i + 1]
+                                    + (logg - 8.) * c["logg_blue"])
             ln_flux += correction
             ln_blue += blue_correction
             lam = np.r_[self.blue_wavelength_nm, self.wavelength_um[:61] * 1000]
@@ -202,7 +212,11 @@ class _Problem:
             extra_error[-len(self.galex):] = c["uv_diag"][indices]
         if self.galex and not 6812 <= teff <= 41430:
             extra_error[-len(self.galex):] = np.maximum(extra_error[-len(self.galex):], .5)
-        return dict(flux=np.r_[full[self.idx], extra], columns=np.zeros((len(self.y), 0)),
+        columns = np.zeros((len(self.y), 0))
+        if c is not None and "scale_sigma" in c:
+            sigma = float(np.interp(np.log(teff), np.log(c["teff_knots"]), c["scale_sigma"]))
+            columns = np.r_[full[self.idx], extra][:, None] * sigma
+        return dict(flux=np.r_[full[self.idx], extra], columns=columns,
                     variance=np.r_[(full[self.idx] * diag[self.idx])**2, (extra * extra_error)**2],
                     full=full, coarse=coarse, labels={k: pred[k] for k in
                         ("teff", "mass", "radius", "logg", "cooling_age_gyr", "luminosity")})

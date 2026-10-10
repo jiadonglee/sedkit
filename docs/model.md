@@ -265,9 +265,11 @@ posterior.
 The [DA route](whitedwarf.md) combines Koester surface spectra with
 Bédard C/O-core cooling tracks. It compares a dwarf, a DA and their
 physical flux sum at the shared distance/extinction. The WD-only XP
-shape correction is trained with source-grouped folds. Empirical WD
-errors enter as diagonal variance; stellar errors retain their low-rank
-covariance. The likelihood includes both covariance determinants.
+calibration retains absolute flux at spectral Teff/log g and Gaia parallax.
+Its log-temperature spline and gravity term are trained on real single
+DAs with source-grouped folds. Empirical WD errors include a correlated
+normalization term and diagonal shape variance; stellar errors retain their
+low-rank covariance. The likelihood includes both covariance determinants.
 
 The default WD radius follows its temperature and mass, with thick H.
 Thin-H tracks and a free WD radius are available for sensitivity and
