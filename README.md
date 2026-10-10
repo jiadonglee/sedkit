@@ -135,6 +135,7 @@ See [model and limitations](docs/model.md) for the full description and
 
 | Entry point | Stars | Support | Hypotheses |
 | --- | --- | --- | --- |
+| `locate`, `fit_star` | any star with Gaia G, BP-RP, Ks and a parallax: placed on the HR diagram, then fitted with its region's route | the routes below; subgiants, late M dwarfs, cool and hot evolved stars and stars below the supported main sequence return no fit | per region: main sequence dwarf, MS+MS, DA+MS; A/B single, binary; giant alone, giant+companion; subdwarf hypotheses; WD hypotheses |
 | `fit` with `StellarModel()` | FGKM dwarfs: empirical J-CAPS network on PARSEC tracks | Teff 2800--7498 K (sparse ultracool support to 2313 K), age 0.5--10 Gyr, [M/H] -1.0 to +0.5; primary mass to 1.5--1.8 solar masses at 0.5--2 Gyr and 1.38 at 3 Gyr (solar [M/H]) | single star, coeval binary |
 | `fit` with `StellarModel(hot=True)` | adds A and B dwarfs: CK04/TLUSTY table with an empirical XP correction | 7000--30000 K, log g 3--4.75, [M/H] -0.3 to +0.3, age from 4 Myr, mass to 20 solar masses; XP and J/H/Ks only | single star, coeval binary |
 | `fit_giant_companion` | red giant (empirical APOGEE template) plus a hot main-sequence companion | giant Teff 3600--6800 K, log g 0--3.8, [M/H] -2.6 to +0.6; companion 1.5--15 solar masses at 10 Myr and solar [M/H] | giant alone, giant plus companion profiled in mass |
@@ -308,6 +309,38 @@ preference diagnostic, not a binary probability.
 Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
 at Gaia's reference epoch. Coordinate lookup requires exactly one Gaia
 match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
+
+## One star, located first
+
+```python
+from sedkit import download, fit_star
+
+sed = download("1521154374020165376", cache_dir="data")
+result = fit_star(sed)
+print(result["region"], result["preferred"], result["delta"])
+```
+
+`locate` places the star by its parallax M_G, BP-RP and G-Ks, dereddened by
+`extinction=` or the `dust_prior` map mean, against the main sequence that
+the PARSEC tables populate inside the model's support, widened by 0.75 mag
+for unresolved binaries. `fit_star` then runs only that region's hypotheses:
+
+| Region | Route | Hypotheses |
+| --- | --- | --- |
+| `ms` | `fit_whitedwarf_companion` | dwarf, coeval MS+MS with free q, DA+dwarf |
+| `hot_ms` | `fit` with `StellarModel(hot=True)` | single, coeval binary |
+| `giant` | `fit_giant_companion`, with `labels=dict(teff=, logg=, feh=)` | giant alone, giant+companion |
+| `sdb` | `fit_subdwarf_companion` | FGK, subdwarf, subdwarf+dwarf, subdwarf+subgiant |
+| `wd` | `fit_whitedwarf_companion` | dwarf, DA, DA+dwarf |
+
+Hypotheses of one region share one data vector and likelihood, so their
+objectives compare directly; objectives of different regions do not. In the
+`ms` region MS+MS is one component with fully correlated model errors, as in
+`fit`. `preferred` is the simplest hypothesis within `tie=1` of the lowest
+objective; no composite-detection threshold is calibrated for the `ms`
+region. `region=` overrides the location and `options=` passes arguments to
+the route. Age is free by default (`age_gyr=None`); location is sensitive to
+extinction beyond about 200 pc.
 
 ## Fit extinction and parallax together
 

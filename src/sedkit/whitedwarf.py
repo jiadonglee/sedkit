@@ -1,6 +1,7 @@
 """DA white dwarfs, dwarf companions and conditional G-band light limits."""
 
 import json
+from itertools import product
 from pathlib import Path
 
 import numpy as np
@@ -169,8 +170,10 @@ class _Problem:
         values.extend(self.wd.passband(coarse, b) for b in self.galex)
         return np.array(values)
 
-    def dwarf(self, mass, age, feh, scale, e):
-        pred = self.stellar.evaluate(mass, 0, age, feh)
+    def dwarf(self, mass, age, feh, scale, e, q=0.):
+        """One dwarf, or a coeval pair with q > 0 as one component with fully
+        correlated model errors."""
+        pred = self.stellar.evaluate(mass, q, age, feh)
         if pred is None:
             return None
         full = pred["flux_10pc"] * scale
@@ -190,7 +193,8 @@ class _Problem:
         return dict(flux=np.r_[full[self.idx] * att[self.idx], extra], columns=cols,
                     variance=np.r_[variance[self.idx], (.5 * extra)**2], full=full * att, coarse=coarse,
                     labels=dict(teff=float(pred["teff"][0]), mass=float(mass), logg=float(pred["logg"][0]),
-                                radius=float(pred["radius"][0]), age_gyr=float(age), feh=float(feh)))
+                                radius=float(pred["radius"][0]), age_gyr=float(age), feh=float(feh),
+                                q=float(q), m2=float(mass * q), beta_g=pred["beta_g"]))
 
     def white_dwarf(self, teff, mass, radius, logg, scale, e):
         try:
@@ -259,6 +263,8 @@ class _Hypothesis:
                 self.bounds["age"] = (np.log(.5), np.log(10.))
             if feh is None:
                 self.bounds["feh"] = (-1., .5)
+        if kind == "ms+ms" and luminous_mass is None:
+            self.bounds["q"] = (.1, 1.)
         if problem.extinction is None:
             self.bounds["e"] = (0., 2.)
         if problem.fit_parallax:
@@ -282,15 +288,16 @@ class _Hypothesis:
             components.append(wd)
         if self.kind != "wd":
             age, feh = float(np.clip(np.exp(v["age"]), .5, 10.)) if self.age is None else self.age, v.get("feh", self.feh)
-            dwarf = p.dwarf(np.exp(v["primary"]), age, feh, scale, e)
+            mass, q = np.exp(v["primary"]), 0.
+            if self.kind == "ms+ms":
+                if self.luminous_mass is None:
+                    q = v["q"]
+                else:
+                    mass, q = max(mass, self.luminous_mass), min(mass, self.luminous_mass) / max(mass, self.luminous_mass)
+            dwarf = p.dwarf(mass, age, feh, scale, e, q)
             if dwarf is None:
                 return None
             components.append(dwarf)
-            if self.kind == "ms+ms":
-                second = p.dwarf(self.luminous_mass, age, feh, scale, e)
-                if second is None:
-                    return None
-                components.append(second)
         penalty = z*z
         if p.extinction_prior is not None:
             penalty += ((e - p.extinction_prior[0]) / p.extinction_prior[1])**2
@@ -312,7 +319,7 @@ class _Hypothesis:
 
     def fit(self, initial=None):
         base = dict(t=np.log(15000.), m=.6, g=8., r=np.log(.013), primary=np.log(.8), age=np.log(5.),
-                    feh=0., e=self.p.extinction_prior[0] if self.p.extinction_prior is not None else .01, z=0.)
+                    feh=0., q=.6, e=self.p.extinction_prior[0] if self.p.extinction_prior is not None else .01, z=0.)
         if self.p.dust is not None:
             base["e"] = self.p.dust.moments(self.p.sed.metadata["ra"], self.p.sed.metadata["dec"],
                                             1000 / self.p.parallax[0])[0]
@@ -321,29 +328,28 @@ class _Hypothesis:
         temperatures = [8000, 11000, 15000, 22000, 35000, 60000] if "t" in self.names else [15000]
         masses = [.2, .4, .7, 1., 1.3] if "primary" in self.names else [.8]
         ages = [5.]
-        if self.kind == "dwarf" and self.age is None:
+        if self.kind in ("dwarf", "ms+ms") and self.age is None:
             masses = np.linspace(.1, 2.2, 22)
             ages = [1., 2., 5., 8., 9.8]
+        ratios = [.3, .6, .9, 1.] if "q" in self.names else [.6]
         seeds = []
         if initial is not None:
-            seeds.extend({**base, **initial, "t": np.log(t)} for t in temperatures)
-        for t in temperatures:
-            for mass in masses:
-                for age in ages:
-                    v = dict(base, t=np.log(t), primary=np.log(mass), age=np.log(age))
-                    if self.free_radius and "t" in self.names:
-                        wd = self.p.white_dwarf(t, .6, .013, 8., 1, 0)
-                        if wd is not None:
-                            ratio = np.median(self.p.y[:len(self.p.idx)] / wd["flux"][:len(self.p.idx)])
-                            if ratio > 0:
-                                v["r"] = np.clip(np.log(.013 * np.sqrt(ratio) / (self.p.parallax[0] / 100)),
-                                                 *self.bounds["r"])
-                    seeds.append(v)
+            seeds.extend({**base, **initial, "t": np.log(t), "q": q} for t in temperatures for q in ratios)
+        for t, mass, age, q in product(temperatures, masses, ages, ratios):
+            v = dict(base, t=np.log(t), primary=np.log(mass), age=np.log(age), q=q)
+            if self.free_radius and "t" in self.names:
+                wd = self.p.white_dwarf(t, .6, .013, 8., 1, 0)
+                if wd is not None:
+                    ratio = np.median(self.p.y[:len(self.p.idx)] / wd["flux"][:len(self.p.idx)])
+                    if ratio > 0:
+                        v["r"] = np.clip(np.log(.013 * np.sqrt(ratio) / (self.p.parallax[0] / 100)),
+                                         *self.bounds["r"])
+            seeds.append(v)
         if self.p.galex_upper_limits and "e" in self.names:
             seeds.extend([{**v,"e":e} for v in list(seeds) for e in [.15,.3,.6]])
         ranked = sorted(((self.objective([v[k] for k in self.names]), v) for v in seeds), key=lambda item: item[0])
         results = []
-        steps = dict(t=.08, m=.05, g=.1, r=.05, primary=.05, age=.2, feh=.1, e=.02, z=.2)
+        steps = dict(t=.08, m=.05, g=.1, r=.05, primary=.05, age=.2, feh=.1, q=.1, e=.02, z=.2)
         for score, v in ranked[:3]:
             if score >= 1e29:
                 continue
@@ -404,7 +410,8 @@ def _prepare(sed, model, stellar, extinction, extinction_prior, dust_prior, para
 def fit_whitedwarf_companion(sed, *, model=None, stellar=None, companions=True, free_radius=False,
                             companion_age_gyr=5., companion_feh=0., extinction=0., extinction_prior=None,
                             dust_prior=None, parallax=None, fit_parallax=False, blue=None, galex=None,
-                            use_spherex=False, whitedwarf_prior=None, companion_prior=None):
+                            use_spherex=False, whitedwarf_prior=None, companion_prior=None,
+                            hypotheses=None):
     """Compare one dwarf, one DA WD and DA+dwarf on identical data channels.
 
     WD parameters are Teff and mass, with radius from thick-H C/O cooling
@@ -412,24 +419,35 @@ def fit_whitedwarf_companion(sed, *, model=None, stellar=None, companions=True, 
     age/metallicity are fixed unless None. Foreground extinction and
     parallax are shared; parallax can move within three catalogue sigma.
     beta_G is the reddened WD fraction of the total G light, not F2/F1.
+    hypotheses selects from "dwarf", "ms+ms" (a coeval dwarf pair with free q,
+    one component with fully correlated model errors), "wd" and "wd+dwarf";
+    by default the last three of these without "ms+ms", or "dwarf" and "wd"
+    with companions=False.
     Delta objectives are diagnostics, not classification probabilities.
     """
+    kinds = (tuple(hypotheses) if hypotheses is not None
+             else ("dwarf", "wd", "wd+dwarf") if companions else ("dwarf", "wd"))
+    unknown = set(kinds) - {"dwarf", "ms+ms", "wd", "wd+dwarf"}
+    if unknown or not kinds:
+        raise ValueError(f"unknown hypotheses: {sorted(unknown)}")
     p = _prepare(sed, model, stellar, extinction, extinction_prior, dust_prior, parallax, fit_parallax,
                  blue, galex, use_spherex, whitedwarf_prior, companion_prior)
-    kinds = ("dwarf", "wd", "wd+dwarf") if companions else ("dwarf", "wd")
     results = {}
     primary_seed = None
+    if "dwarf" in kinds:
+        kinds = ("dwarf",) + tuple(k for k in kinds if k != "dwarf")
     for kind in kinds:
         results[kind], values = _Hypothesis(p, kind, free_radius, companion_age_gyr, companion_feh).fit(
-            initial=primary_seed if kind == "wd+dwarf" else None)
+            initial=primary_seed if kind in ("ms+ms", "wd+dwarf") else None)
         if kind == "dwarf":
             primary_seed = values
     best = min(results, key=lambda k: results[k]["objective"])
     if not np.isfinite(results[best]["objective"]):
         raise ValueError("no supported hypothesis could be fitted")
     return dict(hypotheses=results, preferred=best,
-                detection_statistic=(min(results[k]["objective"] for k in ("dwarf","wd"))
-                                     - results["wd+dwarf"]["objective"]) if companions else None,
+                detection_statistic=(min(results[k]["objective"] for k in ("dwarf", "wd") if k in results)
+                                     - results["wd+dwarf"]["objective"])
+                                    if "wd+dwarf" in results and {"dwarf", "wd"} & set(results) else None,
                 delta={k: r["objective"] - results[best]["objective"] for k, r in results.items()},
                 mask=p.mask, n_fit=len(p.y), source_id=sed.source_id,
                 data=dict(y=p.y, error=np.sqrt(p.variance)), free_radius=free_radius,
