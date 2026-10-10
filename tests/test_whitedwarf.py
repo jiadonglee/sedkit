@@ -3,7 +3,7 @@ import pytest
 
 from sedkit import SED, StellarModel, WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
 from sedkit import loglike_whitedwarf_sed
-from sedkit.orbit import photocentre_a0, solve_dark_companion
+from sedkit.orbit import photocentre_a0, solve_dark_companion, solve_luminous_pair
 
 
 @pytest.fixture(scope="module")
@@ -54,6 +54,9 @@ def test_single_da_and_composite_recovery(wd):
     assert abs(p["whitedwarf"]["teff"] / 18000 - 1) < .05
     assert abs(p["companion"]["mass"] - .35) < .02
     assert 0 < p["fractions"]["beta_G"] < 1
+    assert p["photocentre"]["star1"] == "whitedwarf"
+    assert p["photocentre"]["coefficient"] == pytest.approx(
+        p["photocentre"]["mass_fraction_star1"]-p["fractions"]["beta_G"])
     assert result["mask"].sum() == 64
 
 
@@ -118,3 +121,11 @@ def test_wd_likelihood_atom_excludes_parallax_prior(wd):
     sed.parallax_mas=15;sed.parallax_error_mas=.001
     assert loglike_whitedwarf_sed(sed,**options)==correct
     assert loglike_whitedwarf_sed(sed,**{**options,"teff":5000})==-np.inf
+
+
+def test_wd_dominated_composite_uses_luminous_pair_branches():
+    beta=.9
+    a0=photocentre_a0(.6,.2,beta,500,10)
+    roots=solve_luminous_pair(a0,10,500,m2=.2,beta=beta)
+    wd_branch=next(r for r in roots if r["branch"]=="B<beta")
+    assert wd_branch["m1"]==pytest.approx(.6,abs=1e-7)

@@ -337,6 +337,11 @@ class _Hypothesis:
                                     for b in ("G", "BP", "RP")}
         if dwarf is not None:
             summary["companion"] = dwarf["labels"]
+        if wd is not None and dwarf is not None:
+            b = wd["labels"]["mass"] / (wd["labels"]["mass"] + dwarf["labels"]["mass"])
+            summary["photocentre"] = dict(star1="whitedwarf", star2="dwarf",
+                mass_fraction_star1=b, light_fraction_star1=summary["fractions"]["beta_G"],
+                coefficient=b-summary["fractions"]["beta_G"])
         return summary, v
 
 
