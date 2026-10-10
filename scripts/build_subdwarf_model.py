@@ -293,7 +293,7 @@ def _uv_curve():
     return wave, scale * g23(wave * u.nm), scale
 
 
-def _screen(cube, teff_ax, keys, limit=0.01):
+def _screen(cube, teff_ax, keys, limit=0.01, logg_ax=LOGG_AX):
     """Replace isolated outlier models by their log g neighbours, in place.
 
     A node is an outlier when its mean ln flux over XP departs by more than `limit` from the mean of its
@@ -318,7 +318,7 @@ def _screen(cube, teff_ax, keys, limit=0.01):
                 cube[key][i, j] = 0.5 * (cube[key][i, j - 1] + cube[key][i, j + 1])
             else:
                 cube[key][i, j] = np.sqrt(cube[key][i, j - 1] * cube[key][i, j + 1])
-        replaced.append([float(teff_ax[i]), float(LOGG_AX[j]), round(float(dg[i, j]), 4)])
+        replaced.append([float(teff_ax[i]), float(logg_ax[j]), round(float(dg[i, j]), 4)])
 
 
 def _missing(coarse):

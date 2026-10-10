@@ -1,0 +1,24 @@
+{
+  "source": "SVO Koester koester2 DA LTE, 4 pi H_lambda, air wavelengths",
+  "cooling": "Bedard et al. 2020 C/O core; default q_H=1e-4, optional thin q_H=1e-10; q_He=1e-2",
+  "units": "10-pc F_lambda for R=1 Rsun, 1e-18 W m^-2 nm^-1",
+  "teff": [
+    6000.0,
+    80000.0
+  ],
+  "logg": [
+    7.0,
+    9.5
+  ],
+  "nodes": 858,
+  "wavelength_range_nm": [
+    89.922998046875,
+    2999.179296875
+  ],
+  "ew_max_nm": 10.435690342291725,
+  "replaced_outliers": [],
+  "calibrated": true,
+  "supported_channels": 123,
+  "calibration": "WD-only exp(a + W b), source-grouped five-fold validation on 297 local DA anchors",
+  "uv_calibration": "71 low-proper-motion local DA anchors, 6812--41430 K; constant FUV/NUV passband correction"
+}

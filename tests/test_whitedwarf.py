@@ -1,0 +1,120 @@
+import numpy as np
+import pytest
+
+from sedkit import SED, StellarModel, WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
+from sedkit import loglike_whitedwarf_sed
+from sedkit.orbit import photocentre_a0, solve_dark_companion
+
+
+@pytest.fixture(scope="module")
+def wd():
+    return WhiteDwarfModel()
+
+
+def mock(wd, teff=15000, mass=.6, companion=None):
+    p = wd.predict(teff, mass)
+    flux = p["flux"].copy()
+    cool = None
+    if companion is not None:
+        cool = StellarModel().evaluate(companion, 0, 5, 0)["flux_10pc"]
+        flux += cool
+    sed = SED(flux * .01, flux * .0001, wd.support, 10, .02, "mock")
+    beta = None if cool is None else wd.passband(p["coarse"], "G")
+    return sed, p, cool, beta
+
+
+def test_cooling_relation_units_and_support(wd):
+    p = wd.physical(10000, .6)
+    assert abs(p["radius"] - .01283) < 2e-5
+    assert abs(p["cooling_age_gyr"] - .633) < .002
+    assert abs(p["logg"] - 8.) < .003
+    assert abs(wd.teff_at_age(.6, p["cooling_age_gyr"]) - 10000) < 1
+    for args in [(5000, .6), (90000, .6), (15000, 1.4)]:
+        with pytest.raises(ValueError):
+            wd.predict(*args)
+    with pytest.raises(ValueError):
+        wd.predict(15000, logg=6.0, radius=.03)
+    assert not wd.support[64:66].any()
+    assert not wd.support[-1]
+    thin = WhiteDwarfModel(hydrogen_layer="thin").physical(10000,.6)
+    assert 0 < thin["radius"] < p["radius"]
+
+
+def test_single_da_and_composite_recovery(wd):
+    sed, _, _, _ = mock(wd)
+    result = fit_whitedwarf_companion(sed, model=wd)
+    assert result["hypotheses"]["wd"]["converged"]
+    p = result["hypotheses"]["wd"]["whitedwarf"]
+    assert abs(p["teff"] / 15000 - 1) < .01 and abs(p["mass"] - .6) < .01
+    assert result["delta"]["dwarf"] > 100
+    sed, _, _, _ = mock(wd, teff=18000, companion=.35)
+    result = fit_whitedwarf_companion(sed, model=wd)
+    assert result["preferred"] == "wd+dwarf"
+    p = result["hypotheses"]["wd+dwarf"]
+    assert abs(p["whitedwarf"]["teff"] / 18000 - 1) < .05
+    assert abs(p["companion"]["mass"] - .35) < .02
+    assert 0 < p["fractions"]["beta_G"] < 1
+    assert result["mask"].sum() == 64
+
+
+def test_free_radius_validation_mode(wd):
+    p = wd.predict(13000, logg=8.1, radius=.016)
+    sed = SED(p["flux"] * .01, p["flux"] * .0002, wd.support, 10, .02, "free")
+    result = fit_whitedwarf_companion(sed, model=wd, companions=False, free_radius=True,
+                                    whitedwarf_prior={"logg": (8.1, .01)})
+    p = result["hypotheses"]["wd"]["whitedwarf"]
+    assert abs(p["radius"] / .016 - 1) < .03
+    assert p["cooling_age_gyr"] is None
+
+
+def test_light_limit_and_orbit_flux_ratio_conversion(wd):
+    f = StellarModel().evaluate(.9, 0, 5, 0)["flux_10pc"]
+    sed = SED(f * .01, f * .0001, wd.support, 10, .02, "primary")
+    result = whitedwarf_light_limit(sed, model=wd, masses=[.6],
+                                    temperatures=[6000, 10000, 20000, 40000, 80000], luminous_mass=.6)
+    assert any(r["teff"] == 6000 for r in result["profile"])
+    assert .005 < result["beta_G_upper"] < .1
+    assert result["confidence_level"] is None
+    assert result["luminous_companion"]["delta"] > 100
+    assert result["intervals"]
+    beta = .02
+    # photocentre_a0 takes star 1's light fraction; solve_dark_companion takes F2/F1.
+    a0 = photocentre_a0(.9, .6, 1 - beta, 500, 10)
+    mass = solve_dark_companion(a0, 10, 500, .9, beta=beta / (1 - beta))
+    assert abs(mass["m2"] - .6) < 1e-6
+
+
+def test_shared_nuisance_input_checks(wd):
+    sed, _, _, _ = mock(wd)
+    with pytest.raises(ValueError):
+        fit_whitedwarf_companion(sed, model=wd, extinction=None)
+    with pytest.raises(ValueError):
+        fit_whitedwarf_companion(sed, model=wd, extinction=0, extinction_prior=(0, .1))
+    with pytest.raises(ValueError):
+        fit_whitedwarf_companion(sed, model=wd, blue=([1], [1]))
+    with pytest.raises(ValueError):
+        whitedwarf_light_limit(sed, temperatures=[5000,10000])
+    with pytest.raises(ValueError):
+        fit_whitedwarf_companion(sed, whitedwarf_prior={"metallicity":(0.,.1)})
+
+
+def test_fitted_age_metallicity_and_parallax():
+    stellar=StellarModel()
+    f=stellar.evaluate(1.2,0,2.,-.2)["flux_10pc"]
+    sed=SED(.01*f,.0002*f,np.arange(168)<61,10,.1,"nuisance")
+    result=fit_whitedwarf_companion(sed,companion_age_gyr=None,companion_feh=None,
+        companion_prior={"feh":(-.2,.1)},fit_parallax=True)
+    primary=result["hypotheses"]["dwarf"]
+    assert primary["converged"] and primary["chi2"]/primary["n_fit"]<1
+    assert abs(primary["parallax_mas"]-10)<.3
+
+
+def test_wd_likelihood_atom_excludes_parallax_prior(wd):
+    sed,_,_,_=mock(wd,teff=18000,companion=.35)
+    options=dict(teff=18000,mass=.6,primary_mass=.35,model=wd,parallax_mas=10)
+    correct=loglike_whitedwarf_sed(sed,**options)
+    assert np.isfinite(correct)
+    assert loglike_whitedwarf_sed(sed,**{**options,"teff":25000})<correct
+    sed.parallax_mas=15;sed.parallax_error_mas=.001
+    assert loglike_whitedwarf_sed(sed,**options)==correct
+    assert loglike_whitedwarf_sed(sed,**{**options,"teff":5000})==-np.inf

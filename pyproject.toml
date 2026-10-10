@@ -27,7 +27,7 @@ Repository = "https://github.com/jiadonglee/sedkit"
 where = ["src"]
 
 [tool.setuptools.package-data]
-sedkit = ["models/*.npz", "models/*.txt", "models/stellar/*.npz", "models/stellar/*.json", "models/hot/*.npz", "models/hot/*.json", "models/giant/*.npz", "models/giant/*.json", "models/subdwarf/*.npz", "models/subdwarf/*.json"]
+sedkit = ["models/*.npz", "models/*.txt", "models/stellar/*.npz", "models/stellar/*.json", "models/hot/*.npz", "models/hot/*.json", "models/giant/*.npz", "models/giant/*.json", "models/subdwarf/*.npz", "models/subdwarf/*.json", "models/whitedwarf/*.npz", "models/whitedwarf/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
