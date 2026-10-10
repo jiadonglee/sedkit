@@ -48,8 +48,9 @@ The default `WhiteDwarfModel()` calibrates spectral shape and absolute
 XP flux to 294 real single DAs, using their spectroscopic Teff/log g,
 Gaia parallax and native Edenhofer extinction. The correction is linear
 between seven knots in log Teff, with a linear gravity term. Source
-normalizations are retained. The error model separates a correlated
-absolute-scale term from diagonal spectral-shape scatter. It inherits
+normalizations are retained. The model error is diagonal spectral-shape
+scatter; the absolute scale is constrained through the parallax and
+extinction priors, with Teff and mass free. It inherits
 no hot-star or sdB correction. `WhiteDwarfModel(calibration=None)` uses raw spectra.
 `WhiteDwarfModel(hydrogen_layer="thin")` selects the thin-H cooling
 tracks for a direct sensitivity comparison; the default is thick H.
@@ -66,7 +67,10 @@ unless explicitly supplied. Match it with proper motion and reject
 saturated, contaminated or ambiguous measurements.
 
 `objective` is minus twice the likelihood plus parameter-prior penalties,
-including the model covariance determinant. `chi2` and `minus2lnL`
+including the model covariance determinant. Fractional model errors are
+evaluated at the observed flux and shared between components by their
+model light fractions, so the determinant does not depend on the overall
+model brightness. `chi2` and `minus2lnL`
 are also returned. `preferred` names the smallest objective;
 `detection_statistic` is the composite improvement over the better
 single-star model. This statistic is a diagnostic, not a probability.
@@ -75,7 +79,7 @@ of 55. The absolute-scale model needs its own composite-detection
 calibration; changing the model, data or priors changes that threshold's scope.
 
 On 289 independent single DAs at 100--150 pc, the M–R fit gives
-+1.76% Teff bias and 3.62% robust scatter; absolute XP normalization
++1.40% Teff bias and 3.54% robust scatter; absolute XP normalization
 has +1.90% median bias and about 14% source scatter. These fits use
 native extinction priors and catalogue parallax constraints.
 The calibration labels cover 6003--56800 K and log g 7.37--9.26.

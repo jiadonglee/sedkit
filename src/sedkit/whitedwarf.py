@@ -157,6 +157,7 @@ class _Problem:
         self.y, self.variance = np.array(y), np.array(err)**2
         if not np.isfinite(self.y).all() or not np.all(np.isfinite(self.variance) & (self.variance > 0)):
             raise ValueError("fitting data need finite fluxes and positive errors")
+        self.reference = np.maximum(self.y, np.sqrt(self.variance))
         self.extinction, self.extinction_prior, self.dust = extinction, extinction_prior, dust_prior
         self.parallax, self.fit_parallax = parallax, fit_parallax
         self.priors = (wd_prior, companion_prior)
@@ -212,19 +213,18 @@ class _Problem:
             extra_error[-len(self.galex):] = c["uv_diag"][indices]
         if self.galex and not 6812 <= teff <= 41430:
             extra_error[-len(self.galex):] = np.maximum(extra_error[-len(self.galex):], .5)
-        columns = np.zeros((len(self.y), 0))
-        if c is not None and "scale_sigma" in c:
-            sigma = float(np.interp(np.log(teff), np.log(c["teff_knots"]), c["scale_sigma"]))
-            columns = np.r_[full[self.idx], extra][:, None] * sigma
-        return dict(flux=np.r_[full[self.idx], extra], columns=columns,
+        return dict(flux=np.r_[full[self.idx], extra], columns=np.zeros((len(self.y), 0)),
                     variance=np.r_[(full[self.idx] * diag[self.idx])**2, (extra * extra_error)**2],
                     full=full, coarse=coarse, labels={k: pred[k] for k in
                         ("teff", "mass", "radius", "logg", "cooling_age_gyr", "luminosity")})
 
     def likelihood(self, components):
         flux = sum(c["flux"] for c in components)
-        columns = np.concatenate([c["columns"] for c in components], axis=1)
-        variance = self.variance + sum(c["variance"] for c in components)
+        # Fractional model errors are taken at the observed flux, shared by light fraction,
+        # so the covariance determinant does not depend on the overall model level.
+        ratio = self.reference / np.maximum(flux, 1e-300)
+        columns = np.concatenate([c["columns"] for c in components], axis=1) * ratio[:, None]
+        variance = self.variance + sum(c["variance"] for c in components) * ratio**2
         residual = flux - self.y
         small = np.eye(columns.shape[1]) + columns.T @ (columns / variance[:, None])
         nuisance = np.linalg.solve(small, columns.T @ (residual / variance))

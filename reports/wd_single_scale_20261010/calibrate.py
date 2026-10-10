@@ -47,17 +47,10 @@ def calibration(x,residual,train,smoothing,uv_residual,folds):
     gray_remaining=np.nanmedian(remaining,axis=1)
     shape_remaining=remaining-gray_remaining[:,None]
     diag=np.clip(1.4826*np.nanmedian(abs(shape_remaining[train]-np.nanmedian(shape_remaining[train],axis=0)),axis=0),.01,.3)
-    scale_sigma=[]
-    for j in range(len(KNOTS)):
-        # Temperature-local scatter of absolute normalization; optical channels share it.
-        weights=x[train,:-1]
-        selected=(weights[:,j]>.15)
-        v=gray_remaining[train][selected]
-        scale_sigma.append(max(.03,float(1.4826*np.median(abs(v-np.median(v))))) if len(v)>=8 else .20)
     c=dict(a=np.zeros(168),b=np.zeros(168),blue_a=np.zeros(6),blue_b=np.zeros(6),
            diag=np.r_[diag[6:],np.full(107,.03)],blue_diag=diag[:6],teff_knots=KNOTS,
            teff_flux=np.c_[coef[:-1,6:],np.zeros((len(KNOTS),107))],logg_flux=np.r_[coef[-1,6:],np.zeros(107)],
-           teff_blue=coef[:-1,:6],logg_blue=coef[-1,:6],scale_sigma=np.array(scale_sigma))
+           teff_blue=coef[:-1,:6],logg_blue=coef[-1,:6])
     uv=uv_residual[train]
     c["uv_a"]=np.nanmedian(uv,axis=0)
     c["uv_diag"]=np.maximum(.05,1.4826*np.nanmedian(abs(uv-c["uv_a"]-gray_remaining[train,None]),axis=0))
@@ -218,7 +211,7 @@ def main():
                     empirical_teff_range=[float(min(rows["teff"])),float(max(rows["teff"]))],
                     empirical_logg_range=[float(min(rows["logg"])),float(max(rows["logg"]))],
                     calibration_report="reports/wd_single_scale_20261010/summary.json",
-                    model_error="Temperature-dependent correlated absolute scale plus diagonal spectral shape",
+                    model_error="Diagonal spectral shape; absolute scale through parallax and extinction priors",
                     uv_calibration="71 real single DAs, absolute FUV/NUV passband factors at spectral labels, cooling radius, Gaia parallax and native extinction")
     (model_path/"summary.json").write_text(json.dumps(metadata,indent=2)+"\n")
 

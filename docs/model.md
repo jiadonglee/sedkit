@@ -267,9 +267,9 @@ Bédard C/O-core cooling tracks. It compares a dwarf, a DA and their
 physical flux sum at the shared distance/extinction. The WD-only XP
 calibration retains absolute flux at spectral Teff/log g and Gaia parallax.
 Its log-temperature spline and gravity term are trained on real single
-DAs with source-grouped folds. Empirical WD errors include a correlated
-normalization term and diagonal shape variance; stellar errors retain their
-low-rank covariance. The likelihood includes both covariance determinants.
+DAs with source-grouped folds. Empirical WD errors are diagonal shape
+variance; stellar errors retain their low-rank covariance. Both are taken
+at the observed flux and shared by light fraction. The likelihood includes the covariance determinant.
 
 The default WD radius follows its temperature and mass, with thick H.
 Thin-H tracks and a free WD radius are available for sensitivity and
