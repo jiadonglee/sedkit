@@ -200,6 +200,8 @@ class _Problem:
             extra_error[:6] = c.get("blue_diag", extra_error[:6])
         if self.galex and c is not None and "uv_diag" in c:
             extra_error[-len(self.galex):] = c["uv_diag"][indices]
+        if self.galex and not 6812 <= teff <= 41430:
+            extra_error[-len(self.galex):] = np.maximum(extra_error[-len(self.galex):], .5)
         return dict(flux=np.r_[full[self.idx], extra], columns=np.zeros((len(self.y), 0)),
                     variance=np.r_[(full[self.idx] * diag[self.idx])**2, (extra * extra_error)**2],
                     full=full, coarse=coarse, labels={k: pred[k] for k in

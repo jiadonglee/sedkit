@@ -55,7 +55,9 @@ Optional `blue=(flux6, error6)` supplies XP at 332--382 nm, in SED flux
 units. Optional `galex={"FUV": (AB_mag, mag_error, usable), ...}`
 adds FUV/NUV measurements. The bundled UV passband correction and
 model errors come from 71 local DA anchors at 6.8--41.4 kK. They affect
-GALEX predictions, not the returned coarse continuum. GALEX is absent
+GALEX predictions, not the returned coarse continuum. Outside this
+temperature range, the UV likelihood uses an adopted fractional model-error
+floor of 0.5. GALEX is absent
 unless explicitly supplied. Match it with proper motion and reject
 saturated, contaminated or ambiguous measurements.
 

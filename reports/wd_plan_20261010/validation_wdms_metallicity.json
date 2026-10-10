@@ -1,0 +1,15 @@
+{
+  "n": 126,
+  "teff_median": 0.037869443080922105,
+  "teff_scatter": 0.21401372158467827,
+  "feh_median": -0.20569872945272302,
+  "converged": 126,
+  "feh_prior": [
+    0.0,
+    0.3
+  ],
+  "subtype_median": 0.1111952870732753,
+  "subtype_scatter": 1.366801178386795,
+  "subtype_within_one": 70,
+  "subtype_scale": "https://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt"
+}

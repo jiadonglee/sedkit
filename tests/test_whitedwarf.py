@@ -156,3 +156,13 @@ def test_uv_bound_refits_shared_extinction(wd):
     injected=next(r for r in result["profile"] if r["teff"]==18000)
     assert injected["allowed"] and injected["extinction_e"]>.08
     assert all(8000<=r["teff"]<=35000 for r in result["profile"])
+
+
+def test_uv_fit_error_outside_calibration_temperature_range(wd):
+    from sedkit.whitedwarf import _prepare
+    sed,_,_,_=mock(wd,teff=60000)
+    p=_prepare(sed,wd,None,0.,None,None,None,False,None,{"FUV":(18.,.05,True)},False,None,None)
+    hot=p.white_dwarf(60000,.6,None,None,.01,0.)
+    warm=p.white_dwarf(18000,.6,None,None,.01,0.)
+    assert hot["variance"][-1]==pytest.approx((.5*hot["flux"][-1])**2)
+    assert warm["variance"][-1]==pytest.approx((wd.calibration["uv_diag"][0]*warm["flux"][-1])**2)

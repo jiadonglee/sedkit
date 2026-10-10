@@ -84,6 +84,18 @@ and +11.8% temperature bias with 11.7% scatter for the seven hot anchors;
 the temperature term does not establish the required hot-WD precision.
 Magnitude and temperature bins are in `validation_results.json`.
 
+A separate physical-model comparison uses 84 pure-H
+[TLUSTY207 NLTE nodes](https://archive.stsci.edu/hlsp/wd-grid) at 30--80 kK,
+log g 7--9.5, through the same XP forward operator. On the seven hot
+anchors, raw Koester and raw TLUSTY give temperature biases +17.9% and
++19.8%, with robust scatters 12.6% and 11.8%. Applying the existing
+Koester-trained optical correction to TLUSTY gives −13.6% bias and 7.7%
+scatter; this is a transfer test, not an independently trained NLTE
+calibration. Two raw TLUSTY fits reach the 80-kK grid boundary.
+These comparisons do not establish the 3% hot-temperature precision.
+Per-source fits and the comparison plot are in `nlte_probe.json` and
+`nlte_probe.png`; the runtime atmosphere remains the calibrated DA table.
+
 ## Blue XP and GALEX
 
 Blue XP slightly reduces combined temperature bias without reducing
@@ -99,7 +111,9 @@ This UV test covers 6.8--41.4 kK. Matches propagate Gaia positions to
 2007 and require proper motion < 80 mas/yr, one candidate within
 3 arcsec, no artifact/extraction flags, unsaturated magnitudes and
 magnitude errors < 0.2. Epoch uncertainty is then below 0.4 arcsec.
-GALEX is not supplied by default.
+GALEX is not supplied by default. Outside the empirically tested
+temperature range, the UV likelihood uses an adopted 0.5 fractional
+model-error floor; it does not inherit the measured in-range precision.
 
 ## Null checks and composite recovery
 
@@ -134,6 +148,11 @@ the comparison remains available in `validation_wdms.json`. Broadening
 the adopted extinction prior from 0.03 to 0.10 E gives 17.67% WD
 temperature scatter and 75/126 subtypes within one subclass; it does not
 resolve the subtype shortfall.
+Fitting metallicity with a 0.0 +/- 0.3 dex prior reduces the median
+subtype offset to +0.11 but increases its scatter to 1.37 subclasses;
+70/126 lie within one subclass. WD temperature scatter rises to 21.40%,
+with +3.79% median bias. This does not establish improved composite
+precision; `validation_wdms_metallicity.json` records the comparison.
 The tested statistic recovers 68/126 above 55; this is a catalogue-subset
 recovery fraction, not population completeness.
 
@@ -237,7 +256,9 @@ bundled in `src/sedkit/models/whitedwarf/`.
 Run with `PYTHONPATH=src` in the astronomy Python environment:
 `calibrate_da.py`, `validate_uv.py`, `validate_samples.py`,
 `validate_wdms.py`, `validate_beta.py`, `validate_orbits.py`, `validate_orbits_uv.py`,
-`injections.py`, `wdms_extinction.py`, then `results.py`. The independent-control acquisition
+`injections.py`, `wdms_extinction.py`, `wdms_metallicity.py`, then `results.py`. The independent-control acquisition
 and selection are in `extended_census.py`; external APOGEE inputs are
 identified by their paths there. Published anchor sources are linked
 in [data provenance](data.md).
+`nlte_probe.py` additionally compares the public STScI hot-DA grid;
+its XP-operator path is recorded in the script.
