@@ -69,6 +69,7 @@ Z_MAX = 3.0
 STEP = dict(t=0.5, g=0.1, lnr=0.05, lnm=0.05, lnage=0.3, feh=0.1, tg=1.0, gg=0.1, mg=0.1, lns=0.05,
             e=0.02, z=0.3)
 PROFILE_COARSE_K, PROFILE_FINE_K, PROFILE_WINDOW_K = 2000.0, 500.0, 3000.0
+SCREEN_COARSE_K, SCREEN_NODE = 4000.0, dict(xatol=1e-3, fatol=5e-2, maxfev=1000)   # screening=True
 
 
 def _planck(wave_nm, teff):
@@ -660,12 +661,12 @@ class _Hypothesis:
             value += _giant_physics(self.p, cool, plx, e)["luminosity_penalty"]
         return value
 
-    def minimize(self, x0, fixed=None, maxfev=3000):
+    def minimize(self, x0, fixed=None, maxfev=3000, xatol=1e-4, fatol=1e-3):
         free = [n for n in self.names if n not in (fixed or {})]
         x0 = np.asarray(x0, float)
         simplex = np.vstack([x0, x0 + np.diag([STEP[n] for n in free])])
         return minimize(self.objective, x0, args=(fixed,), method="Nelder-Mead",
-                        options=dict(initial_simplex=simplex, xatol=1e-4, fatol=1e-3, maxfev=maxfev))
+                        options=dict(initial_simplex=simplex, xatol=xatol, fatol=fatol, maxfev=maxfev))
 
 
 def _summary(hyp, v, objective, converged):
@@ -770,7 +771,7 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
                            template=None, giant_template=None, parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
                            dust_prior=None, subdwarf_prior=None, companion_prior=None, companion_age_gyr=None,
                            companion_feh=None, companion_mass=None, use_wise=False, use_spherex=False, blue=None,
-                           galex=None, hot_ms=False, fg_ms=False):
+                           galex=None, hot_ms=False, fg_ms=False, screening=False):
     """Compare a single cool star, a single hot subdwarf and a subdwarf with a cool companion.
 
     companions: any of "dwarf" (PARSEC + J-CAPS network), "subgiant" (GiantTemplate, log g 3.2-3.8, free
@@ -793,6 +794,10 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     which the template does not predict), plus blue=(flux, error) from blue_xp() and galex= from galex().
     GALEX needs the pure-hydrogen tier, the only one with NUV. A companion's GALEX flux, and its blue XP
     flux unless it is a giant, is a blackbody joined to its XP spectrum (COMPANION_UV_ERROR).
+    screening=True is for classifying many stars by the objectives, beta_G and preferred hypothesis alone:
+    the Teff_sd profile has one pass of nodes at SCREEN_COARSE_K, looser node tolerances (SCREEN_NODE) and
+    no refinement around the minimum, and the subdwarf hypotheses carry no `ranges`; the final polish is
+    unchanged. Combine it with tiers=("H",) and companions=("dwarf",) to cut the cost further.
 
     hot_ms=True (with "giant" in companions) adds "ms+giant": the template giant plus a hot star of solar [M/H]
     on the PARSEC isochrones through StellarModel(hot=True), 6800-30000 K and log g 3-4.75, with free mass and
@@ -825,9 +830,9 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
         results["fgk"] = _fit_fgk(problem, age_kw, e0)
     if "giant" in companions:
         results["giant"] = _fit_giant(problem, e0)
-    results["sdb"] = _fit_subdwarf(problem, "sdb", tiers, age_kw, e0)
+    results["sdb"] = _fit_subdwarf(problem, "sdb", tiers, age_kw, e0, screening)
     for name in companions:
-        results[f"sdb+{name}"] = _fit_subdwarf(problem, name, tiers, age_kw, e0)
+        results[f"sdb+{name}"] = _fit_subdwarf(problem, name, tiers, age_kw, e0, screening)
     if hot_ms:
         results["ms+giant"] = _fit_ms_giant(problem, e0)
     if fg_ms:
@@ -1115,9 +1120,12 @@ def _cool_starts(hyp, base):
     return out
 
 
-def _fit_subdwarf(p, name, tiers, age_kw, e0):
+def _fit_subdwarf(p, name, tiers, age_kw, e0, screening=False):
     """Profile over the subdwarf Teff: coarse nodes in every tier, fine nodes around the best, then a
-    free polish. Returns the summary of the best fit with the profile and parameter ranges."""
+    free polish. Returns the summary of the best fit with the profile and parameter ranges; with
+    screening, coarser and looser nodes, no fine nodes and no ranges."""
+    step = SCREEN_COARSE_K if screening else PROFILE_COARSE_K
+    node_opts = SCREEN_NODE if screening else dict(maxfev=2500)
     profile = []
     best_overall = None
     for tier in tiers:
@@ -1131,7 +1139,7 @@ def _fit_subdwarf(p, name, tiers, age_kw, e0):
         def node_fit(teff, start):
             fixed = dict(t=teff / 1000)
             x0 = [start[n] for n in hyp.names if n != "t"]
-            r = hyp.minimize(x0, fixed, maxfev=2500)
+            r = hyp.minimize(x0, fixed, **node_opts)
             v = hyp.unpack(r.x, fixed)
             return r.fun, v, r.success
 
@@ -1142,7 +1150,7 @@ def _fit_subdwarf(p, name, tiers, age_kw, e0):
             v = dict(base, t=teff / 1000, g=s[0], lnr=s[1], **(cool_v or {}))
             return v
 
-        nodes = np.arange(t0, t1 + 1, PROFILE_COARSE_K)
+        nodes = np.arange(t0, t1 + 1, step)
         last = None
         tier_rows = []
         for teff in nodes:
@@ -1158,8 +1166,8 @@ def _fit_subdwarf(p, name, tiers, age_kw, e0):
         if not tier_rows:
             continue
         f_best, t_best, v_best, _ = min(tier_rows, key=lambda r: r[0])
-        for teff in np.arange(max(t0, t_best - PROFILE_WINDOW_K), min(t1, t_best + PROFILE_WINDOW_K) + 1,
-                              PROFILE_FINE_K):
+        for teff in ([] if screening else np.arange(max(t0, t_best - PROFILE_WINDOW_K),
+                                                    min(t1, t_best + PROFILE_WINDOW_K) + 1, PROFILE_FINE_K)):
             if any(abs(teff - r[1]) < 1 for r in tier_rows):
                 continue
             f, v, ok = node_fit(teff, dict(v_best))
@@ -1181,7 +1189,8 @@ def _fit_subdwarf(p, name, tiers, age_kw, e0):
     out = _summary(hyp, v_best, f_best, ok)
     out["profile"] = [dict(tier=r["tier"], teff=r["teff"], objective=r["objective"],
                            delta=r["objective"] - f_best, converged=r["converged"]) for r in profile]
-    out["ranges"] = _ranges(p, name, profile, f_best, out, age_kw)
+    if not screening:
+        out["ranges"] = _ranges(p, name, profile, f_best, out, age_kw)
     return out
 
 

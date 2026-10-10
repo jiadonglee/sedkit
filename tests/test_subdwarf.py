@@ -98,6 +98,21 @@ def test_composite_is_preferred_and_light_fraction_recovered(sdm, stellar):
     assert abs(h["fractions"]["beta_G"] - truth["hypotheses"]["sdb+dwarf"]["fractions"]["beta_G"]) < 0.03
 
 
+def test_screening_keeps_the_classification_with_a_coarser_profile(sdm, stellar):
+    sed, _ = _mock(sdm, stellar, (33000.0, 5.7, 0.16, "H"), companion=(1.1, 3.0, 0.0), parallax=2.5)
+    kw = dict(model=sdm, stellar=stellar, companions=("dwarf",), tiers=("H",), extinction_prior=(0.05, 0.02),
+              subdwarf_prior=dict(logg=(5.7, 0.1)), companion_age_gyr=3.0, companion_feh=0.0)
+    full = fit_subdwarf_companion(sed, **kw)
+    fast = fit_subdwarf_companion(sed, screening=True, **kw)
+    assert fast["preferred"] == full["preferred"] == "sdb+dwarf"
+    for name, h in fast["hypotheses"].items():
+        assert abs(h["objective"] - full["hypotheses"][name]["objective"]) < 1.0
+    assert abs(fast["hypotheses"]["sdb+dwarf"]["fractions"]["beta_G"]
+               - full["hypotheses"]["sdb+dwarf"]["fractions"]["beta_G"]) < 0.03
+    assert "ranges" in full["hypotheses"]["sdb+dwarf"] and "ranges" not in fast["hypotheses"]["sdb+dwarf"]
+    assert len(fast["hypotheses"]["sdb+dwarf"]["profile"]) < len(full["hypotheses"]["sdb+dwarf"]["profile"])
+
+
 def test_subgiant_companion_drops_spherex_and_reports_fractions(sdm, stellar):
     sed, _ = _mock(sdm, stellar, (33000.0, 5.7, 0.16, "H"), companion=(1.1, 3.0, 0.0), parallax=2.5)
     sed.mask[66:] = True
