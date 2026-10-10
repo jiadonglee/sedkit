@@ -110,6 +110,40 @@ dust constraints and `label_prior_penalty`, the age, log g and Teff prior terms;
 `logg` is the primary's PARSEC log g. `m2lnl` includes the model covariance
 determinant without priors.
 
+## HR-diagram location
+
+```python
+from sedkit import locate, fit_star
+
+where = locate(sed, extinction=0.0, dust_prior=None)
+result = fit_star(sed, region=None, labels=None, extinction=0.0,
+                  extinction_prior=None, dust_prior=None, fit_parallax=False,
+                  age_gyr=None, feh=0.0, tie=1.0, options=None)
+```
+
+`locate` needs `phot_g_mean_mag`, `phot_bp_mean_mag` and
+`phot_rp_mean_mag` in `sed.metadata`, the Ks channel and a positive
+parallax. It returns `region` (`ms`, `hot_ms`, `giant`, `sdb`, `wd` or
+`unsupported`), `reason`, `hypotheses`, the dereddened `M_G`, `bp_rp` and
+`g_ks`, `teff_estimate` (the solar PARSEC dwarf with that G-Ks) and
+`extinction_e`. White dwarfs lie below M_G = 10 + 2.6 (BP-RP); the subdwarf
+box is BP-RP < 0 at 2.8 < M_G < 7. Other stars are compared with the main
+sequence of supported PARSEC stars, widened by 0.75 mag upward: inside it
+they are `ms` below 7500 K and `hot_ms` above; above it, the log g of a
+1.1 solar-mass star at that Teff and M_G separates overluminous dwarfs
+(log g >= 4.15, routed to `ms`), subgiants (3.8--4.15) and giants (< 3.8,
+3600--6800 K).
+
+`fit_star` runs the region's route. `extinction` is a fixed ZGR23 E or
+`None` with `extinction_prior` or `dust_prior`; the giant route always fits
+E and takes a fixed value as a 0.01-wide prior. `age_gyr` and `feh` set the
+dwarfs of the `ms`, `wd` and `hot_ms` regions (`None` fits them). `options`
+are keyword arguments of the route function and take precedence. The result
+holds `location`, `region`, the route's own `result`, `objectives`, `delta`
+and `preferred`, the simplest hypothesis within `tie` of the lowest
+objective. Unsupported regions, and the giant region without `labels`,
+return `result=None` with the reason in `location`.
+
 ## Giants with a hot companion
 
 ```python
@@ -286,8 +320,10 @@ thin-H sensitivity. `predict(teff, mass)` gives 10-pc fluxes;
 free_radius=False, companion_age_gyr=5., companion_feh=0., extinction=0.,
 extinction_prior=None, dust_prior=None, parallax=None, fit_parallax=False,
 blue=None, galex=None, use_spherex=False, whitedwarf_prior=None,
-companion_prior=None)` compares `dwarf`, `wd`, and `wd+dwarf`.
-`companions=False` compares the two single-star hypotheses.
+companion_prior=None, hypotheses=None)` compares `dwarf`, `wd`, and `wd+dwarf`.
+`companions=False` compares the two single-star hypotheses. `hypotheses=`
+selects any of `dwarf`, `ms+ms` (a coeval dwarf pair with free q, one
+component with fully correlated model errors), `wd` and `wd+dwarf`.
 
 `whitedwarf_light_limit(sed, *, masses=(.45,.6,.8,1.,1.2), temperatures=None,
 cooling_ages_gyr=None, delta=9., luminous_mass=None, companion_age_gyr=5.,
