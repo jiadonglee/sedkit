@@ -224,6 +224,15 @@ without the subdwarf correction the fit gives 32 kK and beta_G = 0.34, and
 with a mass prior of 0.47 +- 0.1, 25.6 kK and 0.38: the subdwarf's Teff in
 a composite moves beta_G by up to 0.08.
 
+![Example fits](assets/subdwarf-examples.png)
+
+Fits of Feige 11 (sdB + white dwarf, preferred as a single subdwarf),
+TYC 3871-835-1, GALEX J22058-3519 and HDE 283048 with `companions=
+("dwarf",)`, Edenhofer E and the parallax fitted; the subdwarf (blue), the
+companion (coral) and their sum (dashed) of the preferred hypothesis, with
+ln(observed / model) below. TYC 3871-835-1 and HDE 283048 carry a subdwarf
+mass prior of 0.47 +- 0.1 in addition to log g 5.6 +- 0.3.
+
 ## 5. Photocentre orbits
 
 GALEX J22058-3519 and EC 11383-2238 are the two composites with a Gaia DR3
