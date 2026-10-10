@@ -29,6 +29,12 @@ REGIONS = {
 }
 SIMPLEST_FIRST = ("dwarf", "single", "fgk", "wd", "sdb", "ms+ms", "binary", "wd+dwarf",
                   "sdb+dwarf", "sdb+subgiant")
+# objective(dwarf) - objective(composite) in the ms region, exceeded by at most
+# 2% of 154 RV-constant APOGEE dwarfs (none of 197 independent ones) fitted on
+# XP and 2MASS with free [M/H], fitted parallax and fitted extinction. No
+# wd+dwarf threshold: any one set this way is exceeded by 3.6% of the
+# independent dwarfs (reports/wd_plan_20261010/validation_ms.json).
+MS_THRESHOLD = {"ms+ms": 59.0, "wd+dwarf": None}
 
 
 @lru_cache(maxsize=1)
@@ -222,8 +228,11 @@ def fit_star(sed, *, region=None, labels=None, extinction=0.0, extinction_prior=
     Returns the location, the route's own result and, where the route
     compares hypotheses by one objective, their objectives, deltas and the
     simplest hypothesis within `tie` of the lowest. Objectives are
-    comparable only inside one region, and no composite-detection threshold
-    is calibrated for the ms region.
+    comparable only inside one region. In the ms region,
+    detection_statistic holds objective(dwarf) - objective(composite) for
+    ms+ms and wd+dwarf; threshold holds MS_THRESHOLD when the fit runs in its
+    calibrated configuration (feh=None, fit_parallax=True and a fitted
+    extinction), otherwise None.
     """
     options = dict(options or {})
     guess = extinction if extinction is not None else extinction_prior[0] if extinction_prior else 0.0
@@ -235,7 +244,7 @@ def fit_star(sed, *, region=None, labels=None, extinction=0.0, extinction_prior=
                         reason=f"set by region= (located: {location['region']})")
     region = location["region"]
     out = dict(location=location, region=region, result=None, objectives=None, delta=None,
-               preferred=None)
+               preferred=None, detection_statistic=None, threshold=None)
     if region == "unsupported":
         return out
     if extinction is not None and (extinction_prior is not None or dust_prior is not None):
@@ -275,4 +284,8 @@ def fit_star(sed, *, region=None, labels=None, extinction=0.0, extinction_prior=
                delta={k: v - best for k, v in objectives.items()},
                preferred=_preferred(objectives, tie) if region != "giant" else
                ("giant" if objectives["giant"] <= best + tie else "giant+companion"))
+    if region == "ms" and set(REGIONS["ms"]) <= set(objectives):
+        out["detection_statistic"] = {k: objectives["dwarf"] - objectives[k] for k in ("ms+ms", "wd+dwarf")}
+        if feh is None and fit_parallax and extinction is None:
+            out["threshold"] = dict(MS_THRESHOLD)
     return out
