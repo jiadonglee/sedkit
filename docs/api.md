@@ -141,7 +141,14 @@ dwarfs of the `ms`, `wd` and `hot_ms` regions (`None` fits them). `options`
 are keyword arguments of the route function and take precedence. The result
 holds `location`, `region`, the route's own `result`, `objectives`, `delta`
 and `preferred`, the simplest hypothesis within `tie` of the lowest
-objective. Unsupported regions, and the giant region without `labels`,
+objective. In the `ms` region `detection_statistic` holds
+objective(dwarf) − objective(composite) for `ms+ms` and `wd+dwarf`.
+`threshold` is `{"ms+ms": 59.0, "wd+dwarf": None}` when the fit has
+`feh=None`, `fit_parallax=True` and a fitted extinction, the configuration
+in which 0 of 197 independent RV-constant dwarfs exceed 59; otherwise it
+is `None`. No wd+dwarf threshold is calibrated
+([validation](validation-whitedwarf.md#main-sequence-region-of-fit_star)).
+Unsupported regions, and the giant region without `labels`,
 return `result=None` with the reason in `location`.
 
 ## Giants with a hot companion
@@ -320,7 +327,10 @@ thin-H sensitivity. `predict(teff, mass)` gives 10-pc fluxes;
 free_radius=False, companion_age_gyr=5., companion_feh=0., extinction=0.,
 extinction_prior=None, dust_prior=None, parallax=None, fit_parallax=False,
 blue=None, galex=None, use_spherex=False, whitedwarf_prior=None,
-companion_prior=None, hypotheses=None)` compares `dwarf`, `wd`, and `wd+dwarf`.
+companion_prior=None, hypotheses=None)` compares `dwarf`, `wd`, and `wd+dwarf`;
+`detection_statistic` is the better single-star objective minus the
+`wd+dwarf` objective (threshold 11 for XP fits with free dwarf age and
+metallicity, fitted parallax and extinction).
 `companions=False` compares the two single-star hypotheses. `hypotheses=`
 selects any of `dwarf`, `ms+ms` (a coeval dwarf pair with free q, one
 component with fully correlated model errors), `wd` and `wd+dwarf`.

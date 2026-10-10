@@ -33,7 +33,7 @@ SIMPLEST_FIRST = ("dwarf", "single", "fgk", "wd", "sdb", "ms+ms", "binary", "wd+
 # 2% of 154 RV-constant APOGEE dwarfs (none of 197 independent ones) fitted on
 # XP and 2MASS with free [M/H], fitted parallax and fitted extinction. No
 # wd+dwarf threshold: any one set this way is exceeded by 3.6% of the
-# independent dwarfs (reports/wd_plan_20261010/validation_ms.json).
+# independent dwarfs (docs/validation-whitedwarf.md).
 MS_THRESHOLD = {"ms+ms": 59.0, "wd+dwarf": None}
 
 
