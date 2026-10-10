@@ -1,0 +1,42 @@
+{
+  "n": 297,
+  "cohort": "100 pc, |b|>30 deg, DESI/Gianninas spectroscopy; E=0",
+  "shape_correction": "a + WD_Balmer_W*b",
+  "raw_shape_rms": 0.10225538494206231,
+  "cv_shape_rms": {
+    "0": 0.06534676399480983,
+    "1": 0.06214939032892911
+  },
+  "temperature": {
+    "raw": {
+      "median": 0.027797221457702692,
+      "scatter": 0.035201312553011566,
+      "rms_spectrum": 0.10223457021993315,
+      "converged": 297
+    },
+    "cal": {
+      "median": 0.01062712629029039,
+      "scatter": 0.03456489908079286,
+      "rms_spectrum": 0.04986975979968462,
+      "converged": 297
+    },
+    "blue": {
+      "median": 0.008008211356877126,
+      "scatter": 0.03679749552857066,
+      "rms_spectrum": 0.04997872208445643,
+      "converged": 297
+    },
+    "mr": {
+      "median": 0.015995630989034337,
+      "scatter": 0.038742682448385565,
+      "rms_spectrum": 0.04979827250841494,
+      "converged": 297
+    }
+  },
+  "mass_comparison": {
+    "n": 294,
+    "median_msun": 0.028151336598467858,
+    "scatter_msun": 0.04433276868649086,
+    "reference": "mass implied by spectroscopic Teff/logg and the same thick-H cooling tracks"
+  }
+}

@@ -9,8 +9,9 @@ trained on real spectra where stars with good labels exist, synthetic
 atmospheres calibrated on real stars where they do not, and PARSEC stellar
 evolution tying both to mass, age and metallicity. It predicts absolute
 fluxes at the Gaia parallax for a single star or a coeval binary, tests red
-giants for hot companions, and tells whether a Gaia astrometric orbit comes
-from a faint companion or a hidden near-equal-mass twin. The package runs
+giants for hot companions, fits hot subdwarfs with or without a cool
+companion, and tells whether a Gaia astrometric orbit comes from a faint
+companion, a hidden near-equal-mass twin or a luminous star of another kind. The package runs
 on NumPy and SciPy, with no J-CAPS installation, JAX, GPU or separate model
 download.
 
@@ -27,6 +28,8 @@ best constrained there:
 | Warm dwarfs (F, early A) | 6250--7498 K | the same network, extended with 1661 dwarfs within 1 kpc | PARSEC M_Ks | IRFM | 2% |
 | Hot dwarfs (A, B) | 7000--30000 K | CK04 and TLUSTY spectra through the XP forward model, with an empirical correction | PARSEC radius x model surface flux | spectroscopic or spectral type; IRFM at 7000--7500 K | 1.2% |
 | Red giants (`fit_giant_companion`) | 3600--6800 K | empirical template of APOGEE giants | free scale, or a PARSEC M_Ks prior | APOGEE ASPCAP | 3--13% at 392 nm, 3--10% at 442 nm |
+| DA white dwarfs (`fit_whitedwarf_companion`) | 6--80 kK, log g 7--9.5 | Koester spectra calibrated to real single-DA spectral labels and Gaia absolute XP fluxes | thick/thin-H C/O cooling tracks, or free WD radius | 294 calibration stars and 289 independent single DAs | independent Teff bias +1.4%, scatter 3.5%; absolute-flux bias +1.9%, source scatter about 14% |
+| Hot subdwarfs (`fit_subdwarf_companion`) | 20--45 kK, log g 5--6.5 | TMAP NLTE spectra through the XP forward model, with an empirical correction | free radius at the parallax | Dawson et al. (2026) spectroscopy | 1.3% (0.5--1.4% at 0.45--0.9 um) |
 
 ### Cool and warm dwarfs: an empirical network
 
@@ -46,8 +49,10 @@ best constrained there:
 - **Model error.** A fractional covariance (four eigen-columns plus a
   diagonal) is built from training residuals: a cold term below 3800 K and
   a warm term above 4200 K, blended in between. No synthetic spectra enter
-  this part, and the network does not extrapolate beyond 2800--7498 K and
-  G-Ks >= 0.51.
+  this part, and the network does not extrapolate beyond its training
+  coverage: 2800--7498 K at G-Ks >= 0.51, plus a sparse ultracool box at
+  2313--2929 K, M_Ks 8.86--10.58, that holds the lowest PARSEC masses
+  (0.1 solar masses at 5 Gyr is 2451 K) without validated accuracy.
 
 ### Hot dwarfs: calibrated synthetic spectra
 
@@ -117,8 +122,10 @@ See [model and limitations](docs/model.md) for the full description and
   enters the fit only for a unique point-source match with A-quality
   photometry. W1/W2 are held out of `fit` by default.
 - Optional SPHEREx QR2 spectra ([SPHEREx downloads](docs/spherex.md)).
-- Gaia G/BP/RP are kept as metadata, not fit channels. No ultraviolet data
-  and no XP below 392 nm enter a fit, so the Balmer jump is not used.
+- Gaia G/BP/RP are kept as metadata, not fit channels. Outside the
+  subdwarf route no ultraviolet data and no XP below 392 nm enter a fit, so
+  the Balmer jump is not used; the subdwarf route takes optional XP at
+  332--382 nm and GALEX FUV/NUV ([subdwarf validation](docs/validation-subdwarf.md)).
 - Models predict absolute fluxes at the parallax, with no free
   normalisation. The parallax is fixed at the catalogue value or fitted
   within three catalogue standard deviations under its Gaussian constraint
@@ -128,22 +135,34 @@ See [model and limitations](docs/model.md) for the full description and
 
 | Entry point | Stars | Support | Hypotheses |
 | --- | --- | --- | --- |
-| `fit` with `StellarModel()` | FGKM dwarfs: empirical J-CAPS network on PARSEC tracks | Teff 2800--7498 K, age 0.5--10 Gyr, [M/H] -1.0 to +0.5; primary mass to 1.5--1.8 solar masses at 0.5--2 Gyr and 1.38 at 3 Gyr (solar [M/H]) | single star, coeval binary |
+| `fit` with `StellarModel()` | FGKM dwarfs: empirical J-CAPS network on PARSEC tracks | Teff 2800--7498 K (sparse ultracool support to 2313 K), age 0.5--10 Gyr, [M/H] -1.0 to +0.5; primary mass to 1.5--1.8 solar masses at 0.5--2 Gyr and 1.38 at 3 Gyr (solar [M/H]) | single star, coeval binary |
 | `fit` with `StellarModel(hot=True)` | adds A and B dwarfs: CK04/TLUSTY table with an empirical XP correction | 7000--30000 K, log g 3--4.75, [M/H] -0.3 to +0.3, age from 4 Myr, mass to 20 solar masses; XP and J/H/Ks only | single star, coeval binary |
 | `fit_giant_companion` | red giant (empirical APOGEE template) plus a hot main-sequence companion | giant Teff 3600--6800 K, log g 0--3.8, [M/H] -2.6 to +0.6; companion 1.5--15 solar masses at 10 Myr and solar [M/H] | giant alone, giant plus companion profiled in mass |
+| `fit_subdwarf_companion` | hot subdwarf (TMAP NLTE table with an XP correction) plus a cool dwarf or subgiant of another age | subdwarf 20--45 kK, log g 5--6.5, three helium tiers (He-rich from 32 kK); companion as `StellarModel()`, or the giant template at log g 3.2--3.8 | single FGK star, single subdwarf, subdwarf plus companion |
+| `fit_whitedwarf_companion`, `whitedwarf_light_limit` | DA white dwarf plus a dwarf; conditional WD light envelope for a luminous primary | DA table 6--80 kK, log g 7--9.5; C/O cooling tracks with thick or thin H; strongest label validation below 40 kK | single dwarf, single DA, DA plus dwarf |
 | `orbit.solve_orbit`, `rank_roots` | Gaia photocentre orbits | as `StellarModel()` | faint companion, luminous twin |
+| `orbit.solve_luminous_pair`, `branch_from_rv`, `solve_dark_companion` | photocentre orbits of two luminous stars of different kinds, e.g. sdB + FGK | any masses | both branches of a0 = a \|B - beta_G\| |
 
 Fits stay inside these ranges; the models do not extrapolate.
 See [model and limitations](docs/model.md).
 
 ### What the fits measure
 
+White dwarfs: the default emulator is anchored to spectroscopic Teff/log g
+and absolute Gaia fluxes of 294 single DAs. On 289 independent stars,
+with extinction and parallax constraints, the cooling-relation fit gives
+1.4% temperature bias and 3.5% robust scatter. Its absolute-flux bias is
+1.9%, with about 14% source scatter. Masses remain conditional on the
+C/O cooling relation and reference gravity scale. See the
+[single-star calibration](reports/wd_single_scale_20261010/report.md) and
+[composite/orbit benchmarks](docs/validation-whitedwarf.md).
+
 Single stars:
 
 - **FGK dwarfs.** Hyades, Praesepe and Coma Ber members at 6000--7500 K
-  fit with chi2/N of 0.7--0.9 at free age, with masses 0.02--0.06 solar
+  fit with chi2/N of 0.7--0.9 at free age, with masses 0.02--0.05 solar
   masses below the isochrone mass. Free ages come out older than the
-  literature cluster ages (1.0--2.0 against 0.6--0.7 Gyr)
+  literature cluster ages (1.0--2.1 against 0.6--0.7 Gyr)
   ([warm-star validation](docs/validation-warm.md)).
 - **A and B dwarfs.** 44 holdout anchors at 7.5--30 kK fit to 1.2--1.4 per
   cent in XP shape, with Teff 0.2 kK below to 0.05 kK above the
@@ -183,7 +202,9 @@ Giants with a hot companion:
   supplies more than about 20 per cent of the 0.40--0.45 micron light: 87
   per cent of injections at 20--30 per cent, all above 30 per cent, none
   below 10 per cent. The threshold of 10 lies above every one of 238
-  reddened control giants (maximum 8.8).
+  reddened control giants (maximum 8.8), the sample that also set
+  `tilt_sigma`; its false-positive rate on other giants awaits an
+  independent control set.
 - **Recovery by mass.** Injected 2 and 3 solar-mass companions are
   detected in 92.9 and 99.2 per cent of cases. On the controls, the fit
   excludes companions from 2 solar masses upward (median).
@@ -197,6 +218,32 @@ Giants with a hot companion:
 - **Assumptions.** The fit needs Teff, log g and [M/H] priors on the
   APOGEE scale. Giant and companion share only extinction and, with
   `luminosity=`, the parallax ([giant validation](docs/validation-giant.md)).
+
+Hot subdwarfs and their companions:
+
+- **Single subdwarfs.** For 157 Dawson et al. (2026) subdwarfs fitted out of
+  fold with their spectroscopic log g, Teff lies 0.4 kK above the
+  spectroscopic value (scatter 1.7 kK with XP at 332--382 nm, 2.6 kK
+  without) and the radius 1.3 per cent above their SED radii (scatter
+  4 per cent). Teff is compressed towards 30 kK (+1.1 kK below 28 kK,
+  -1.0 kK above 36 kK) and follows Dawson's scale, 1.05 kK below Luo et
+  al. (2021). The XP channels at 332--382 nm are validated for single
+  subdwarfs, not for composites; GALEX pulls Teff 5 kK low and is not used
+  by default.
+- **Compact companions.** For 5 subdwarfs with a compact-companion orbit
+  and 16 sdB+WD systems the composite is never preferred (Delta <= 2.8);
+  dwarf companions above 0.12--0.45 solar masses are excluded.
+- **Light fraction.** In injections with real noise and model mismatch,
+  beta_G has a scatter of 0.005 for K/M companions, 0.025--0.031 for G and
+  0.04 for F, and an E prior 0.03 too high biases it by +0.02. Through a
+  photocentre orbit this gives M_sdB to 0.09--0.10 solar masses for G and
+  F companions; for K/M companions, with M_sdB = 0.47 +- 0.05, the orbit
+  gives the companion's dynamical mass to 0.04. A companion 0.1 solar
+  masses below its isochrone mass biases M_sdB by +0.07 (G) to +0.18 (K/M).
+- **Detection.** Requiring Delta > 25 and beta_G > 0.2 flags none of 230
+  RV-constant FGK dwarfs and recovers composites in which the subdwarf
+  gives more than half of the 400--450 nm light
+  ([subdwarf validation](docs/validation-subdwarf.md)).
 
 Other measurements:
 
@@ -213,12 +260,16 @@ Other measurements:
 - Giants and subgiants in `fit`: the network is trained on dwarfs, the hot
   table stops at log g 3, and stars near the turn-off are outside the
   tables. The giant route models only a hot main-sequence companion.
-- White dwarfs, brown dwarfs and ultracool atmospheres, triples, blends and
+- Brown dwarfs and dedicated ultracool atmospheres, triples, blends and
   variable stars.
 - Stars above 30 kK (O stars are untested), hot stars with |[M/H]| > 0.3,
   supergiants, Be and emission-line stars, chemically peculiar stars and
   fast rotators.
-- Binaries of different ages, except the giant route.
+- Binaries of different ages, except the giant, subdwarf and DA routes.
+- Hot subdwarfs outside 20--45 kK and log g 5--6.5, He-rich subdwarfs below
+  32 kK, HW Vir-type close binaries with a reflection effect, pulsating
+  subdwarfs' light variations, non-DA/magnetic white dwarfs, ELM WDs,
+  and double-degenerate systems.
 - Posterior uncertainties, calibrated binary probabilities and population
   inference: fits return constrained best fits and objective differences.
 - Correlations between XP channels: GaiaXPy inter-channel covariance is
@@ -335,6 +386,8 @@ comparing zero-extinction and Edenhofer-prior fits of a real SB2.
 - [Warm-star validation](docs/validation-warm.md): warm network, cluster members, binary mocks and log g priors.
 - [Hot-star validation](docs/validation-hot.md): calibration, holdout and CALSPEC checks, binary injections and cluster tests.
 - [Giant validation](docs/validation-giant.md): giant template, controls and injected companions.
+- [White-dwarf fitting](docs/whitedwarf.md) and [validation](docs/validation-whitedwarf.md): DA labels, composite light fractions and conditional dark-companion bounds.
+- [Subdwarf validation](docs/validation-subdwarf.md): single and composite subdwarfs, light fractions, orbits, injections and false positives.
 - [Visual identity](docs/appearance.md): logo, plotting palette and reproducible homepage figures.
 
 ## Development
@@ -349,7 +402,9 @@ pytest -q
 The bundled stellar network and hot-star table are extracted from
 [J-CAPS](https://github.com/jiadonglee/J-Caps), using PARSEC stellar tracks,
 CK04 (Castelli & Kurucz 2003) and TLUSTY BSTAR2006 (Lanz & Hubeny 2007)
-model atmospheres. The giant template is built from APOGEE DR17.
+model atmospheres. The giant template is built from APOGEE DR17. Hot-subdwarf spectra are
+Tuebingen TMAP NLTE models (Werner et al. 2003; Rauch & Deetjen 2003) from
+the TheoSSA service of the German Astrophysical Virtual Observatory.
 Public XP spectra are calibrated with
 [GaiaXPy](https://gaia-dpci.github.io/GaiaXPy-website/).
 SPHEREx aperture extraction uses [XphereX](https://github.com/jiadonglee/XphereX),
@@ -357,6 +412,6 @@ SPHEREx aperture extraction uses [XphereX](https://github.com/jiadonglee/XphereX
 [SPExPI](https://github.com/fkiwy/spexpi).
 Catalogue data are retrieved through
 [astroquery](https://astroquery.readthedocs.io/en/latest/gaia/gaia.html).
-Please acknowledge Gaia, 2MASS, WISE, APOGEE, PARSEC, CK04, TLUSTY and
-J-CAPS when using these data and models in research; see
+Please acknowledge Gaia, 2MASS, WISE, APOGEE, PARSEC, CK04, TLUSTY, TMAP
+and TheoSSA, GALEX and J-CAPS when using these data and models in research; see
 [provenance](docs/data.md).

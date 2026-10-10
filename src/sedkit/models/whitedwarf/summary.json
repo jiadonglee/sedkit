@@ -1,0 +1,36 @@
+{
+  "source": "SVO Koester koester2 DA LTE, 4 pi H_lambda, air wavelengths",
+  "cooling": "Bedard et al. 2020 C/O core; default q_H=1e-4, optional thin q_H=1e-10; q_He=1e-2",
+  "units": "10-pc F_lambda for R=1 Rsun, 1e-18 W m^-2 nm^-1",
+  "teff": [
+    6000.0,
+    80000.0
+  ],
+  "logg": [
+    7.0,
+    9.5
+  ],
+  "nodes": 858,
+  "wavelength_range_nm": [
+    89.922998046875,
+    2999.179296875
+  ],
+  "ew_max_nm": 10.435690342291725,
+  "replaced_outliers": [],
+  "calibrated": true,
+  "supported_channels": 123,
+  "calibration": "Absolute single-DA scale: robust log-Teff spline plus linear logg, spectral labels and Gaia parallax",
+  "uv_calibration": "71 real single DAs, absolute FUV/NUV passband factors at spectral labels, cooling radius, Gaia parallax and native extinction",
+  "calibration_anchors": 294,
+  "calibration_holdout": 289,
+  "empirical_teff_range": [
+    6003.0,
+    56800.0
+  ],
+  "empirical_logg_range": [
+    7.37,
+    9.260000228881836
+  ],
+  "calibration_report": "reports/wd_single_scale_20261010/summary.json",
+  "model_error": "Diagonal spectral shape; absolute scale through parallax and extinction priors"
+}

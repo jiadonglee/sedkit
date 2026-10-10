@@ -28,13 +28,13 @@ arguments, cache reuse and explicit refresh.
 
 ## Example notebooks
 
-On 2026-10-03, the first three [example notebooks](../examples) executed top to bottom
+On 2026-10-08, the first three [example notebooks](../examples) executed top to bottom
 with Python 3.11, the warm network and the 2MASS training scale; the
 cached SEDs were rebuilt from the cached catalogue products. The SB2 fit
 gives q=0.840 against the Gaia NSS RV ratio 0.868 (binary chi2/N 1.02).
 The orbit notebook prefers the luminous solution for Gaia DR3
-1916454200349735680 (objective difference 630) and the dark solution for
-LP 769-9 (958).
+1916454200349735680 (objective difference 659) and the dark solution for
+LP 769-9 (929).
 
 The [giant validation](validation-giant.md) records the giant template, control
 giants and companion injections.

@@ -7,7 +7,9 @@ import numpy as np
 
 DATA = Path(__file__).parent / "models"
 FLUX_UNIT = "1e-18 W m^-2 nm^-1"
-KS_ZERO_FLAMBDA = 666.7 * 299792458.0 * 10.0 / 2159.0**2
+# Flux of M_Ks = 0 at 10 pc on the J-CAPS training scale, where 2MASS Ks fluxes carry the factor
+# 0.99105 (fetch.TRAINING_SCALE): the network anchors PARSEC M_Ks on the scale of `download`.
+KS_ZERO_FLAMBDA = 666.7 * 299792458.0 * 10.0 / 2159.0**2 * 0.99105
 # Primary Teff range (K) over which the cold and warm model-error terms are blended.
 ERROR_BLEND_K = (3800.0, 4200.0)
 # Component Teff range (K) over which the network hands over to the hot table

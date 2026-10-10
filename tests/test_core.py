@@ -21,6 +21,14 @@ def test_absolute_binary_and_photocentre(model):
     assert twin["a_phot_over_a1"] == 0
 
 
+def test_ks_anchor_follows_download_zero_point(model):
+    from sedkit.fetch import TRAINING_SCALE, ZERO_JY
+    labels = model.labels([0.7])
+    flux = model.predict_labels(labels)[0, 63]
+    zero = ZERO_JY[2] * 299792458.0 * 10.0 / (model.wavelength_um[63] * 1000)**2 * TRAINING_SCALE[2]
+    assert np.isclose(flux, zero * 10**(-0.4 * labels[0, 1]), rtol=1e-6)
+
+
 def test_no_extrapolation(model):
     assert model.evaluate(0.75, 0.01, 5, 0) is None
     with pytest.raises(ValueError):

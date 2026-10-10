@@ -87,7 +87,9 @@ Reuse a `StellarModel` across sources through `model=`.
   example from its spectral type. They enter the single and binary
   objectives alike.
 - Free binary q covers 0.1--1, further restricted by component support.
-- `q=` fixes q for the binary hypothesis.
+- `q=` fixes q for the binary hypothesis, or ties it to the fitted
+  parameters through a callable `q(m1, age_gyr, feh, parallax_mas)` that
+  returns NaN where no q applies; `rank_roots` uses this for orbit branches.
 - Parallax is fixed at the catalogue value by default. Set
   `fit_parallax=True` to fit within three catalogue standard deviations,
   with one Gaussian constraint. Zero/absent uncertainty keeps it fixed.
@@ -140,7 +142,7 @@ parallax. Three keywords add that constraint:
 - `luminosity="massfree"` keeps only the mass bounds, which allows a
   stripped giant.
 - `dust_prior=EdenhoferPrior(...)` adds the map E at the trial distance.
-  Within 1.25 kpc it is Gaussian with width sqrt(sigma^2 + 0.04^2); beyond,
+  Within 1.2 kpc it is Gaussian with width sqrt(sigma^2 + 0.04^2); beyond,
   E is held above the value at 1.2 kpc minus 0.04. It needs
   `sed.metadata["ra"]` and `["dec"]` and replaces `extinction_prior`.
 
@@ -158,7 +160,9 @@ result = fit_giant_companion(sed, teff=(4895, 150), logg=(2.54, 0.3), feh=(-1.22
 `result["rows"]` holds one row per mass, M2 = 0 being the giant alone:
 `objective`, its `delta` from the giant alone, its -2 ln L part `minus2lnL`,
 `chi2`, the giant's labels, `extinction_e`, `tilt` and `scale`, and the
-companion's Teff, radius and share of the observed 0.40--0.45 micron flux.
+companion's Teff, radius and share of the observed 0.40--0.45 micron flux,
+and `converged`, whether the final optimisation at that mass met its
+tolerance; a profile point without it is not a reliable minimum.
 With `luminosity` or `dust_prior`, rows also hold the fitted `z` and
 `parallax_mas`, the giant's `mks`, `luminosity`, `radius` and `mass`, the map
 `e_map` and `distance_pc`, and the penalties `label_penalty`,
@@ -172,6 +176,64 @@ thresholds calibrated on control giants are 10 for the default fit and for
 `luminosity="massfree"` with the dust prior
 ([giant validation](validation-giant.md)). `dust_prior=` without
 `luminosity=` has no calibrated threshold.
+
+## Hot subdwarfs and their companions
+
+```python
+from sedkit import download, EdenhoferPrior
+from sedkit.subdwarf import fit_subdwarf_companion, blue_xp
+sed = download("1601000947085068160", cache_dir="data")
+result = fit_subdwarf_companion(sed, companions=("dwarf", "subgiant"), fit_parallax=True,
+                                dust_prior=EdenhoferPrior(), subdwarf_prior=dict(logg=(5.6, 0.3)))
+best = result["hypotheses"][result["preferred"]]
+print(result["delta"], best["subdwarf"], best["companion"], best["fractions"]["beta_G"])
+```
+
+`fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"),
+tiers=("H", "mid", "He"), model=None, stellar=None, template=None,
+parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
+dust_prior=None, subdwarf_prior=None, companion_prior=None,
+companion_age_gyr=None, companion_feh=None, companion_mass=None,
+use_wise=False, use_spherex=False, blue=None, galex=None)` fits four
+hypotheses on one data vector and returns `hypotheses` (`fgk`, `sdb`,
+`sdb+dwarf`, `sdb+subgiant`), `delta` (each objective minus the lowest),
+`preferred`, `n_fit`, `mask` and the fitted `data`; see the
+[subdwarf route](model.md#subdwarf-route).
+
+- The subdwarf has Teff, log g, a helium tier and a free radius. Each
+  subdwarf hypothesis reports `subdwarf` with `teff`, `logg`, `radius`,
+  `mass` (g R^2 / G), `luminosity`, `tier` and `log_he_h`.
+- The companion is `"dwarf"` (mass, age and [M/H] on PARSEC through the
+  network) or `"subgiant"` (`GiantTemplate` at log g 3.2--3.8 with a free
+  scale). `companions=()` fits the subdwarf alone. `companion_age_gyr`,
+  `companion_feh` and `companion_mass` fix the dwarf's parameters.
+- Parallax: catalogue value by default; `fit_parallax=True` fits it within
+  3 sigma with penalty z^2; `parallax=(mean, sigma)` replaces the SED's.
+- Extinction: a number fixes ZGR23 E; with `extinction=None`, give
+  `extinction_prior=(mean, sigma)` or `dust_prior=EdenhoferPrior()` (needs
+  `sed.metadata["ra"]` and `["dec"]`).
+- `subdwarf_prior` and `companion_prior` are dicts of `(mean, sigma)` on
+  `teff`, `logg` and, for the companion, `feh` (spectroscopic labels such
+  as LAMOST or GSSP).
+- `fractions` holds `beta_G`, `beta_BP`, `beta_RP` (the subdwarf's share of
+  the photon-weighted, reddened passband flux) and `channels`, its share on
+  each of the 168 channels; `coarse` holds both components' 2 nm spectra on
+  the XP channel scale for other windows.
+- `ranges` spans each quantity over the Teff_sd profile within 1 of the
+  minimum; `profile` lists the profile points.
+
+`blue_xp(sed, cache_dir="data")` calibrates XP at 332--382 nm from the
+cached continuous spectrum and returns `(flux, error)` for `blue=`; it is
+validated for single subdwarfs and biases composites
+([validation](validation-subdwarf.md)).
+`galex(sed, cache_dir="data")` returns GALEX GR6/7 AIS FUV and NUV with a
+usable flag (below the count-rate roll-off, no artifact) for `galex=`;
+GALEX needs `tiers=("H",)` and pulls Teff low against spectroscopy, so it
+is for diagnostics. `SubdwarfModel(correction="ab",
+calibration="bundled")` evaluates the table:
+`predict(teff, logg, radius, tier)` returns 10-pc fluxes on the 168
+channels, the blue channels and the 2 nm spectrum, and raises outside a
+tier.
 
 ## Plotting
 
@@ -195,7 +257,51 @@ The plotting style is scoped to the call; spectra are not normalized.
 feh=0, model=None)` returns the solutions of a Gaia photocentre orbit for a
 coeval main-sequence companion; `solve_amrf(a_obs, m1, ...)` takes the
 astrometric mass-ratio function directly. Each solution has `kind`, `q`,
-`m2`, `beta_G`, `delta_G` and `delta_Ks`.
+`m1`, `m2`, `beta_G`, `delta_G`, `delta_Ks` and `amrf`; `solve_orbit` adds
+the `parallax_mas` it used, which `rank_roots` reads with `amrf` and `m1`.
 `rank_roots(sed, roots, parallax_mas=None, model=None, **fit_kwargs)` fits
-the SED at each solution and sorts them by the fit objective, with `delta`
-above the best. See [Photocentre orbits](orbit.md).
+the SED along each solution branch, with q re-solved from the orbit at every
+trial primary, returns these quantities at the fitted parameters, and sorts
+the solutions by the fit objective, with `delta` above the best. See
+[Photocentre orbits](orbit.md).
+
+## DA white dwarfs
+
+```python
+from sedkit import WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
+
+fit_wd = fit_whitedwarf_companion(sed)
+light = whitedwarf_light_limit(sed, masses=[.6, .8, 1.], delta=9.)
+```
+
+`WhiteDwarfModel(calibration="bundled", hydrogen_layer="thick")` uses
+the empirical absolute single-DA flux calibration and thick-H C/O cooling relation.
+Use `calibration=None` for raw spectra or `hydrogen_layer="thin"` for
+thin-H sensitivity. `predict(teff, mass)` gives 10-pc fluxes;
+`predict(teff, logg=..., radius=...)` uses an independent radius.
+`physical(teff, mass)` returns radius, gravity, luminosity and cooling age;
+`teff_at_age(mass, age_gyr)` stays within cooling-table support.
+
+`fit_whitedwarf_companion(sed, *, model=None, stellar=None, companions=True,
+free_radius=False, companion_age_gyr=5., companion_feh=0., extinction=0.,
+extinction_prior=None, dust_prior=None, parallax=None, fit_parallax=False,
+blue=None, galex=None, use_spherex=False, whitedwarf_prior=None,
+companion_prior=None)` compares `dwarf`, `wd`, and `wd+dwarf`.
+`companions=False` compares the two single-star hypotheses.
+
+`whitedwarf_light_limit(sed, *, masses=(.45,.6,.8,1.,1.2), temperatures=None,
+cooling_ages_gyr=None, delta=9., luminous_mass=None, companion_age_gyr=5.,
+companion_feh=0., galex_upper_limits=None, **kwargs)` takes the same data,
+model and nuisance options. `galex_upper_limits={"FUV": flux_cap, ...}`
+constrains the WD contribution by measured total UV light in SED flux units.
+It returns `beta_G_upper`, `flux_ratio_G_upper`, `profile`, `intervals`,
+`single_primary` and the optional `luminous_companion` comparison.
+Its envelope has `confidence_level=None`.
+
+See [WD fitting and conventions](whitedwarf.md) and
+[validation](validation-whitedwarf.md).
+
+`loglike_whitedwarf_sed(sed, *, teff, mass, primary_mass=None, age_gyr=5.,
+feh=0., parallax_mas=None, extinction=0., model=None, stellar=None,
+blue=None, galex=None, use_spherex=False)` supplies a DA or DA+dwarf
+likelihood without priors/parallax penalties for external orbital models.

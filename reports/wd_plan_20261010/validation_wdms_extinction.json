@@ -1,0 +1,13 @@
+{
+  "n": 126,
+  "extinction_prior": [
+    0,
+    0.1
+  ],
+  "teff_median": 0.056123801066145784,
+  "teff_scatter": 0.17667066594472153,
+  "subtype_median": 0.6612764477831776,
+  "subtype_scatter": 0.9806699849661643,
+  "subtype_within_one": 75,
+  "median_extinction_e": 0.02884658547210903
+}

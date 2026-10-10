@@ -118,9 +118,77 @@ adds -2 ln(p / p_mode) of M_Ks near the labels:
   constraint; there the mass walls alone bound the luminosity.
 
 With `dust_prior=`, E follows the Edenhofer et al. (2023) map at the trial
-distance, with the map width widened by 0.04 in quadrature. Beyond the
-map's 1.25 kpc, E is held above the 1.2 kpc value minus 0.04 by a one-sided
-wall.
+distance, with the map width widened by 0.04 in quadrature. Beyond
+1.2 kpc, near the map's 1.25 kpc edge, E is held above the 1.2 kpc value
+minus 0.04 by a one-sided wall.
+
+## Subdwarf route
+
+`fit_subdwarf_companion` fits a hot subdwarf and, optionally, a cool
+companion of a different age and evolutionary stage. The subdwarf is a
+Tuebingen TMAP NLTE spectrum ([data](data.md#hot-subdwarf-atmospheres))
+passed through the forward model of the Gaia XP external calibration that
+built the hot table, and tabulated for R = 1 Rsun at 10 pc on Teff x
+log g in three helium tiers:
+
+| Tier | Atmosphere | log(He/H) | Teff | log g |
+| --- | --- | --- | --- | --- |
+| `H` | pure hydrogen | -- | 20--45 kK | 5.0--6.5 |
+| `mid` | H+He+C | -1.9 | 32--45 kK | 5.0--6.5 |
+| `He` | H+He+C | -0.1 | 32--45 kK | 5.0--6.5 |
+
+The `H` tier stands for He-poor subdwarfs (log(He/H) <~ -2): at
+32--45 kK it differs from the `mid` tier by 0.3--0.5 per cent in XP shape
+and 4--6 per cent in surface flux, that is 2--3 per cent in radius. Inputs
+outside a tier are rejected, not extrapolated. Eleven TheoSSA models that
+sit 2--11 per cent off their neighbours are replaced by their log g
+neighbours; node-to-node roughness of up to 1.2 per cent remains in the
+32 kK row of the `He` tier.
+
+Each channel carries the hot-table operator correction (per-channel
+offset and Balmer-index term) and a subdwarf correction exp(a + W b), with
+W the Balmer index of the TMAP spectrum, fitted per channel to 157 single
+subdwarfs of Dawson et al. (2026) at their spectroscopic Teff and log g,
+with Edenhofer E and free radius. It covers XP, J/H/Ks and the six XP
+channels at 332--382 nm; its median size over XP is 1.3 per cent and it
+reaches 5--6 per cent at the XP edges and H-alpha. W1/W2 and SPHEREx are
+the TMAP spectrum averaged over each channel. The model error is the hot
+term on XP and J/H/Ks, 3 per cent on W1/W2 and SPHEREx, 5 per cent on the
+blue XP channels and on GALEX.
+
+The radius is free and the flux scales as R^2 at the parallax; the mass is
+M = g R^2 / G and the luminosity R^2 (Teff / Teff_sun)^4. XP and 2MASS
+constrain log g weakly: without a spectroscopic prior the fit drifts to the
+table edge, so the mass needs a spectroscopic log g. In a composite the
+subdwarf's Teff and radius trade against the companion, and a log g prior
+alone can leave it at 1--1.4 solar masses; `subdwarf_prior` also takes
+`mass` and `radius`.
+
+The companion is a dwarf from `StellarModel()` (PARSEC mass, age and [M/H]
+through the network, supported Teff 2800--7498 K) or a subgiant from
+`GiantTemplate` with log g 3.2--3.8 and a free scale; its luminosity and
+radius follow from its Ks flux, the parallax and the PARSEC BC_Ks, and its
+mass g R^2 / G is held to 0.7--3 solar masses by walls of 0.1 dex. The two
+stars share the parallax and ZGR23 E, nothing else. The single-FGK
+hypothesis is one `StellarModel()` star. All hypotheses use one data
+vector: XP and J/H/Ks (W1/W2 with `use_wise`, SPHEREx with `use_spherex`
+and without the subgiant), plus optional blue XP and GALEX points. Below
+392 nm the extinction curve is Gordon et al. (2023) R_V = 3.1 scaled to
+ZGR23 over 392--550 nm. A companion's flux below 392 nm is a blackbody
+joined to its 392--412 nm flux, with a 50 per cent error.
+
+Light fractions use a 2 nm spectrum of each component on the XP channel
+scale: the channels in 392--992 nm, the model spectrum beyond, joined at
+the edge channels (for the companion a blackbody at its Teff). beta_G,
+beta_BP and beta_RP are the subdwarf's share of the photon-weighted,
+reddened flux in the Gaia DR3 passbands.
+
+The fit profiles the objective over the subdwarf Teff: nodes every 2 kK in
+each tier, every 0.5 kK within 3 kK of the best node, with all other
+parameters refitted at each node, then a free polish. `ranges` spans each
+reported quantity over the profile points and the interpolated crossings
+within 1 of the minimum: a profile interval in Teff, not a marginal
+posterior.
 
 ## Limitations
 
@@ -140,7 +208,9 @@ wall.
   APOGEE labels and, at 6250--7500 K, 1661 LAMOST/APOGEE dwarfs within
   1 kpc at Edenhofer et al. (2023) E < 0.05. Teff follows the IRFM scale at
   4500 K and above and ASPCAP below. Coverage is Teff 2800--7498 K and G-Ks
-  down to 0.51; 7250--7500 K holds only 137 stars. The supported primary
+  down to 0.51, plus a sparse ultracool box at 2313--2929 K and M_Ks
+  8.86--10.58 that holds the lowest PARSEC masses (0.1 solar masses at
+  5 Gyr is 2451 K); 7250--7500 K holds only 137 stars. The supported primary
   mass at solar metallicity reaches 1.5--1.8 solar masses at 0.5--2 Gyr
   and 1.38 at 3 Gyr; 1.4 solar masses at [M/H] = -0.5 (about 8100 K) is
   outside. Stars near the turn-off are outside the tables; gaps and support
@@ -155,7 +225,8 @@ wall.
   SPHEREx channels comes from cooler stars.
 - GaiaXPy inter-channel measurement covariance is omitted; XP marginal
   errors are used. The model covariance does not replace that information.
-- Variable sources, blends, triples and white dwarfs are not modeled.
+- Variable sources, blends and triples are not modeled. DA white dwarfs
+  use the separate [WD route](whitedwarf.md).
   Catalogue flags are preserved but do not establish a clean binary sample.
 - Fixed age/metallicity experiments are conditional on those choices.
   A matched mock checks the algorithm, not real-data model calibration.
@@ -165,7 +236,7 @@ wall.
 - At the same PARSEC star in 7000--7498 K, the solar table and the
   metallicity-dependent network differ in XP shape by 0.8 per cent at
   [M/H] = 0 and 1.6 per cent at -0.3 and +0.3, and in XP level by 0, 2 and
-  4 per cent. Fits of 7000--7500 K dwarfs give Teff 3--21 K above IRFM.
+  4 per cent. Fits of 7000--7500 K dwarfs give Teff 2--21 K above IRFM.
   The cool-edge correction carries the map E of its calibration dwarfs, so
   map E errors enter the table at 7000--9000 K. Between 7.5 and 9 kK there
   is no IRFM-quality Teff reference.
@@ -188,3 +259,22 @@ wall.
   +0.5 its isochrones are 0.5 dex apart in age. `download` stores the Gaia
   DR3 parallax without the Lindegren et al. (2021) zero point; the validated
   luminosity fits used corrected parallaxes passed through `parallax=`.
+
+## DA white-dwarf route
+
+The [DA route](whitedwarf.md) combines Koester surface spectra with
+Bédard C/O-core cooling tracks. It compares a dwarf, a DA and their
+physical flux sum at the shared distance/extinction. The WD-only XP
+calibration retains absolute flux at spectral Teff/log g and Gaia parallax.
+Its log-temperature spline and gravity term are trained on real single
+DAs with source-grouped folds. Empirical WD errors are diagonal shape
+variance; stellar errors retain their low-rank covariance. Both are taken
+at the observed flux and shared by light fraction. The likelihood includes the covariance determinant.
+
+The default WD radius follows its temperature and mass, with thick H.
+Thin-H tracks and a free WD radius are available for sensitivity and
+spectroscopic comparisons. Companion age/metallicity can be fitted.
+A temperature/mass profile gives a conditional WD G-light envelope for
+orbit calculations. Its operational threshold has no calibrated coverage.
+The [validation](validation-whitedwarf.md) measures temperature,
+light-fraction and mass sensitivity separately.

@@ -1,0 +1,135 @@
+{
+  "version": "subdwarf-v1",
+  "source": "Tuebingen TMAP NLTE spectra (Rauch; TheoSSA, GAVO)",
+  "units": "ln F_lambda at 10 pc for R = 1 Rsun, 1e-18 W m^-2 nm^-1",
+  "channels": "168 sedkit channels; XP through the J-CAPS phase-0 forward operator; J/H/Ks/W1/W2 sampled at the sedkit wavelengths; SPHEREx averaged between channel midpoints",
+  "blue_xp": "six XP channels at 332-382 nm through the same operator",
+  "tiers": {
+    "H": {
+      "family": "H",
+      "w_he": 0.0,
+      "w_h": 1.0,
+      "log_he_h": null,
+      "teff": [
+        20000.0,
+        45000.0
+      ],
+      "logg": [
+        5.0,
+        6.5
+      ],
+      "n_models": 416,
+      "max_logg_offset": 0.009999999999999787,
+      "galex_nuv": true,
+      "galex_fuv": true,
+      "coarse_missing_nm": null,
+      "replaced_outliers": [
+        [
+          35000.0,
+          5.6,
+          0.0191
+        ]
+      ]
+    },
+    "mid": {
+      "family": "HHeC",
+      "w_he": 0.0498,
+      "w_h": 0.9477999806404114,
+      "log_he_h": -1.8783948632909853,
+      "teff": [
+        32000.0,
+        45000.0
+      ],
+      "logg": [
+        5.0,
+        6.5
+      ],
+      "n_models": 221,
+      "max_logg_offset": 0.1299999999999999,
+      "galex_nuv": false,
+      "galex_fuv": false,
+      "coarse_missing_nm": [
+        130.0,
+        300.0
+      ],
+      "replaced_outliers": [
+        [
+          33000.0,
+          5.8,
+          0.0669
+        ],
+        [
+          32000.0,
+          5.8,
+          0.0776
+        ],
+        [
+          33000.0,
+          5.3,
+          0.0558
+        ],
+        [
+          36000.0,
+          5.5,
+          0.0155
+        ],
+        [
+          34000.0,
+          6.2,
+          0.0112
+        ]
+      ]
+    },
+    "He": {
+      "family": "HHeC",
+      "w_he": 0.7575,
+      "w_h": 0.24009999632835388,
+      "log_he_h": -0.0999170267995265,
+      "teff": [
+        32000.0,
+        45000.0
+      ],
+      "logg": [
+        5.0,
+        6.5
+      ],
+      "n_models": 224,
+      "max_logg_offset": 0.020000000000000462,
+      "galex_nuv": false,
+      "galex_fuv": true,
+      "coarse_missing_nm": [
+        178.0,
+        300.0
+      ],
+      "replaced_outliers": [
+        [
+          33000.0,
+          5.8,
+          0.1043
+        ],
+        [
+          32000.0,
+          5.8,
+          0.1119
+        ],
+        [
+          35000.0,
+          5.5,
+          0.0441
+        ],
+        [
+          32000.0,
+          5.6,
+          -0.0113
+        ],
+        [
+          33000.0,
+          5.9,
+          0.0102
+        ]
+      ]
+    }
+  },
+  "uv_extinction": "G23 R_V=3.1 times 2.7606, the ZGR23 scale over 392-550 nm",
+  "operator": "J-CAPS phase0_forward_xp_20261003 transfer.json"
+}

@@ -1,0 +1,42 @@
+{
+  "solar": {
+    "n": 126,
+    "teff_median": -0.0027655927133832248,
+    "teff_scatter": 0.14890601685795216,
+    "subtype_median": 0.6767156584140763,
+    "subtype_scatter": 0.9742449034549413,
+    "subtype_within_one": 74,
+    "n_ir": 0,
+    "converged": 126
+  },
+  "ir": {
+    "n": 126,
+    "teff_median": 0.008896889840014355,
+    "teff_scatter": 0.16729140870493184,
+    "subtype_median": 0.6579995403128085,
+    "subtype_scatter": 0.98562332061836,
+    "subtype_within_one": 75,
+    "n_ir": 39,
+    "converged": 126
+  },
+  "free": {
+    "n": 126,
+    "teff_median": -0.003746565335469243,
+    "teff_scatter": 0.16216409631725642,
+    "subtype_median": 0.5942061953733497,
+    "subtype_scatter": 1.0474353479490657,
+    "subtype_within_one": 76,
+    "n_ir": 39,
+    "converged": 126
+  },
+  "blue": {
+    "n": 126,
+    "teff_median": -0.00290864247127004,
+    "teff_scatter": 0.15029116753343577,
+    "subtype_median": 0.5713881315623301,
+    "subtype_scatter": 1.1129212236434445,
+    "subtype_within_one": 76,
+    "n_ir": 39,
+    "converged": 126
+  }
+}

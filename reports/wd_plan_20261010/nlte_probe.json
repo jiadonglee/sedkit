@@ -1,0 +1,103 @@
+{
+  "reference": "https://archive.stsci.edu/hlsp/wd-grid",
+  "grid": {
+    "nodes": 84,
+    "temperature_range": [
+      30000.0,
+      80000.0
+    ],
+    "units": "4*pi*H_lambda, erg/s/cm2/Angstrom; vacuum wavelengths",
+    "finite_range_flux_over_sigma_teff4": [
+      0.10429320295843911,
+      0.947100904982153
+    ]
+  },
+  "n": 7,
+  "comparison": {
+    "nlte": {
+      "median": 0.1977649794828209,
+      "scatter": 0.11764894211261699,
+      "at_upper_temperature_edge": 2
+    },
+    "nlte_koester_cal": {
+      "median": -0.1360673260676909,
+      "scatter": 0.07723702103335904,
+      "at_upper_temperature_edge": 0
+    },
+    "koester_raw": {
+      "median": 0.17913418579162288,
+      "scatter": 0.1257452471889461,
+      "at_upper_temperature_edge": 1
+    },
+    "koester_cal": {
+      "median": -0.13816535309537936,
+      "scatter": 0.09781696297072967,
+      "at_upper_temperature_edge": 0
+    }
+  },
+  "sources": [
+    {
+      "source_id": "292454841560140032",
+      "teff_spec": 41430.0,
+      "teff_nlte": 51133.78968235353,
+      "teff_koester_raw": 51167.69688903658,
+      "teff_koester_cal": 43165.69436253989,
+      "converged": true,
+      "teff_nlte_koester_cal": 43468.07843956049
+    },
+    {
+      "source_id": "1461833904932026368",
+      "teff_spec": 56800.0,
+      "teff_nlte": 55000.02008815907,
+      "teff_koester_raw": 53429.14181066509,
+      "teff_koester_cal": 37914.98981109058,
+      "converged": true,
+      "teff_nlte_koester_cal": 38332.35162008724
+    },
+    {
+      "source_id": "2810585920868186240",
+      "teff_spec": 56160.0,
+      "teff_nlte": 79999.99999999994,
+      "teff_koester_raw": 77284.75850908134,
+      "teff_koester_cal": 45451.09827918124,
+      "converged": true,
+      "teff_nlte_koester_cal": 46173.52470629191
+    },
+    {
+      "source_id": "3251244858154433536",
+      "teff_spec": 42700.0,
+      "teff_nlte": 53549.044831774394,
+      "teff_koester_raw": 54239.291943527365,
+      "teff_koester_cal": 41396.01780663735,
+      "converged": true,
+      "teff_nlte_koester_cal": 41493.06110376039
+    },
+    {
+      "source_id": "3944400490365194368",
+      "teff_spec": 40320.0,
+      "teff_nlte": 48293.88397274734,
+      "teff_koester_raw": 47542.69037111823,
+      "teff_koester_cal": 36783.990815863086,
+      "converged": true,
+      "teff_nlte_koester_cal": 36934.26230224319
+    },
+    {
+      "source_id": "6443328221136801920",
+      "teff_spec": 43360.0,
+      "teff_nlte": 47838.9236528217,
+      "teff_koester_raw": 47449.72294039212,
+      "teff_koester_cal": 37369.15028978435,
+      "converged": true,
+      "teff_nlte_koester_cal": 37460.12074170492
+    },
+    {
+      "source_id": "6560067493827212544",
+      "teff_spec": 71530.0,
+      "teff_nlte": 79999.99999999994,
+      "teff_koester_raw": 79999.99999999994,
+      "teff_koester_cal": 56927.72340242497,
+      "converged": true,
+      "teff_nlte_koester_cal": 59389.30471645006
+    }
+  ]
+}

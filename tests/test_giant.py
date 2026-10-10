@@ -54,6 +54,7 @@ def test_mock_giant_alone_rejects_a_luminous_companion(template, hot):
                                  m2_grid=(3.0, 6.0), template=template, model=hot, threshold=25)
     rows = {r["m2"]: r for r in result["rows"]}
     assert result["best_m2"] == 0.0
+    assert all(isinstance(r["converged"], bool) for r in result["rows"])
     assert rows[0.0]["chi2"] < 5
     assert abs(rows[0.0]["extinction_e"] - 0.6) < 0.02
     assert rows[3.0]["delta"] > 25 and result["m2_excluded"] == 3.0
