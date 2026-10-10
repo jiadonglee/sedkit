@@ -60,6 +60,14 @@ def test_single_da_and_composite_recovery(wd):
     assert result["mask"].sum() == 64
 
 
+def test_hot_wd_beside_a_dwarf_is_not_missed_at_high_signal_to_noise(wd):
+    flux = wd.predict(35000, .6)["flux"] + StellarModel().evaluate(.6, 0, 5, 0)["flux_10pc"]
+    sed = SED(.01 * flux, .0002 * flux, np.arange(168) < 61, 10, .02, "hot_wd")
+    composite = fit_whitedwarf_companion(sed, model=wd)["hypotheses"]["wd+dwarf"]
+    assert composite["fractions"]["beta_G"] == pytest.approx(.2, abs=.02)
+    assert abs(composite["companion"]["mass"] - .6) < .01
+
+
 def test_free_radius_validation_mode(wd):
     p = wd.predict(13000, logg=8.1, radius=.016)
     sed = SED(p["flux"] * .01, p["flux"] * .0002, wd.support, 10, .02, "free")
