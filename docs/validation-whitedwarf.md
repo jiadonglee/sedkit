@@ -172,6 +172,28 @@ SED/RV/astrometry posterior or independent WD confirmation.
 The numerical results, XP-only comparison and measurement choices are
 in `orbit_results.ecsv` and `validation_results.json`.
 
+Measured total GALEX light adds a one-sided WD-only UV constraint, without
+using the primary's UV continuation. Gaia positions are propagated to
+2007; proper motion <300 mas/yr, a unique match within 3 arcsec, clean
+artifact/extraction flags, unsaturated magnitudes and errors <0.2 are
+required. GR6/7 AIS supplies 10 systems, nine of them Gaia/RV consistent.
+GR5 MIS adds no usable bands; its magnitudes are converted to the GR6
+scale by +0.033 FUV and +0.043 NUV, following the
+[GALEX calibration notes](https://www.galex.caltech.edu/researcher/data.html).
+
+The cap is observed total flux plus three measurement errors. The WD
+lower UV prediction includes three model-error allowances, with an
+adopted 0.5 log-flux floor outside the calibrated 6.8--41.4 kK range.
+Extinction and parallax are refitted under the bound. Both sides of that
+UV calibration range are sampled, retaining high-temperature allowed
+islands. Six of the nine consistent systems with UV meet the 0.02 mass
+criterion, with median mass shift 0.0118 solar masses. Across all 29
+consistent systems, retaining the XP+2MASS envelope where UV is absent,
+8/29 meet it and the median is 0.0278 solar masses. The remaining 20
+have no usable UV measurement; no survey-depth bound is assigned.
+These remain conditional envelopes, rather than calibrated 95% limits.
+Per-source band availability and mass shifts are in `orbit_uv_results.ecsv`.
+
 There are 48 injection fits: 36 WD+M and 12 FGK+WD, with 2% measurement
 noise, matched models or a 5% temperature-scale shift, thin-H cooling,
 and an offset extinction prior. The largest composite G-fraction error
@@ -214,7 +236,7 @@ bundled in `src/sedkit/models/whitedwarf/`.
 
 Run with `PYTHONPATH=src` in the astronomy Python environment:
 `calibrate_da.py`, `validate_uv.py`, `validate_samples.py`,
-`validate_wdms.py`, `validate_beta.py`, `validate_orbits.py`,
+`validate_wdms.py`, `validate_beta.py`, `validate_orbits.py`, `validate_orbits_uv.py`,
 `injections.py`, `wdms_extinction.py`, then `results.py`. The independent-control acquisition
 and selection are in `extended_census.py`; external APOGEE inputs are
 identified by their paths there. Published anchor sources are linked

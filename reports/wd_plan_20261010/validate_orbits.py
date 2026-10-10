@@ -17,7 +17,7 @@ DATA = Path(__file__).resolve().parents[2] / "data/whitedwarf"
 OUT = Path(__file__).resolve().parent
 
 
-def one(task):
+def one(task,galex_upper_limits=None):
     row, orbit, flux, error, ir = task
     f, e = np.full(168, np.nan), np.full(168, np.nan)
     f[:61], e[:61] = flux[6:], error[6:]
@@ -31,7 +31,7 @@ def one(task):
     limit = whitedwarf_light_limit(sed, model=WhiteDwarfModel(calibration="bundled"),
         masses=[row["mass_joint"]], temperatures=[6000,8000,10000,13000,16000,20000,25000,32000,40000,55000,80000], extinction=None, extinction_prior=(extinction, .03),
         companion_age_gyr=None, companion_feh=row["feh_init"], fit_parallax=True,
-        luminous_mass=row["mass_joint"])
+        luminous_mass=row["mass_joint"],galex_upper_limits=galex_upper_limits)
     a0 = campbell(*[orbit[k+"_thiele_innes"] for k in ["a", "b", "f", "g"]])["a0"]
     args = a0, orbit["parallax"], orbit["period"], row["m1_sed"]
     dark = solve_dark_companion(*args)["m2"]
@@ -43,7 +43,8 @@ def one(task):
         luminous_delta=limit["luminous_companion"]["delta"],
         primary_mass=limit["single_primary"]["companion"]["mass"],
         primary_chi2_per_channel=limit["single_primary"]["chi2"] / limit["single_primary"]["n_fit"],
-        intervals=limit["intervals"], profile=limit["profile"], delta_threshold=limit["delta_threshold"],n_ir=int(pm[:3].sum()))
+        intervals=limit["intervals"], profile=limit["profile"], delta_threshold=limit["delta_threshold"],n_ir=int(pm[:3].sum()),
+        galex_upper_limits=limit["galex_upper_limits"])
 
 
 def main():

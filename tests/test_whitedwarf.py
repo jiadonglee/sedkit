@@ -129,3 +129,30 @@ def test_wd_dominated_composite_uses_luminous_pair_branches():
     roots=solve_luminous_pair(a0,10,500,m2=.2,beta=beta)
     wd_branch=next(r for r in roots if r["branch"]=="B<beta")
     assert wd_branch["m1"]==pytest.approx(.6,abs=1e-7)
+
+
+def test_uv_total_flux_bound_refines_temperature_boundary(wd):
+    primary=StellarModel().evaluate(.9,0,5,0)["flux_10pc"]
+    sed=SED(.01*primary,.0002*primary,np.arange(168)<61,10,.02,"uv_cap")
+    pred=wd.predict(10000,.6)
+    upper=.01*wd.passband(pred["coarse"],"FUV")*np.exp(wd.calibration["uv_a"][0])
+    result=whitedwarf_light_limit(sed,model=wd,masses=[.6],
+        temperatures=[6000,8000,10000,13000,20000,40000,80000],galex_upper_limits={"FUV":upper})
+    assert 0<result["beta_G_upper"]<.005
+    assert 10000<max(r["teff"] for r in result["profile"] if r["allowed"])<13000
+    assert any(not np.isfinite(r["objective"]) for r in result["profile"])
+
+
+def test_uv_bound_refits_shared_extinction(wd):
+    from sedkit.extinction import extinction_curve
+    primary=StellarModel().evaluate(.9,0,5,0)["flux_10pc"]
+    pred=wd.predict(18000,.6)
+    flux=.01*(primary+pred["flux"])*np.exp(-.15*extinction_curve(wd.wavelength_um))
+    sed=SED(flux,.02*flux,np.arange(168)<61,10,.02,"reddened_uv")
+    coarse=.01*pred["coarse"]*np.exp(-.15*wd.coarse_curve)
+    cap=wd.passband(coarse,"FUV")*np.exp(wd.calibration["uv_a"][0])
+    result=whitedwarf_light_limit(sed,model=wd,masses=[.6],temperatures=[8000,18000,35000],
+        extinction=None,extinction_prior=(0.,.2),galex_upper_limits={"FUV":cap})
+    injected=next(r for r in result["profile"] if r["teff"]==18000)
+    assert injected["allowed"] and injected["extinction_e"]>.08
+    assert all(8000<=r["teff"]<=35000 for r in result["profile"])

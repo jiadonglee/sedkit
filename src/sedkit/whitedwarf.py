@@ -150,6 +150,7 @@ class _Problem:
         self.extinction, self.extinction_prior, self.dust = extinction, extinction_prior, dust_prior
         self.parallax, self.fit_parallax = parallax, fit_parallax
         self.priors = (wd_prior, companion_prior)
+        self.galex_upper_limits = {}
         self.curve = extinction_curve(model.wavelength_um)
 
     def extras(self, coarse, blue):
@@ -214,6 +215,19 @@ class _Problem:
         chi2 = float(np.sum((residual - columns @ nuisance)**2 / variance) + nuisance @ nuisance)
         return chi2 + float(np.log(variance).sum() + np.linalg.slogdet(small)[1]), chi2
 
+    def uv_allowed(self, wd):
+        if wd is None:
+            return True
+        c=self.wd.calibration
+        for band,cap in self.galex_upper_limits.items():
+            i=0 if band=="FUV" else 1
+            correction=0. if c is None or "uv_a" not in c else c["uv_a"][i]
+            sigma=.15 if c is None or "uv_diag" not in c else c["uv_diag"][i]
+            if not 6812<=wd["labels"]["teff"]<=41430:sigma=max(sigma,.5)
+            lower=self.wd.passband(wd["coarse"],band)*np.exp(correction-3*sigma)
+            if lower>cap:return False
+        return True
+
 
 class _Hypothesis:
     def __init__(self, problem, kind, free_radius, age, feh, fixed=None, luminous_mass=None):
@@ -276,6 +290,8 @@ class _Hypothesis:
         result = self.components(self.unpack(x))
         if result is None:
             return 1e30
+        if not self.p.uv_allowed(result[1]):
+            return 1e30
         return self.p.likelihood(result[0])[0] + result[-1]
 
     def fit(self, initial=None):
@@ -307,6 +323,8 @@ class _Hypothesis:
                                 v["r"] = np.clip(np.log(.013 * np.sqrt(ratio) / (self.p.parallax[0] / 100)),
                                                  *self.bounds["r"])
                     seeds.append(v)
+        if self.p.galex_upper_limits and "e" in self.names:
+            seeds.extend([{**v,"e":e} for v in list(seeds) for e in [.15,.3,.6]])
         ranked = sorted(((self.objective([v[k] for k in self.names]), v) for v in seeds), key=lambda item: item[0])
         results = []
         steps = dict(t=.08, m=.05, g=.1, r=.05, primary=.05, age=.2, feh=.1, e=.02, z=.2)
@@ -404,7 +422,7 @@ def fit_whitedwarf_companion(sed, *, model=None, stellar=None, companions=True, 
 
 def whitedwarf_light_limit(sed, *, masses=(.45, .6, .8, 1., 1.2), temperatures=None,
                           cooling_ages_gyr=None, delta=9., luminous_mass=None,
-                          companion_age_gyr=5., companion_feh=0., **kwargs):
+                          companion_age_gyr=5., companion_feh=0., galex_upper_limits=None, **kwargs):
     """Conditional WD beta_G envelope after profiling the luminous primary.
 
     Scans WD temperature or cooling age at each supplied WD mass, refitting
@@ -413,6 +431,9 @@ def whitedwarf_light_limit(sed, *, masses=(.45, .6, .8, 1., 1.2), temperatures=N
     delta is an operational profile threshold, without confidence coverage
     calibration. The envelope is conditional on mass/temperature support.
     luminous_mass additionally compares a coeval MS companion of that mass.
+    galex_upper_limits maps FUV/NUV to observed total-flux caps in SED
+    units. The WD's conservative lower UV prediction must fit below each
+    cap; this needs no primary-star UV template.
     """
     if not np.isfinite(delta) or delta <= 0:
         raise ValueError("delta must be positive")
@@ -423,8 +444,20 @@ def whitedwarf_light_limit(sed, *, masses=(.45, .6, .8, 1., 1.2), temperatures=N
                    whitedwarf_prior=None, companion_prior=None)
     options.update(kwargs)
     p = _prepare(sed, **options)
+    for band,cap in (galex_upper_limits or {}).items():
+        if band not in ("FUV","NUV") or not np.isfinite(cap) or cap<=0:
+            raise ValueError("GALEX upper limits need FUV/NUV names and positive finite fluxes")
+    p.galex_upper_limits=dict(galex_upper_limits or {})
     single, seed = _Hypothesis(p, "dwarf", False, companion_age_gyr, companion_feh).fit()
     profile = []
+    def profile_row(t,mass,fit):
+        row=dict(teff=float(t),mass=float(mass),objective=fit["objective"],converged=fit["converged"])
+        if np.isfinite(fit["objective"]):
+            row.update(beta_G=fit["fractions"]["beta_G"],cooling_age_gyr=fit["whitedwarf"]["cooling_age_gyr"],
+                       extinction_e=fit["extinction_e"],parallax_mas=fit["parallax_mas"])
+        else:
+            row.update(beta_G=np.nan,cooling_age_gyr=None)
+        return row
     masses = np.unique(np.atleast_1d(masses).astype(float))
     if not len(masses) or not np.all(np.isfinite(masses) & (masses >= .2) & (masses <= 1.3)):
         raise ValueError("scan masses must be within 0.2--1.3 solar masses")
@@ -436,15 +469,17 @@ def whitedwarf_light_limit(sed, *, masses=(.45, .6, .8, 1., 1.2), temperatures=N
         grid = p.wd.table["teff_ax"] if temperatures is None else np.asarray(temperatures, float)
         if cooling_ages_gyr is not None:
             grid = np.array([p.wd.teff_at_age(mass, a) for a in cooling_ages_gyr])
+        if p.galex_upper_limits and cooling_ages_gyr is None:
+            # Resolve both sides of the empirical UV-error domain as well
+            # as optical/UV constraint crossings on the supplied grid.
+            edges=np.array([6811.,6813.,41429.,41431.])
+            grid=np.r_[grid,edges[(edges>=np.min(grid)) & (edges<=np.max(grid))]]
         current = seed
         for t in np.sort(np.unique(grid)):
             hyp = _Hypothesis(p, "wd+dwarf", False, companion_age_gyr, companion_feh,
                               fixed=dict(t=np.log(t), m=mass))
             fit, current = hyp.fit(initial=current)
-            if np.isfinite(fit["objective"]):
-                profile.append(dict(teff=float(t), mass=float(mass), objective=fit["objective"],
-                                    beta_G=fit["fractions"]["beta_G"], converged=fit["converged"],
-                                    cooling_age_gyr=fit["whitedwarf"]["cooling_age_gyr"]))
+            profile.append(profile_row(t,mass,fit))
     best = min([single["objective"]] + [r["objective"] for r in profile])
     # Resolve crossings of the allowed-set boundary instead of reporting
     # an upper limit at an arbitrary temperature-grid node.
@@ -461,11 +496,7 @@ def whitedwarf_light_limit(sed, *, masses=(.45, .6, .8, 1., 1.2), temperatures=N
                     hyp = _Hypothesis(p, "wd+dwarf", False, companion_age_gyr, companion_feh,
                                       fixed=dict(t=np.log(t), m=mass))
                     fit, current = hyp.fit(initial=current)
-                    if not np.isfinite(fit["objective"]):
-                        break
-                    row = dict(teff=float(t), mass=float(mass), objective=fit["objective"],
-                               beta_G=fit["fractions"]["beta_G"], converged=fit["converged"],
-                               cooling_age_gyr=fit["whitedwarf"]["cooling_age_gyr"])
+                    row=profile_row(t,mass,fit)
                     profile.append(row)
                     if (row["objective"] - best <= delta) == (lo["objective"] - best <= delta):
                         lo = row
@@ -501,6 +532,7 @@ def whitedwarf_light_limit(sed, *, masses=(.45, .6, .8, 1., 1.2), temperatures=N
                 single_primary=single, luminous_companion=luminous, minimum_objective=float(best),
                 mask=p.mask, source_id=sed.source_id, mass_grid=masses,
                 hydrogen_layer=p.wd.hydrogen_layer,
+                galex_upper_limits=p.galex_upper_limits,
                 temperature_support=[float(p.wd.table["teff_ax"][0]), float(p.wd.table["teff_ax"][-1])])
 
 

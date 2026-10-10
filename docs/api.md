@@ -291,7 +291,9 @@ companion_prior=None)` compares `dwarf`, `wd`, and `wd+dwarf`.
 
 `whitedwarf_light_limit(sed, *, masses=(.45,.6,.8,1.,1.2), temperatures=None,
 cooling_ages_gyr=None, delta=9., luminous_mass=None, companion_age_gyr=5.,
-companion_feh=0., **kwargs)` takes the same data, model and nuisance options.
+companion_feh=0., galex_upper_limits=None, **kwargs)` takes the same data,
+model and nuisance options. `galex_upper_limits={"FUV": flux_cap, ...}`
+constrains the WD contribution by measured total UV light in SED flux units.
 It returns `beta_G_upper`, `flux_ratio_G_upper`, `profile`, `intervals`,
 `single_primary` and the optional `luminous_companion` comparison.
 Its envelope has `confidence_level=None`.

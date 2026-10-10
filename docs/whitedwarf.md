@@ -111,6 +111,36 @@ parallax and orbit convention when assessing the resulting mass shift.
 specified mass and returns its objective difference. It tests that
 hypothesis, rather than excluding every possible luminous companion.
 
+`galex_upper_limits={"FUV": flux_cap, "NUV": flux_cap}` optionally
+requires the WD's UV contribution to fit below measured total system
+light. It does not need a primary-star UV template. The primary, extinction
+and parallax are refitted under this constraint, and disconnected optical/UV
+allowed regions are retained within the supplied temperature range.
+
+For an accepted GALEX AB magnitude `mag` with uncertainty `mag_error`,
+construct an FUV total-flux cap as follows (including the 0.05-mag FUV
+calibration term; NUV uses 0.03 mag):
+
+```python
+import numpy as np
+
+wd = WhiteDwarfModel()
+pivot_nm = wd.galex_pivot_nm["FUV"]
+flux = 3631. * 10**(-0.4 * mag) * 2997924580. / pivot_nm**2
+error = flux * np.log(10) / 2.5 * np.hypot(mag_error, 0.05)
+light = whitedwarf_light_limit(
+    sed, model=wd, masses=[0.6],
+    galex_upper_limits={"FUV": flux + 3 * error},
+)
+```
+
+The bound compares the cap with `WD_UV * exp(-3*sigma_model)`;
+`sigma_model` is the bundled UV fractional-error term (0.127 FUV,
+0.149 NUV), with an adopted log-flux floor of 0.5 outside the empirically
+tested 6812--41430 K range. This is a conservative model allowance,
+not calibrated probability coverage. A missing GALEX measurement supplies
+no bound; catalogue absence is not a measured nondetection.
+
 `delta=9` defines an operational envelope. `confidence_level=None`
 is returned because coverage has not been calibrated. The envelope is
 conditional on the supplied mass/temperature or cooling-age range,

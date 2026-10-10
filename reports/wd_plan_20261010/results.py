@@ -51,6 +51,8 @@ def main():
     summary["orbits"].update(n_with_ir=sum(r.get("n_ir",0)>0 for r in orbits),
         xp_only_mass_shift_median=float(np.nanmedian([r["mass_shift"] for r in xp_valid])),
         xp_only_mass_shift_le_002=sum(r["mass_shift"]<=.02 for r in xp_valid))
+    uv_orbits=read("orbits_uv")
+    summary["orbits_uv"]=json.loads((OUT/"validation_orbits_uv.json").read_text())
     summary["wdms_detection"]=dict(n=len(wdms),above_threshold=sum(r["detection"]>55 for r in wdms),
         scope="known SDSS DA/M catalogue subset; recovery fraction, not population completeness")
     injections=[json.loads(l) for l in (DATA/"injections.jsonl").read_text().splitlines()]
@@ -64,7 +66,12 @@ def main():
             mass_median_offset=float(np.median([r["mass"]-r["mass_true"] for r in c])),
             dark_beta_covered=sum(r["beta_covered"] for r in d),dark_mass_covered=sum(r["mass_covered"] for r in d))
     (OUT/"validation_results.json").write_text(json.dumps(summary,indent=2)+"\n")
-    Table(rows=[{k:v for k,v in r.items() if k not in ["profile","intervals"]} for r in orbits]).write(OUT/"orbit_results.ecsv",overwrite=True)
+    Table(rows=[{k:v for k,v in r.items() if k not in ["profile","intervals","galex_upper_limits"]} for r in orbits]).write(OUT/"orbit_results.ecsv",overwrite=True)
+    Table(rows=[{k:v for k,v in r.items() if k not in ["profile","intervals","galex_upper_limits"]} |
+                {"uv_bands":",".join(r["galex_upper_limits"]),
+                 "fuv_flux_cap":r["galex_upper_limits"].get("FUV",np.nan),
+                 "nuv_flux_cap":r["galex_upper_limits"].get("NUV",np.nan)}
+                for r in uv_orbits]).write(OUT/"orbit_uv_results.ecsv",overwrite=True)
     fig,axes=plt.subplots(2,3,figsize=(12,7.5),layout="constrained")
     ax=axes[0,0]
     for label,color,title in [("cal","#3976a5","Free radius + spectral gravity"),("mr","#cb7d28","Thick-H M–R relation")]:
@@ -82,8 +89,14 @@ def main():
     ax.scatter([r["beta_reference"] for r in b],[r["beta_fit"] for r in b],s=13,alpha=.65,c="#3976a5");ax.plot([0,1],[0,1],c=".5",lw=1)
     ax.set(xlabel="SDSS normalization transferred to G",ylabel="XP WD light fraction",title=f"{len(b)} spectral decompositions",xlim=(0,max(1.05,max(r["beta_reference"] for r in b)*1.02)),ylim=(0,1.05))
     ax=axes[1,1]
-    ax.scatter([r["mass_rv"] for r in valid],[r["mass_shift"] for r in valid],s=20,c="#3976a5");ax.axhline(.02,c="#cb7d28",ls="--",label="0.02 solar masses")
-    ax.set(xlabel="RV + astrometry WD mass (solar masses)",ylabel="Allowed mass change (solar masses)",title=f"{len(valid)} Gaia/RV orbits, XP + 2MASS");ax.legend(fontsize=8,frameon=False)
+    ax.scatter([r["mass_rv"] for r in valid],[r["mass_shift"] for r in valid],s=20,c="#aaaaaa",label="XP + 2MASS")
+    u=[r for r in uv_orbits if r["gaia_rv_consistent"] and r["galex_upper_limits"]]
+    ax.scatter([r["mass_rv"] for r in u],[r["mass_shift"] for r in u],s=28,c="#3976a5",label="With total-UV cap")
+    for r in u:
+        old=next(v for v in valid if v["source_id"]==r["source_id"])
+        ax.plot([r["mass_rv"]]*2,[old["mass_shift"],r["mass_shift"]],c="#3976a5",alpha=.4,lw=.8)
+    ax.axhline(.02,c="#cb7d28",ls="--",label="0.02 solar masses")
+    ax.set(xlabel="RV + astrometry WD mass (solar masses)",ylabel="Allowed mass change (solar masses)",title=f"{len(valid)} Gaia/RV orbits, {len(u)} with UV");ax.legend(fontsize=7,frameon=False)
     ax=axes[1,2]
     for variant,color in [("matched","#3976a5"),("thin_hydrogen","#cb7d28")]:
         a=[r for r in injections if r["kind"]=="composite" and r["variant"]==variant]
