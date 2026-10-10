@@ -1,0 +1,18 @@
+{
+  "grid_nodes": 858,
+  "temperature_nodes": 78,
+  "gravity_nodes": 11,
+  "missing_nodes": [],
+  "teff_K": 10000,
+  "logg": 8.0,
+  "wavelength_nm": [
+    89.9229965209961,
+    2999.17919921875
+  ],
+  "finite_range_flux_over_sigma_teff4": 0.9938027858734131,
+  "cooling_mass_msun": 0.6,
+  "radius_rsun": 0.012829974258733834,
+  "cooling_age_yr": 632856295.9131801,
+  "cooling_logg": 7.999767289491124,
+  "logg_from_mass_radius": 7.999767307618303
+}

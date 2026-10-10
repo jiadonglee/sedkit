@@ -127,3 +127,34 @@ the giant route's luminosity.
 AllWISE W1/W2 are converted at the model wavelengths; the training data use
 unWISE fluxes, which lie about 5 per cent lower for the example sources, so
 W1/W2 stay out of the default fit. The source code license is retained in LICENSE.
+
+### White-dwarf development data
+
+The [DA anchor census and validation criteria](validation-whitedwarf.md)
+use the spectroscopic DESI EDR fits of Manser et al. (2024), SDSS DR16
+fits of Kepler et al. (2021), and the Gianninas et al. (2011) subset of
+the Montreal White Dwarf Database. Kilic et al. (2025) supplies spectral
+classifications and photometric parameters for coverage comparisons.
+Catalogue EDR3 IDs are joined to Gaia DR3; SDSS plate/MJD/fibre IDs are
+resolved using the Gentile Fusillo et al. (2021) Gaia--SDSS crossmatch.
+
+The SVO `koester2` grid supplies pure-hydrogen LTE DA spectra at air
+wavelengths, with surface flux `4 pi H_lambda` in erg s^-1 cm^-2 A^-1.
+Selection over Teff 6000--80000 K and log g 7.0--9.5 yields 858 nodes
+(78 temperatures, 11 gravities). The inspected 10000 K, log g 8 spectrum
+covers 89.923--2999.1793 nm and integrates to 0.99380 times sigma Teff^4
+over that finite range. This checks the surface-flux scale; it does not
+validate XP agreement. The long infrared channels are outside this
+spectrum's support.
+
+The Bédard et al. (2020) thick-hydrogen cooling sequences tabulate radius
+in cm and age in years. At 10000 K and 0.6 solar masses, interpolation in
+the inspected sequence gives R = 0.012830 solar radii and age = 0.633 Gyr;
+the tabulated log g agrees with G M / R^2. The atmosphere table and public
+WD fitting API are still under development.
+
+Sources: [SVO Koester grid](https://svo2.cab.inta-csic.es/theory/newov2/index.php?models=koester2),
+[Bédard cooling sequences](https://www.astro.umontreal.ca/~bergeron/CoolingModels/),
+[DESI catalogue](https://zenodo.org/records/13684288),
+[SDSS DR16 catalogue](https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/507/4646),
+[MWDD](https://www.montrealwhitedwarfdatabase.org/tables-and-charts.html).

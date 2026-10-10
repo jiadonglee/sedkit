@@ -1,0 +1,59 @@
+{
+  "catalogues": [
+    {
+      "catalogue": "DESI_DA",
+      "rows": 1958,
+      "gaia_ids": 1950,
+      "xp": 1043,
+      "da_xp": 1043,
+      "db_xp": 0,
+      "da_in_box": 974,
+      "da_label_ready": 974
+    },
+    {
+      "catalogue": "SDSS_DR16",
+      "rows": 555,
+      "gaia_ids": 554,
+      "xp": 425,
+      "da_xp": 417,
+      "db_xp": 0,
+      "da_in_box": 416,
+      "da_label_ready": 228
+    },
+    {
+      "catalogue": "MWDD_Gianninas2011",
+      "rows": 1264,
+      "gaia_ids": 1257,
+      "xp": 1240,
+      "da_xp": 1240,
+      "db_xp": 0,
+      "da_in_box": 1210,
+      "da_label_ready": 915
+    },
+    {
+      "catalogue": "Kilic2025",
+      "rows": 3146,
+      "gaia_ids": 3145,
+      "xp": 3060,
+      "da_xp": 1845,
+      "db_xp": 12,
+      "da_in_box": 0,
+      "da_label_ready": 0
+    },
+    {
+      "catalogue": "DESI_DB",
+      "rows": 141,
+      "gaia_ids": 141,
+      "xp": 65,
+      "da_xp": 0,
+      "db_xp": 65,
+      "da_in_box": 0,
+      "da_label_ready": 0
+    }
+  ],
+  "unique_da_candidates": 2524,
+  "unique_da_label_ready": 2064,
+  "unique_da_label_ready_astrometry": 2005,
+  "gaia_ids_requested": 6680,
+  "gaia_ids_returned": 6680
+}
