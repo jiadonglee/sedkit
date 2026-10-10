@@ -28,6 +28,7 @@ best constrained there:
 | Warm dwarfs (F, early A) | 6250--7498 K | the same network, extended with 1661 dwarfs within 1 kpc | PARSEC M_Ks | IRFM | 2% |
 | Hot dwarfs (A, B) | 7000--30000 K | CK04 and TLUSTY spectra through the XP forward model, with an empirical correction | PARSEC radius x model surface flux | spectroscopic or spectral type; IRFM at 7000--7500 K | 1.2% |
 | Red giants (`fit_giant_companion`) | 3600--6800 K | empirical template of APOGEE giants | free scale, or a PARSEC M_Ks prior | APOGEE ASPCAP | 3--13% at 392 nm, 3--10% at 442 nm |
+| DA white dwarfs (`fit_whitedwarf_companion`) | 6--80 kK, log g 7--9.5 | Koester LTE spectra through the XP forward model, with a WD-only correction | thick/thin-H C/O cooling tracks, or free WD radius | 297 DESI/Gianninas DA anchors, grouped cross-validation | 5.0% median XP spectrum RMS; hot-WD labels above 40 kK less secure |
 | Hot subdwarfs (`fit_subdwarf_companion`) | 20--45 kK, log g 5--6.5 | TMAP NLTE spectra through the XP forward model, with an empirical correction | free radius at the parallax | Dawson et al. (2026) spectroscopy | 1.3% (0.5--1.4% at 0.45--0.9 um) |
 
 ### Cool and warm dwarfs: an empirical network
@@ -138,6 +139,7 @@ See [model and limitations](docs/model.md) for the full description and
 | `fit` with `StellarModel(hot=True)` | adds A and B dwarfs: CK04/TLUSTY table with an empirical XP correction | 7000--30000 K, log g 3--4.75, [M/H] -0.3 to +0.3, age from 4 Myr, mass to 20 solar masses; XP and J/H/Ks only | single star, coeval binary |
 | `fit_giant_companion` | red giant (empirical APOGEE template) plus a hot main-sequence companion | giant Teff 3600--6800 K, log g 0--3.8, [M/H] -2.6 to +0.6; companion 1.5--15 solar masses at 10 Myr and solar [M/H] | giant alone, giant plus companion profiled in mass |
 | `fit_subdwarf_companion` | hot subdwarf (TMAP NLTE table with an XP correction) plus a cool dwarf or subgiant of another age | subdwarf 20--45 kK, log g 5--6.5, three helium tiers (He-rich from 32 kK); companion as `StellarModel()`, or the giant template at log g 3.2--3.8 | single FGK star, single subdwarf, subdwarf plus companion |
+| `fit_whitedwarf_companion`, `whitedwarf_light_limit` | DA white dwarf plus a dwarf; conditional WD light envelope for a luminous primary | DA table 6--80 kK, log g 7--9.5; C/O cooling tracks with thick or thin H; strongest label validation below 40 kK | single dwarf, single DA, DA plus dwarf |
 | `orbit.solve_orbit`, `rank_roots` | Gaia photocentre orbits | as `StellarModel()` | faint companion, luminous twin |
 | `orbit.solve_luminous_pair`, `branch_from_rv`, `solve_dark_companion` | photocentre orbits of two luminous stars of different kinds, e.g. sdB + FGK | any masses | both branches of a0 = a \|B - beta_G\| |
 
@@ -145,6 +147,14 @@ Fits stay inside these ranges; the models do not extrapolate.
 See [model and limitations](docs/model.md).
 
 ### What the fits measure
+
+White dwarfs: 297 held-out DA anchors give 1.6% temperature offset and
+3.9% robust scatter with the default cooling relation. A 200-star
+independent FGK control sample has zero detections at the tested XP
+threshold. Real WD+M temperatures scatter by 14.9%; companion subtypes
+and hot-WD temperatures remain less secure. WD light limits give useful
+conditional orbit mass ranges, with the validation and limitations in
+[WD validation](docs/validation-whitedwarf.md).
 
 Single stars:
 
@@ -249,15 +259,16 @@ Other measurements:
 - Giants and subgiants in `fit`: the network is trained on dwarfs, the hot
   table stops at log g 3, and stars near the turn-off are outside the
   tables. The giant route models only a hot main-sequence companion.
-- White dwarfs, brown dwarfs and ultracool atmospheres, triples, blends and
+- Brown dwarfs and dedicated ultracool atmospheres, triples, blends and
   variable stars.
 - Stars above 30 kK (O stars are untested), hot stars with |[M/H]| > 0.3,
   supergiants, Be and emission-line stars, chemically peculiar stars and
   fast rotators.
-- Binaries of different ages, except the giant and subdwarf routes.
+- Binaries of different ages, except the giant, subdwarf and DA routes.
 - Hot subdwarfs outside 20--45 kK and log g 5--6.5, He-rich subdwarfs below
   32 kK, HW Vir-type close binaries with a reflection effect, pulsating
-  subdwarfs' light variations, and white dwarfs.
+  subdwarfs' light variations, non-DA/magnetic white dwarfs, ELM WDs,
+  and double-degenerate systems.
 - Posterior uncertainties, calibrated binary probabilities and population
   inference: fits return constrained best fits and objective differences.
 - Correlations between XP channels: GaiaXPy inter-channel covariance is
@@ -374,6 +385,7 @@ comparing zero-extinction and Edenhofer-prior fits of a real SB2.
 - [Warm-star validation](docs/validation-warm.md): warm network, cluster members, binary mocks and log g priors.
 - [Hot-star validation](docs/validation-hot.md): calibration, holdout and CALSPEC checks, binary injections and cluster tests.
 - [Giant validation](docs/validation-giant.md): giant template, controls and injected companions.
+- [White-dwarf fitting](docs/whitedwarf.md) and [validation](docs/validation-whitedwarf.md): DA labels, composite light fractions and conditional dark-companion bounds.
 - [Subdwarf validation](docs/validation-subdwarf.md): single and composite subdwarfs, light fractions, orbits, injections and false positives.
 - [Visual identity](docs/appearance.md): logo, plotting palette and reproducible homepage figures.
 

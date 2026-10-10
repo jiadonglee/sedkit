@@ -1,63 +1,54 @@
-# WD 路线进展：2026-10-10
+# WD 路线结果：2026-10-10
 
-已从 `feat/subdwarf` 切出 `feat/whitedwarf`，完成第一轮锚点统计和大气表来源检查。
+DA 模型、WD+矮星拟合、暗 WD 光比上限和联合轨道似然接口已经落地。
+已完成真实单星、复合星、轨道和失配注入检查；部分精度目标仍未达到。
 
-## 第一轮结果
+![验证结果](validation.png)
 
-光谱参数 DA 样本按 Gaia ID 去重后，有 **2524 颗**具备 XP 且在
-Teff 6–80 kK、log g 7.0–9.5 内。**2064 颗**温度至少 13 kK，或目录提供了
-3D 修正；再要求 RUWE < 1.4、视差信噪比 > 10，还剩 **2005 颗**。
-数量上足以进入计划的 ≥200 档，但最终校正形式要等无校正残差出来后决定。
+| 检查 | 结果 | 能说明什么 |
+| --- | --- | --- |
+| 297 颗 DA，按源五折验证 | 默认 M–R 模式温度偏差 +1.60%，离散 3.87%；条件质量离散 0.044 M☉ | 整体达到预设标准；不是动力学质量验证 |
+| 新的 200 颗恒定 RV FGK 对照 | 0 个超过阈值；单侧 95% 上限 1.49% | 该对照样本的候选率低于 2%；阈值不通用于任意数据/先验 |
+| 126 个 SDSS DA+M 系统 | WD 温度偏差 −0.28%，离散 14.89% | 温度标准达到；M 星次型只有 74/126 在 ±1 内 |
+| 123 个 SDSS 谱分解归一化 | G 光比中位偏差 −0.0214，离散 0.0824 | 中位偏差达到目标；23 个参考归一化超过总光，且共享 DA 大气模型 |
+| 29 个 Gaia/RV 一致的真实轨道，XP+2MASS | 光比上限中位数 0.0196；质量影响中位数 0.0419 M☉，只有 3/29 ≤0.02 M☉ | 大部分系统仍需保留 WD 光的质量不确定性 |
+| 48 次匹配/失配注入 | 复合星光比最大误差 0.011；12 个暗伴星包络均包含注入值 | 小规模条件检查，不能据此标为 95% 上限 |
 
-| 光谱参数来源 | 有 XP | 参数范围内的纯 DA |
-| --- | ---: | ---: |
-| DESI EDR / Manser+2024 | 1043 | 974 |
-| SDSS DR16 / Kepler+2021 | 425 | 416 |
-| MWDD 的 Gianninas+2011 子样本 | 1240 | 1210 |
+## 现在能用什么
 
-各行包含重复天体，不能直接相加。
+- `WhiteDwarfModel`：858 节点的 DA 表，6–80 kK、log g 7–9.5；
+  默认 WD 专属校正，支持厚/薄氢层冷却轨道。
+- `fit_whitedwarf_companion`：单矮星、单 DA、DA+矮星，共享视差和消光；
+  默认 M–R 关系，也可用自由 WD 半径做光谱对照。
+- `whitedwarf_light_limit`：扫描质量与温度/冷却年龄，重拟合主星和共享参数，
+  保留不连通区间；可比较指定质量的共龄 MS 伴星。
+- `loglike_whitedwarf_sed`：供 SED/RV/天体测量联合拟合使用，
+  WD 质量同时决定冷却半径，不重复加入视差先验。
 
-![DA 锚点覆盖](anchor_census.png)
+`beta_G` 是 WD 占总 G 光的份额。轨道的 `solve_dark_companion`
+需要 `F_WD/F_primary`，接口同时给出 `flux_ratio_G_upper`。
+`delta=9` 是操作阈值，返回的 `confidence_level` 为 `None`。
 
-Gaia 查询的 6680 个有效 ID 全部返回。三颗 G>17.65 的 DA 已从 DataLink
-下载到 XP_CONTINUOUS，源 ID 为 717674397913354880、1070456831149326208、
-910001899563870592。Yamaguchi+2024 的 31 个系统也全部有 XP；已保存其 Gaia
-对照表，尚未进行 SED 或轨道拟合。
+完整说明和来源在 [WD 文档](../../docs/whitedwarf.md) 与
+[验证报告](../../docs/validation-whitedwarf.md)。逐源轨道结果在
+[orbit_results.ecsv](orbit_results.ecsv)，汇总数字在
+[validation_results.json](validation_results.json)。示例是
+[06_whitedwarf.py](../../examples/06_whitedwarf.py)。
 
-Koester DA 网格在计划范围内有 **858 个节点**（78 个温度、11 个重力），
-没有缺失组合。检查的 10000 K、log g 8 光谱覆盖 **89.9–2999.2 nm**，
-覆盖 GALEX 和 Gaia；有限波长积分为 σTeff⁴ 的 **0.9938**，表面通量单位正确。
-Bédard 厚氢层 0.6 M☉ 轨道在 10000 K 给出 **R=0.01283 R☉**、
-冷却年龄 **0.633 Gyr**；表中重力与 GM/R² 一致。
+## 已量化的限制
 
-## 当前决定
+40 kK 以上只有 7 个 DA 锚点。温度对校正形式敏感：基准偏差 −13.8%，
+加一个温度项后为 +11.8%，离散仍有 11.7%；不能沿用整体的精度。
+M 星次型也不稳定：增加现有 2MASS、自由 WD 半径或放宽消光先验都未解决。
+真实轨道加 2MASS 后，质量影响仍为 0.0109–0.1242 M☉。
+这些是数据/模型限制，不能靠改阈值变成已验证的精度。
 
-- 先构建无经验校正的 DA 表，画残差随 Teff、WD Balmer 等值宽度的变化。
-- 单 DA 和零检验的判据已写入
-  [validation-whitedwarf.md](../../docs/validation-whitedwarf.md)，尚未运行拟合。
-- 原始目录、查询结果和逐源名单保存在 `data/whitedwarf/anchors/`；
-  网格节点、单节点光谱和冷却序列在 `data/whitedwarf/models/`。
-  `anchor_census.py` 和 `model_probe.py` 可重复生成本轮统计。
+薄氢层注入用厚氢层拟合时，WD 质量中位偏差约 +0.10 M☉，所以提供两套
+冷却模型做敏感性比较。DB、磁 WD、He 核冷却和 3 μm 以外光谱仍需另外的数据。
+Nayak 测光样本未计入本轮可用性统计，也不承担独立光谱定标。
 
-## 局限与待办
+后续最直接的补充是：热 DA 的可靠紫外谱、WD+M 的独立伴星谱/测光，
+以及带完整轨道协方差和 RV 的联合拟合。当前输出保留这些不确定性。
 
-Kilic+2025 的光谱用于分类，温度和质量来自测光拟合，不计入独立光谱锚点。
-Kepler+2021 的光谱拟合受 Gaia 视差约束，且没有应用 3D 修正；冷 DA 标签
-还需单独处理。上述数量是候选数，尚未完成 XP 质量、标签尺度和隐藏伴星检查。
-
-Koester 光谱不到 3 μm 以外，不能直接用于 W1/W2 或长波 SPHEREx。
-下一步先完成 Gaia/GALEX 范围内的表；长波部分需另外验证。
-
-任务 0 尚待补齐 SDSS WDMS、Nayak、Shahaf 和 Gentile Fusillo 测光控制样本的
-覆盖统计；DB 光谱表来源也尚未落实。完整 DA 表、经验校正、β_G 上限接口
-和拟合验证均未完成。
-
-来源：[DESI 数据包](https://zenodo.org/records/13684288)、
-[SDSS DR16](https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/507/4646)、
-[MWDD](https://www.montrealwhitedwarfdatabase.org/tables-and-charts.html)、
-[Kilic 的测光方法](https://arxiv.org/html/2412.04611v1#S4)、
-[Gianninas 光谱分析](https://arxiv.org/abs/1109.3171)、
-[Gaia XP 发布说明](https://doi.org/10.1051/0004-6361/202243940)、
-[Yamaguchi 轨道样本](https://arxiv.org/html/2405.06020v1)、
-[SVO Koester 表](https://svo2.cab.inta-csic.es/theory/newov2/index.php?models=koester2)、
-[Bédard 冷却轨道](https://www.astro.umontreal.ca/~bergeron/CoolingModels/)。
+测试：全套 70 项通过，WD 专项 8 项通过（含新增联合似然和亮 WD 光心两支解）。
+示例已运行，wheel 打包确认包含 WD 代码及全部五个模型/校正资源。

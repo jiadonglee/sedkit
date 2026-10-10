@@ -128,7 +128,7 @@ AllWISE W1/W2 are converted at the model wavelengths; the training data use
 unWISE fluxes, which lie about 5 per cent lower for the example sources, so
 W1/W2 stay out of the default fit. The source code license is retained in LICENSE.
 
-### White-dwarf development data
+### White-dwarf atmospheres and cooling
 
 The [DA anchor census and validation criteria](validation-whitedwarf.md)
 use the spectroscopic DESI EDR fits of Manser et al. (2024), SDSS DR16
@@ -158,3 +158,17 @@ Sources: [SVO Koester grid](https://svo2.cab.inta-csic.es/theory/newov2/index.ph
 [DESI catalogue](https://zenodo.org/records/13684288),
 [SDSS DR16 catalogue](https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/507/4646),
 [MWDD](https://www.montrealwhitedwarfdatabase.org/tables-and-charts.html).
+
+The complete table supports 123 of the 168 channels and has no replaced
+outlier nodes. `scripts/build_whitedwarf_model.py` builds the atmosphere
+and thick/thin-H cooling tables. The bundled XP correction uses 297 local
+DA anchors; raw catalogues and validation spectra stay in `data/whitedwarf/`.
+The UV passband correction uses a separate 71-source DA subset.
+See [WD fitting](whitedwarf.md) for model and passband conventions.
+
+The orbit validation uses [Yamaguchi et al. (2024)](https://arxiv.org/html/2405.06020v1)
+Tables 1, 4 and 5 and Gaia DR3 NSS Thiele–Innes elements. WDMS spectral
+parameters and angular-normalization distances use the
+[author SQL catalogue](https://sdsswdms.upc.edu/query.php), matched by
+plate/MJD/fibre. M-subtype comparisons use the
+[Pecaut/Mamajek dwarf scale](https://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt).

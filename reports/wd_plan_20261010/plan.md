@@ -1,6 +1,6 @@
 # sedkit 白矮星路线：计划 2026-10-10
 
-目标服务于 Gaia DR4（2026-12-02）双星论文：给出白矮星（WD）伴星的光比 β_G，或其上限，供 q/AMRF 和轨道解使用。sdB 路线已经搭好了这套基础设施，WD 路线照搬它的结构。
+目标服务于 Gaia DR4 双星论文：给出白矮星（WD）伴星的光比 β_G，或其上限，供 q/AMRF 和轨道解使用。sdB 路线已经搭好了这套基础设施，WD 路线照搬它的结构。
 
 ## 范围
 
@@ -20,11 +20,8 @@
 
 ## 已核实的事实
 
-- SVO 上的 Koester DA 网格（`koester2`）：纯氢，Teff 5000–80000 K（20 kK 以下步长 250 K），log g 6.5–9.5（步长 0.25）。没有 DB 档，所以第一阶段只做 DA。
-- 尚未核实：
-  - 网格的波长范围是否覆盖 130 nm（GALEX）到 1100 nm；
-  - 有没有可公开获取的 DB 光谱网格（Koester 本人按需提供；Montreal 只公开合成测光）。
-  这两项在任务 1 里解决。
+- 本轮 SVO `koester2` DA 表实际选择 Teff 6000–80000 K、log g 7.0–9.5，共 858 节点。光谱覆盖约 90–3000 nm，包含 GALEX 与 Gaia。
+- 运行表已包含 Bédard 厚/薄氢层 C/O 冷却关系。可分发的 DB 光谱表尚未落实。
 
 ## 任务
 
@@ -35,7 +32,7 @@ DR3 的普通星 XP 发布主要限于 G < 17.65，但额外包含约十万颗�
 - 光谱分类、测光参数：Kilic+2025（100 pc，SDSS 天区），用于覆盖率和对照，不作独立光谱定标；
 - 只有测光参数的：Gentile Fusillo+2021，仅用于零检验和覆盖率统计，不作定标；
 - WD+MS：Rebassa-Mansergas SDSS WDMS 目录（有 Teff_WD、log g 和 M 型伴星次型），Nayak+2024 Gaia/GALEX 测光 WD+MS 候选；
-- 暗 WD 伴星轨道：Yamaguchi+2024（有 RV 证认的宽 post-CE WD+MS）、Shahaf+2024（AMRF III 类）。
+- 暗 WD 伴星轨道：Yamaguchi+2024（有 RV 证认的宽 post-CE WD+MS）、Shahaf+2024（non-class-I 父样本，需区分 II/III 类和颜色过量筛选）。
 
 按光谱 DA 锚点数分三档：
 - ≥ 200 颗：照搬 sdB 的做法，exp(a + W b) 校正加交叉验证；
@@ -114,7 +111,10 @@ DR4 后再做：
 - 光谱 log g 本身存在系统偏差：热 DA 的光度 Teff 与光谱 Teff 不一致（Genest-Beaulieu & Bergeron 2019），冷 DA 需要 3D 修正。
 - XP 在暗蓝源上的定标误差可能主导 WD 的残差。
 
-## 需要你决定的
+## 执行状态
 
-- 范围是否就是 (c) + (b)，还是只做 (a)/(c)。
-- 有没有 DB 光谱网格的来源，比如直接向 Koester 要。
+已实现 DA 模型、校正、(b)/(c) 两种拟合路线、厚/薄氢层敏感性与联合轨道似然，
+并完成单 DA、零检验、SDSS WDMS、谱分解光比、31 个轨道和 48 次注入检查。
+结果和仍未达到的科学精度写在 [progress.md](progress.md)。
+DB、He 核冷却、长波红外及更强的热 DA/伴星谱约束仍需补充数据；
+原定精度判据保留，未通过的部分不标为完成验证。

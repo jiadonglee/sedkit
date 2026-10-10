@@ -264,3 +264,42 @@ the SED along each solution branch, with q re-solved from the orbit at every
 trial primary, returns these quantities at the fitted parameters, and sorts
 the solutions by the fit objective, with `delta` above the best. See
 [Photocentre orbits](orbit.md).
+
+## DA white dwarfs
+
+```python
+from sedkit import WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
+
+fit_wd = fit_whitedwarf_companion(sed)
+light = whitedwarf_light_limit(sed, masses=[.6, .8, 1.], delta=9.)
+```
+
+`WhiteDwarfModel(calibration="bundled", hydrogen_layer="thick")` uses
+the WD-specific empirical correction and thick-H C/O cooling relation.
+Use `calibration=None` for raw spectra or `hydrogen_layer="thin"` for
+thin-H sensitivity. `predict(teff, mass)` gives 10-pc fluxes;
+`predict(teff, logg=..., radius=...)` uses an independent radius.
+`physical(teff, mass)` returns radius, gravity, luminosity and cooling age;
+`teff_at_age(mass, age_gyr)` stays within cooling-table support.
+
+`fit_whitedwarf_companion(sed, *, model=None, stellar=None, companions=True,
+free_radius=False, companion_age_gyr=5., companion_feh=0., extinction=0.,
+extinction_prior=None, dust_prior=None, parallax=None, fit_parallax=False,
+blue=None, galex=None, use_spherex=False, whitedwarf_prior=None,
+companion_prior=None)` compares `dwarf`, `wd`, and `wd+dwarf`.
+`companions=False` compares the two single-star hypotheses.
+
+`whitedwarf_light_limit(sed, *, masses=(.45,.6,.8,1.,1.2), temperatures=None,
+cooling_ages_gyr=None, delta=9., luminous_mass=None, companion_age_gyr=5.,
+companion_feh=0., **kwargs)` takes the same data, model and nuisance options.
+It returns `beta_G_upper`, `flux_ratio_G_upper`, `profile`, `intervals`,
+`single_primary` and the optional `luminous_companion` comparison.
+Its envelope has `confidence_level=None`.
+
+See [WD fitting and conventions](whitedwarf.md) and
+[validation](validation-whitedwarf.md).
+
+`loglike_whitedwarf_sed(sed, *, teff, mass, primary_mass=None, age_gyr=5.,
+feh=0., parallax_mas=None, extinction=0., model=None, stellar=None,
+blue=None, galex=None, use_spherex=False)` supplies a DA or DA+dwarf
+likelihood without priors/parallax penalties for external orbital models.

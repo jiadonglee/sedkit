@@ -143,3 +143,20 @@ This is the check of Sect. 6 of Li et al. (XPS paper, in preparation), where
 the spectra also include SPHEREx.
 
 [API](api.md) · [README](../README.md)
+
+## Faint white-dwarf companions
+
+`whitedwarf_light_limit` profiles a WD's optical contribution while
+refitting the luminous primary. Its `beta_G_upper` is the WD fraction of
+**total** G light. `solve_dark_companion` requires a companion/primary
+ratio, so pass `flux_ratio_G_upper = beta_G_upper/(1-beta_G_upper)`.
+At fixed a0, parallax, period and primary mass, compare the zero-light
+mass with the mass at that ratio to measure the effect of the permitted
+WD light. The envelope depends on the scanned cooling models and is not
+a calibrated 95% confidence limit. See the
+[worked WD example](whitedwarf.md#conditional-wd-light-limits).
+
+For a joint SED/RV/astrometry fit, `loglike_whitedwarf_sed` evaluates the
+WD and primary at their trial masses, distance and shared extinction.
+Use the same WD mass in its cooling radius and the orbit, and apply the
+catalogue parallax constraint once in the joint model.

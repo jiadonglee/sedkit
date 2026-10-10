@@ -1,0 +1,10 @@
+{
+  "n": 123,
+  "median": -0.02144402149449165,
+  "scatter": 0.08238708840059604,
+  "within_005": 56,
+  "passband_weight_outside_xp": 0.0036592210764131976,
+  "physical_reference": 100,
+  "reference_above_one": 23,
+  "reference": "SDSS decomposition angular normalization; Koester transfer to G, independent of Gaia parallax but sharing a DA atmosphere family"
+}

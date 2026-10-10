@@ -225,7 +225,8 @@ posterior.
   SPHEREx channels comes from cooler stars.
 - GaiaXPy inter-channel measurement covariance is omitted; XP marginal
   errors are used. The model covariance does not replace that information.
-- Variable sources, blends, triples and white dwarfs are not modeled.
+- Variable sources, blends and triples are not modeled. DA white dwarfs
+  use the separate [WD route](whitedwarf.md).
   Catalogue flags are preserved but do not establish a clean binary sample.
 - Fixed age/metallicity experiments are conditional on those choices.
   A matched mock checks the algorithm, not real-data model calibration.
@@ -258,3 +259,20 @@ posterior.
   +0.5 its isochrones are 0.5 dex apart in age. `download` stores the Gaia
   DR3 parallax without the Lindegren et al. (2021) zero point; the validated
   luminosity fits used corrected parallaxes passed through `parallax=`.
+
+## DA white-dwarf route
+
+The [DA route](whitedwarf.md) combines Koester surface spectra with
+Bédard C/O-core cooling tracks. It compares a dwarf, a DA and their
+physical flux sum at the shared distance/extinction. The WD-only XP
+shape correction is trained with source-grouped folds. Empirical WD
+errors enter as diagonal variance; stellar errors retain their low-rank
+covariance. The likelihood includes both covariance determinants.
+
+The default WD radius follows its temperature and mass, with thick H.
+Thin-H tracks and a free WD radius are available for sensitivity and
+spectroscopic comparisons. Companion age/metallicity can be fitted.
+A temperature/mass profile gives a conditional WD G-light envelope for
+orbit calculations. Its operational threshold has no calibrated coverage.
+The [validation](validation-whitedwarf.md) measures temperature,
+light-fraction and mass sensitivity separately.

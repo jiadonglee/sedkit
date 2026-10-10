@@ -1,0 +1,23 @@
+[
+  {
+    "catalogue": "Shahaf2024",
+    "requested": 9786,
+    "gaia": 9786,
+    "xp": 9786,
+    "sample": "non-class-I parent; not RV-confirmed and not exclusively class III",
+    "updated_2025_nce": 3145,
+    "updated_red_probability_threshold": 0.64
+  },
+  {
+    "catalogue": "GF2021_100pc",
+    "requested": 16676,
+    "gaia": 16676,
+    "xp": 14852
+  },
+  {
+    "catalogue": "astra_local150",
+    "requested": 5223,
+    "gaia": 635,
+    "xp": 575
+  }
+]

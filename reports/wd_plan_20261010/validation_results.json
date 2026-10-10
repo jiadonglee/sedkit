@@ -1,0 +1,228 @@
+{
+  "detection": {
+    "statistic": "min(objective_dwarf, objective_wd) - objective_wd+dwarf",
+    "threshold": 55.0,
+    "training": "230 APOGEE RV-constant XP controls",
+    "rule": "first integer strictly above the maximum training statistic",
+    "validation": "200 new Astra APOGEE RV-constant controls, within 150 pc and |b|>30; no shared source IDs",
+    "scope": "XP61, calibrated DA spectra, fitted parallax/extinction, free primary age/metallicity with spectroscopic metallicity prior"
+  },
+  "null": {
+    "wd_cv": {
+      "n": 297,
+      "false_positive": 0,
+      "upper95": 0.01003594109779244
+    },
+    "fgk_training": {
+      "n": 230,
+      "false_positive": 0,
+      "upper95": 0.012940465700466402
+    },
+    "fgk_holdout": {
+      "n": 200,
+      "false_positive": 0,
+      "upper95": 0.014867039231272054
+    }
+  },
+  "temperature_bins": [
+    {
+      "range": [
+        6000,
+        13000
+      ],
+      "n": 50,
+      "cal": {
+        "median": 0.025749207878071112,
+        "scatter": 0.026016831499662836
+      },
+      "mr": {
+        "median": 0.029098964552213613,
+        "scatter": 0.026792044685800404
+      },
+      "blue": {
+        "median": 0.027492820766228165,
+        "scatter": 0.030844770047902745
+      }
+    },
+    {
+      "range": [
+        13000,
+        25000
+      ],
+      "n": 213,
+      "cal": {
+        "median": 0.0084053779419353,
+        "scatter": 0.03663051521415469
+      },
+      "mr": {
+        "median": 0.01733683434618727,
+        "scatter": 0.038744536077183304
+      },
+      "blue": {
+        "median": 0.006843053281358369,
+        "scatter": 0.03496891156906901
+      }
+    },
+    {
+      "range": [
+        25000,
+        40000
+      ],
+      "n": 27,
+      "cal": {
+        "median": -0.0042925666911409754,
+        "scatter": 0.029183190920494904
+      },
+      "mr": {
+        "median": -0.005996652154621529,
+        "scatter": 0.025921802642767788
+      },
+      "blue": {
+        "median": -0.01115243311887748,
+        "scatter": 0.03087642939529511
+      }
+    },
+    {
+      "range": [
+        40000,
+        80001
+      ],
+      "n": 7,
+      "cal": {
+        "median": -0.13816535309537936,
+        "scatter": 0.09781696297072967
+      },
+      "mr": {
+        "median": -0.11495695359058156,
+        "scatter": 0.11127353881153434
+      },
+      "blue": {
+        "median": -0.10337469937441823,
+        "scatter": 0.08305259293888698
+      }
+    }
+  ],
+  "magnitude_bins": [
+    {
+      "range": [
+        9,
+        14
+      ],
+      "n": 33,
+      "cal": {
+        "median": 0.011739352411050286,
+        "scatter": 0.0399670864296572
+      },
+      "mr": {
+        "median": 0.017844739175574942,
+        "scatter": 0.04989478284951095
+      },
+      "blue": {
+        "median": 0.006126063259960235,
+        "scatter": 0.04560988606843732
+      }
+    },
+    {
+      "range": [
+        14,
+        16
+      ],
+      "n": 179,
+      "cal": {
+        "median": 0.004167231040540509,
+        "scatter": 0.03806328145757204
+      },
+      "mr": {
+        "median": 0.01146150967389814,
+        "scatter": 0.03848260496466455
+      },
+      "blue": {
+        "median": 0.0020654539468762945,
+        "scatter": 0.035029413112109664
+      }
+    },
+    {
+      "range": [
+        16,
+        21
+      ],
+      "n": 85,
+      "cal": {
+        "median": 0.023378719242687085,
+        "scatter": 0.034715648585388975
+      },
+      "mr": {
+        "median": 0.026307167545162713,
+        "scatter": 0.037762928679580074
+      },
+      "blue": {
+        "median": 0.024612402010521173,
+        "scatter": 0.03641216095427875
+      }
+    }
+  ],
+  "orbits": {
+    "n": 31,
+    "gaia_rv_consistent": 29,
+    "mass_shift_le_002": 3,
+    "beta_G_upper_median": 0.019620136481019658,
+    "mass_shift_median": 0.041892295276119706,
+    "mass_shift_range": [
+      0.010938550447679884,
+      0.12421482649269044
+    ],
+    "excluded": [
+      "J1834+1525",
+      "J1922-4624"
+    ],
+    "ms_rejected_at_delta9": 28,
+    "threshold": 9,
+    "confidence_level": null,
+    "n_with_ir": 31,
+    "xp_only_mass_shift_median": 0.040146423185162594,
+    "xp_only_mass_shift_le_002": 3
+  },
+  "wdms_detection": {
+    "n": 126,
+    "above_threshold": 68,
+    "scope": "known SDSS DA/M catalogue subset; recovery fraction, not population completeness"
+  },
+  "injections": {
+    "matched": {
+      "n_composite": 9,
+      "n_dark": 3,
+      "teff_median": 0.02458765816692532,
+      "beta_max_abs_error": 0.006961181392926008,
+      "mass_median_offset": 0.034397319086653,
+      "dark_beta_covered": 3,
+      "dark_mass_covered": 3
+    },
+    "temperature_scale": {
+      "n_composite": 9,
+      "n_dark": 3,
+      "teff_median": 0.0679499112134454,
+      "beta_max_abs_error": 0.008357751494197041,
+      "mass_median_offset": 0.012729682512463203,
+      "dark_beta_covered": 3,
+      "dark_mass_covered": 3
+    },
+    "thin_hydrogen": {
+      "n_composite": 9,
+      "n_dark": 3,
+      "teff_median": 0.05053311836232499,
+      "beta_max_abs_error": 0.009034636359067594,
+      "mass_median_offset": 0.10157918503157093,
+      "dark_beta_covered": 3,
+      "dark_mass_covered": 3
+    },
+    "extinction_offset": {
+      "n_composite": 9,
+      "n_dark": 3,
+      "teff_median": -0.04169198327973511,
+      "beta_max_abs_error": 0.01098500188119056,
+      "mass_median_offset": 0.0015124722286848913,
+      "dark_beta_covered": 3,
+      "dark_mass_covered": 3
+    }
+  }
+}
