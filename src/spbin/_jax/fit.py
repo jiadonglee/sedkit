@@ -414,49 +414,50 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         values = np.where(supported, scores, np.inf)[
             np.argsort(np.where(supported, scores, np.inf))[:5]]
         converged_flags = np.zeros(len(starts), bool)
-        if optimizer == "nm":
-            simplices = np.tile(starts[:, free_idx][:, None, :], (1, len(free) + 1, 1))
-            for i in range(len(free)):
-                at_high = starts[:, free_idx[i]] + steps[i] > free_bounds[i, 1]
-                simplices[:, i + 1, i] += np.where(at_high, -steps[i], steps[i])
-            nm_solution, nm_values, done = _nm_compiled(
+
+        def nelder_mead(points, step):
+            """Nelder-Mead from each point; every final vertex becomes a candidate.
+
+            The other vertices lie within the termination tolerances of the
+            best one, which matters when that one fails numpy's domain check.
+            """
+            simplices = np.tile(points[:, None, :], (1, n_free + 1, 1))
+            for i in range(n_free):
+                at_high = points[:, i] + step[i] > free_bounds[i, 1]
+                simplices[:, i + 1, i] += np.where(at_high, -step[i], step[i])
+            vertices, vertex_values, done = _nm_compiled(
                 jnp.asarray(simplices), jnp.asarray(free_bounds),
                 jnp.asarray(template), jnp.asarray(free_idx), problem)
-            # Every final vertex is a candidate: they lie within the tolerances
-            # of the best one, which matters when that one fails numpy's check.
-            solution = np.concatenate([solution, np.asarray(nm_solution).reshape(-1, n_free)])
-            values = np.concatenate([values, np.asarray(nm_values).ravel()])
-            converged_flags = np.concatenate([converged_flags,
-                                              np.repeat(np.asarray(done), n_free + 1)])
+            return (np.asarray(vertices).reshape(-1, n_free), np.asarray(vertex_values).ravel(),
+                    np.repeat(np.asarray(done), n_free + 1))
+
+        def add(candidates):
+            nonlocal solution, values, converged_flags
+            solution = np.concatenate([solution, candidates[0]])
+            values = np.concatenate([values, candidates[1]])
+            converged_flags = np.concatenate([converged_flags, candidates[2]])
+
+        if optimizer == "nm":
+            add(nelder_mead(starts[:, free_idx], steps))
+            # One restart from the best endpoint with the full initial steps:
+            # Nelder-Mead stops early in this objective's flat valleys, and
+            # where it stops depends on rounding-level differences.
+            finite = np.where(values < 1e29, values, np.inf)
+            add(nelder_mead(solution[np.argmin(finite)][None], steps))
         elif optimizer in ("bfgs", "bfgs+nm"):
             bfgs_solution, bfgs_values, bfgs_done = _bfgs_compiled(
                 jnp.asarray(starts), jnp.asarray(one_bounds), jnp.asarray(template),
                 jnp.asarray(free_idx), problem)
             bfgs_solution, bfgs_values = np.asarray(bfgs_solution), np.asarray(bfgs_values)
-            converged_flags = np.concatenate([converged_flags, np.asarray(bfgs_done)])
+            add((bfgs_solution, bfgs_values, np.asarray(bfgs_done)))
             if optimizer == "bfgs+nm":
                 # BFGS stalls on the PARSEC grid-node kinks; a Nelder-Mead from
                 # each endpoint settles the remaining distance at a fraction of
                 # the full-search cost. Endpoints that diverged into the
                 # unsupported region fall back to their grid start.
-                polish_steps = 0.25 * steps
                 good = np.isfinite(bfgs_values) & (bfgs_values < 1e29)
-                polish_from = np.where(good[:, None], bfgs_solution, starts[:, free_idx])
-                polish = np.tile(polish_from[:, None, :], (1, len(free) + 1, 1))
-                for i in range(len(free)):
-                    at_high = polish_from[:, i] + polish_steps[i] > free_bounds[i, 1]
-                    polish[:, i + 1, i] += np.where(at_high, -polish_steps[i],
-                                                    polish_steps[i])
-                pol_solution, pol_values, pol_done = _nm_compiled(
-                    jnp.asarray(polish), jnp.asarray(free_bounds),
-                    jnp.asarray(template), jnp.asarray(free_idx), problem, 1600)
-                bfgs_solution = np.concatenate([bfgs_solution,
-                                                np.asarray(pol_solution).reshape(-1, n_free)])
-                bfgs_values = np.concatenate([bfgs_values, np.asarray(pol_values).ravel()])
-                converged_flags = np.concatenate([converged_flags,
-                                                  np.repeat(np.asarray(pol_done), n_free + 1)])
-            solution = np.concatenate([solution, bfgs_solution])
-            values = np.concatenate([values, bfgs_values])
+                add(nelder_mead(np.where(good[:, None], bfgs_solution, starts[:, free_idx]),
+                                0.25 * steps))
         else:
             raise ValueError("optimizer must be 'nm', 'bfgs' or 'bfgs+nm'")
         values = np.where(np.isfinite(values) & (values < 1e29), values, np.inf)
