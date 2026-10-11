@@ -16,7 +16,7 @@ A component's 392 nm channel (hot table, with its operator correction) times exp
 channels, so the table carries only the synthetic colour below 392 nm.
 
 The synthetic Balmer jump is too deep in XP: at 7-11 kK the observed 342-372 nm channels of the hot-table
-anchors lie 0.3-0.45 in ln above it, falling to about zero at 20 kK. `calibrate` fits that offset per blue
+anchors lie 0.3-0.45 in ln above it, and 0-0.16 at 342-382 nm above 15 kK. `calibrate` fits that offset per blue
 channel as the median residual in Teff bins of the training anchors (BLUE_BINS_K), interpolated linearly in
 log Teff between the bins' median Teff and held flat beyond, and reports the residuals of the held-out anchors.
 ANCHORS.csv holds the anchors' hot-table MAP labels (teff, logg, e = ZGR23 E), the holdout flag and the
@@ -141,7 +141,7 @@ def calibrate(args):
     from sedkit.subdwarf import SubdwarfModel
 
     with np.load(OUT / "hot_uv.npz") as archive:
-        uv = {key: archive[key] for key in archive.files}
+        uv = {key: archive[key] for key in archive.files if key not in ("blue_node_teff", "blue_offset")}
     anchors = pd.read_csv(args.anchors)
     curve = SubdwarfModel(calibration=None).blue_curve - extinction_curve(np.array([0.392]))[0]
     logg = np.clip(anchors.logg.to_numpy(), uv["logg_ax"][0], uv["logg_ax"][-1])
