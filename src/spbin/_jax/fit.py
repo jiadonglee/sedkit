@@ -18,7 +18,6 @@ import equinox as eqx
 import jax
 import jax.numpy as jnp
 import numpy as np
-import optimistix as optx
 
 from ..extinction import EdenhoferPrior, extinction_curve
 from ..fit import STEP
@@ -178,26 +177,32 @@ def _bfgs(u0, bounds, template, free_idx, problem):
     """Unconstrained-space BFGS; returns theta, objective and the result code."""
     def objective(u, args):
         return _free_objective(_unconstrain(u, bounds), template, free_idx, bounds, problem)
+    import optimistix as optx
+
     solution = optx.minimise(objective, optx.BFGS(rtol=1e-9, atol=1e-9), u0,
                              max_steps=300, throw=False)
-    return _unconstrain(solution.value, bounds), solution.state.result
+    success = solution.state.result == optx.RESULTS.successful
+    return _unconstrain(solution.value, bounds), success
 
 
 def _nm_runner(simplices, bounds, template, free_idx, problem, maxiter=1600):
-    def one(simplex, one_bounds):
+    # One solve at a time: under vmap the step's lax.cond branches all
+    # evaluate (the shrink alone costs n+1 objective calls per iteration)
+    # and the batch waits for the slowest start.
+    def one(simplex):
         return _nelder_mead(
-            lambda u: _free_objective(u, template, free_idx, one_bounds, problem),
-            simplex, one_bounds, maxiter=maxiter)
-    return jax.vmap(one, in_axes=(0, None))(simplices, bounds)
+            lambda u: _free_objective(u, template, free_idx, bounds, problem),
+            simplex, bounds, maxiter=maxiter)
+    return jax.lax.map(one, simplices)
 
 
 def _bfgs_runner(starts, bounds, template, free_idx, problem):
     free_bounds = bounds[free_idx]
 
     def one(u0):
-        theta, result = _bfgs(u0, free_bounds, template, free_idx, problem)
+        theta, success = _bfgs(u0, free_bounds, template, free_idx, problem)
         full = template.at[free_idx].set(theta)
-        return theta, _objective(full, problem), result
+        return theta, _objective(full, problem), success
 
     starts_u = jax.vmap(_constrain, in_axes=(0, None))(starts[:, free_idx], free_bounds)
     return jax.vmap(one)(starts_u)
@@ -327,9 +332,17 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
     if dust_prior is not None:
         dust_mean, dust_sigma = dust_prior.moments(
             sed.metadata["ra"], sed.metadata["dec"], 1000 / sed.parallax_mas)
-        dust_par, dust_mean_grid, dust_sigma_grid, dust_fail = _dust_grid(
-            dust_prior, sed.metadata["ra"], sed.metadata["dec"],
-            sed.parallax_mas, sed.parallax_error_mas, bounds[5])
+        if parallax_free:
+            dust_par, dust_mean_grid, dust_sigma_grid, dust_fail = _dust_grid(
+                dust_prior, sed.metadata["ra"], sed.metadata["dec"],
+                sed.parallax_mas, sed.parallax_error_mas, bounds[5])
+        else:
+            # A fixed parallax evaluates the penalty at one distance; a map
+            # query per grid node would be wasted.
+            dust_par = np.array([sed.parallax_mas])
+            dust_mean_grid = np.array([dust_mean])
+            dust_sigma_grid = np.array([dust_sigma])
+            dust_fail = np.zeros(1)
     else:
         dust_mean = dust_sigma = None
         zeros = np.zeros(DUST_GRID_POINTS)
@@ -411,12 +424,11 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
             values = np.concatenate([values, np.asarray(nm_values)])
             converged_flags = np.concatenate([converged_flags, np.asarray(done)])
         elif optimizer in ("bfgs", "bfgs+nm"):
-            bfgs_solution, bfgs_values, result = _bfgs_compiled(
+            bfgs_solution, bfgs_values, bfgs_done = _bfgs_compiled(
                 jnp.asarray(starts), jnp.asarray(one_bounds), jnp.asarray(template),
                 jnp.asarray(free_idx), problem)
             bfgs_solution, bfgs_values = np.asarray(bfgs_solution), np.asarray(bfgs_values)
-            converged_flags = np.concatenate([converged_flags, np.asarray(
-                result == optx.RESULTS.successful)])
+            converged_flags = np.concatenate([converged_flags, np.asarray(bfgs_done)])
             if optimizer == "bfgs+nm":
                 # BFGS stalls on the PARSEC grid-node kinks; a Nelder-Mead from
                 # each endpoint settles the remaining distance at a fraction of

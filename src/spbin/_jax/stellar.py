@@ -2,7 +2,8 @@
 
 Every function here is compiled with fixed shapes: a coeval pair is always two
 components whose fluxes add with weight zero for a single star, channel masks
-are 0/1 weights, and the low-rank model-error basis always has 11 columns.
+are 0/1 weights, and the low-rank model-error basis always has all 12
+columns (4 per error term).
 Outside their domain the components return safe finite values and a `valid`
 flag; the objective turns the flag into one large finite value.
 """
@@ -204,12 +205,12 @@ def evaluate(arr, m1, q, age_gyr, feh):
 
 
 def error_factors(arr, teff, flux_10pc, scale):
-    """Low-rank model-error columns (168, 11) and diagonal variance, all terms.
+    """Low-rank model-error columns (168, 12) and diagonal variance, all terms.
 
     The primary's Teff selects the term weights: v2.1_cold below 3800 K,
     v2.1_warm above 4200 K, smoothstep blend in between, and with hot=True a
     further handover to the hot term over 7000--7498 K. Zero-weight terms
-    leave zero columns, so the 11x11 Woodbury matrix stays fixed-shaped.
+    leave zero columns, so the 12x12 Woodbury matrix stays fixed-shaped.
     """
     warm = smoothstep((teff - ERROR_BLEND_K[0]) / (ERROR_BLEND_K[1] - ERROR_BLEND_K[0]))
     hot = (smoothstep((teff - HOT_BLEND_K[0]) / (HOT_BLEND_K[1] - HOT_BLEND_K[0]))
