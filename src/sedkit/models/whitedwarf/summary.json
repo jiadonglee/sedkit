@@ -31,6 +31,5 @@
     7.37,
     9.260000228881836
   ],
-  "calibration_report": "reports/wd_single_scale_20261010/summary.json",
   "model_error": "Diagonal spectral shape; absolute scale through parallax and extinction priors"
 }

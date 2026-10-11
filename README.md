@@ -155,7 +155,6 @@ with extinction and parallax constraints, the cooling-relation fit gives
 1.4% temperature bias and 3.5% robust scatter. Its absolute-flux bias is
 1.9%, with about 14% source scatter. Masses remain conditional on the
 C/O cooling relation and reference gravity scale. See the
-[single-star calibration](reports/wd_single_scale_20261010/report.md) and
 [composite/orbit benchmarks](docs/validation-whitedwarf.md).
 
 Single stars:

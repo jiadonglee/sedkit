@@ -9,3 +9,6 @@ dist/
 data/
 cache/
 .DS_Store
+
+# Analysis reports, paper plans and run outputs stay local
+reports/

@@ -5,14 +5,13 @@ light envelopes for photocentre-orbit calculations. Validation below
 uses the bundled Koester DA table and Bédard C/O-core cooling tracks.
 The criteria were recorded before fitting in the WD plan.
 
-The current bundled emulator's absolute single-star scale is described in
-the [single-DA calibration report](../reports/wd_single_scale_20261010/report.md):
-294 training stars and 289 independent stars, with spectral labels, Gaia
-parallax and native extinction. The combined benchmarks below use the
-[shape-reference calibration](../reports/wd_single_scale_20261010/reference_shape_calibration.npz).
-Their composite-detection threshold is specific to that calibration.
+The current bundled emulator's absolute single-star scale is calibrated on
+294 training stars and checked on 289 independent stars, with spectral
+labels, Gaia parallax and native extinction. The combined benchmarks below
+use the shape-reference calibration; their composite-detection threshold is
+specific to that calibration.
 
-![DA, control, composite and orbit comparisons](../reports/wd_plan_20261010/validation.png)
+![DA, control, composite and orbit comparisons](assets/whitedwarf-validation.png)
 
 ## Anchors and availability
 
@@ -252,13 +251,7 @@ exposed for sensitivity comparisons.
 
 ## Reproduction
 
-`reports/wd_plan_20261010/` contains the census, model probes,
-calibration and validation scripts and JSON summaries. Raw catalogues,
-XP coefficients, calibrated spectra, per-source outputs and cooling
-sequences are cached in `data/whitedwarf/`. Exact anchor lists and the precomputed native Edenhofer moments for
-the FGK training controls are also saved beside the report scripts.
-The runtime tables are
-bundled in `src/sedkit/models/whitedwarf/`.
+The runtime tables are bundled in `src/sedkit/models/whitedwarf/`.
 
 Run with `PYTHONPATH=src` in the astronomy Python environment:
 `calibrate_da.py`, `validate_uv.py`, `validate_samples.py`,

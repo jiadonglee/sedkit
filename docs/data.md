@@ -164,12 +164,9 @@ outlier nodes. `scripts/build_whitedwarf_model.py` builds the atmosphere
 and thick/thin-H cooling tables. The bundled XP correction retains the
 absolute flux of 294 spectroscopic DESI/Gianninas single-DA anchors within
 100 pc. Another 289 supported stars at 100--150 pc form an independent
-comparison. Native Edenhofer moments are cached with the anchor lists;
+comparison. Extinction uses native Edenhofer moments;
 stars inside the map's inner radius use a local E=0 +/- 0.005 prior.
 The UV passband correction uses 71 single DAs on the same absolute scale.
-Raw catalogues and XP spectra stay in `data/whitedwarf/`; the
-[calibration recipe and exact samples](../reports/wd_single_scale_20261010/report.md)
-are saved with the report.
 See [WD fitting](whitedwarf.md) for model and passband conventions.
 
 The orbit validation uses [Yamaguchi et al. (2024)](https://arxiv.org/html/2405.06020v1)

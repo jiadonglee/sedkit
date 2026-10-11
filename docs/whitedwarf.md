@@ -86,7 +86,6 @@ The calibration labels cover 6003--56800 K and log g 7.37--9.26.
 Only six training and eight independent stars exceed 40 kK;
 their temperature and normalization precision is weaker. The atmospheric
 table's wider domain does not establish empirical precision there.
-See the [single-DA scale report](../reports/wd_single_scale_20261010/report.md).
 
 For a detected WD+dwarf composite, `photocentre` reports the WD as star 1,
 the dwarf as star 2, and the signed coefficient `B_WD-beta_G` along the
