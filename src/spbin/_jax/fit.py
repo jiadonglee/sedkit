@@ -109,13 +109,17 @@ def _constrain(theta, bounds):
                      jnp.log(jnp.expm1(jnp.maximum(theta - lo, 1e-12))))
 
 
-def _nelder_mead(objective, simplex, bounds, maxiter=1600, xatol=1e-5, fatol=1e-5):
+def _nelder_mead(objective, simplex, bounds, maxiter=1600, xatol=1e-5, fatol=1e-5,
+                 maxfev=None):
     """Bounded Nelder-Mead with scipy's semantics on fixed shapes.
 
     Clipped evaluations, the reflect-then-clip initial-simplex treatment, the
     reflect/expand/contract/shrink rules with rho=1, chi=2, psi=sigma=0.5, and
-    the top-of-loop xatol/fatol termination. Returns the final simplex sorted
-    by value (vertex 0 is scipy's result), its values and the converged flag.
+    the top-of-loop xatol/fatol termination. maxfev counts objective calls the
+    way scipy does (n+1 for the initial simplex; 1, 2 or n+2 per iteration);
+    an iteration that starts below the budget runs to completion, where scipy
+    stops at the call that exhausts it. Returns the final simplex sorted by
+    value (vertex 0 is scipy's result), its values and the converged flag.
     """
     lo, hi = bounds[:, 0], bounds[:, 1]
     simplex = jnp.where(simplex > hi, 2 * hi - simplex, simplex)
@@ -151,6 +155,7 @@ def _nelder_mead(objective, simplex, bounds, maxiter=1600, xatol=1e-5, fatol=1e-
         take = inside & (fxcc < values[-1])
         new_x, new_f = jnp.where(take, xcc, new_x), jnp.where(take, fxcc, new_f)
         shrink = (outside & ~(fxc <= fxr)) | (inside & ~(fxcc < values[-1]))
+        calls = 1 + (~reflect).astype(jnp.int32) + n * shrink.astype(jnp.int32)
 
         def do_shrink(_):
             moved = jnp.clip(simplex[0] + 0.5 * (simplex - simplex[0]), lo, hi)
@@ -161,19 +166,21 @@ def _nelder_mead(objective, simplex, bounds, maxiter=1600, xatol=1e-5, fatol=1e-
             shrink, do_shrink,
             lambda _: (simplex.at[-1].set(new_x), values.at[-1].set(new_f)), None)
         order = jnp.argsort(values)
-        return simplex[order], values[order]
+        return simplex[order], values[order], calls
 
     def body(state):
-        simplex, values, iterations, done = state
+        simplex, values, iterations, calls, done = state
         hit = converged(simplex, values)
-        simplex, values = jax.lax.cond(hit | done, lambda c: c, step, (simplex, values))
-        return simplex, values, iterations + 1, done | hit
+        simplex, values, used = jax.lax.cond(
+            hit | done, lambda c: (*c, jnp.int32(0)), step, (simplex, values))
+        return simplex, values, iterations + 1, calls + used, done | hit
 
     def keep_going(state):
-        return (~state[3]) & (state[2] < maxiter)
+        going = (~state[4]) & (state[2] < maxiter)
+        return going if maxfev is None else going & (state[3] < maxfev)
 
-    simplex, values, _, done = jax.lax.while_loop(
-        keep_going, body, (simplex, values, 1, jnp.asarray(False)))
+    simplex, values, _, _, done = jax.lax.while_loop(
+        keep_going, body, (simplex, values, 1, jnp.int32(n + 1), jnp.asarray(False)))
     return simplex, values, done
 
 
