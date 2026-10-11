@@ -7,7 +7,8 @@ network), a subgiant from the empirical GiantTemplate (log g 3.2-3.8, free scale
 0.7-3 Msun), a giant from the GiantTemplate extended to the blue XP channels (log g 0-3.8, free scale with its
 luminosity tied to the parallax by the PARSEC M_Ks prior), or absent. The stars share the parallax and ZGR23
 extinction and nothing else. fit_subdwarf_companion compares a single cool star (FGK dwarf or giant), a single
-subdwarf and subdwarf + companion on one data vector.
+subdwarf and subdwarf + companion on one data vector; beside a giant it can also fit a hot main-sequence star
+(StellarModel(hot=True), 7-30 kK) in the subdwarf's place, its blue XP channels from the hot UV table.
 """
 
 import json
@@ -33,6 +34,11 @@ IR_ERROR, BLUE_ERROR, GALEX_ERROR = 0.03, 0.05, 0.05
 # A companion's flux below 392 nm is a blackbody joined to its 392-412 nm XP flux; line blanketing makes it
 # uncertain by this fraction.
 COMPANION_UV_ERROR = 0.5
+# Fractional error of a hot main-sequence star's blue XP channels and GALEX fluxes from the hot UV table.
+MS_BLUE_ERROR, MS_GALEX_ERROR = 0.05, 0.10
+# Starting lattice of the hot main-sequence star of ms+giant: masses (Msun) and ages (Gyr).
+MS_MASSES = np.geomspace(1.5, 15.0, 14)
+MS_AGES = 10**np.arange(-2.4, 0.61, 0.5)
 # GALEX: AB zero points (counts/s = 1) and the 10 per cent local roll-off, 114 and 303 counts/s (Morrissey et
 # al. 2007, Table 1), and the calibration uncertainty added in quadrature.
 GALEX_ZERO = {"FUV": 18.82, "NUV": 20.08}
@@ -162,6 +168,27 @@ class SubdwarfModel:
         return coarse[inside] @ weight
 
 
+class HotUV:
+    """The hot table below 392 nm (models/hot/hot_uv.npz): CK04 and TLUSTY colours against the 392 nm XP channel.
+
+    __call__(teff, logg) returns ln(F / F_392) of the six blue XP channels, with the offset fitted to the hot-table
+    anchors (linear in ln Teff between its nodes, flat beyond; the synthetic Balmer jump is too deep in XP by up
+    to 0.45 at 7-11 kK), and of the 2 nm coarse spectrum, uncalibrated.
+    """
+
+    def __init__(self):
+        with np.load(DATA / "hot" / "hot_uv.npz") as archive:
+            self.table = {key: archive[key].astype(float) for key in archive.files}
+
+    def __call__(self, teff, logg):
+        t = self.table
+        teff, logg = np.atleast_1d(float(teff)), np.atleast_1d(float(logg))
+        ln_blue = _bilinear(t["teff_ax"], t["logg_ax"], t["ln_blue"], teff, logg)[0]
+        ln_blue = ln_blue + np.array([np.interp(np.log(teff[0]), np.log(t["blue_node_teff"]), t["blue_offset"][:, k])
+                                      for k in range(N_BLUE)])
+        return ln_blue, _bilinear(t["teff_ax"], t["logg_ax"], t["ln_coarse"], teff, logg)[0]
+
+
 def physical(teff, logg, radius):
     """Mass (Msun) from g R**2 / G and luminosity (Lsun) from R**2 (Teff / Teff_sun)**4."""
     mass = 10**logg * (radius * RSUN_CM)**2 / G_CGS / MSUN_G
@@ -245,8 +272,10 @@ class _Problem:
     """
 
     def __init__(self, sed, sdm, stellar, template, giant_template, mask, blue, galex_data, parallax,
-                 fit_parallax, extinction, extinction_prior, dust, priors):
+                 fit_parallax, extinction, extinction_prior, dust, priors, hot_stellar=None):
         self.sdm, self.stellar, self.template, self.giant_template = sdm, stellar, template, giant_template
+        self.hot_stellar = hot_stellar
+        self.hot_uv = None if hot_stellar is None else HotUV()
         self.idx = np.flatnonzero(mask)
         self.mask = mask
         y, err, kind = list(sed.flux[self.idx]), list(sed.error[self.idx]), ["channel"] * len(self.idx)
@@ -368,6 +397,33 @@ class _Problem:
                    radius=float(prediction["radius"][0]), mass=float(mass), M_G=float(prediction["M_G"][0]))
         return out
 
+    def hot_ms(self, mass, age, scale, e):
+        """A hot star of solar [M/H] on the PARSEC isochrones through StellarModel(hot=True): XP61 and J/H/Ks
+        from the hot route, its blue XP channels and coarse spectrum from the hot UV table times its 392 nm
+        channel. None below 7000 K or outside the route."""
+        prediction = self.hot_stellar.evaluate(mass, 0.0, age, 0.0)
+        if prediction is None or prediction["teff"][0] < self.hot_stellar.hot_summary["support"]["teff"][0]:
+            return None
+        teff, logg = float(prediction["teff"][0]), float(prediction["logg"][0])
+        full = prediction["flux_10pc"] * scale
+        att_full = np.exp(-e * self.curve_full)
+        f = full[self.idx] * att_full[self.idx]
+        if not np.isfinite(f).all():
+            return None
+        ln_blue, ln_coarse = self.hot_uv(teff, logg)
+        blue = full[0] * np.exp(ln_blue - e * self.sdm.blue_curve)
+        model_coarse = full[0] * np.exp(ln_coarse - e * self.sdm.coarse_curve)
+        xf, xv = self._extras(model_coarse, blue, MS_BLUE_ERROR, MS_GALEX_ERROR)
+        columns_full, variance_full = self.hot_stellar.error_factors(prediction, scale)
+        columns = np.zeros((len(self.y), columns_full.shape[1]))
+        columns[:self.n_channel] = np.nan_to_num(columns_full[self.idx]) * att_full[self.idx, None]
+        variance = np.r_[variance_full[self.idx] * att_full[self.idx]**2, xv]
+        radius = float(prediction["radius"][0])
+        return dict(flux=np.r_[f, xf], columns=columns, variance=variance,
+                    coarse=self._channel_coarse(full[:N_XP] * att_full[:N_XP], model_coarse),
+                    full=full * att_full, teff=teff, logg=logg, radius=radius, mass=float(mass),
+                    age_gyr=float(age), luminosity=physical(teff, logg, radius)[1], M_G=float(prediction["M_G"][0]))
+
     def subgiant(self, teff, logg, mh, lns, e):
         if not SUBGIANT_LOGG[0] <= logg <= SUBGIANT_LOGG[1]:
             return None
@@ -445,13 +501,15 @@ class _Hypothesis:
     def __init__(self, problem, name, tier=None, free_age=True, free_feh=True, age=None, feh=None, mass=None):
         self.p, self.name, self.tier = problem, name, tier
         names = []
-        if name not in ("fgk", "giant_alone"):
+        if name not in ("fgk", "giant_alone", "ms_giant"):
             names += ["t", "g", "lnr"]
+        if name == "ms_giant":
+            names += ["lnm", "lnage"]
         if name in ("fgk", "dwarf"):
             names += (["lnm"] if mass is None or name == "fgk" else []) + (["lnage"] if free_age else []) + (
                 ["feh"] if free_feh else [])
         self.mass = None if name == "fgk" else mass
-        if name in ("subgiant", "giant", "giant_alone"):
+        if name in ("subgiant", "giant", "giant_alone", "ms_giant"):
             names += ["tg", "gg", "mg", "lns"]
         if problem.extinction is None:
             names.append("e")
@@ -473,7 +531,16 @@ class _Hypothesis:
             return None
         scale = (plx / 100.0)**2
         comps, sd, cool = [], None, None
-        if self.name not in ("fgk", "giant_alone"):
+        if self.name == "ms_giant":
+            age = np.exp(v["lnage"])
+            low_age, high_age = p.hot_stellar.age_range_gyr
+            if not low_age <= age <= high_age:
+                return None
+            sd = p.hot_ms(np.exp(v["lnm"]), age, scale, e)
+            if sd is None:
+                return None
+            comps.append(sd)
+        elif self.name not in ("fgk", "giant_alone"):
             sd = p.subdwarf(1000 * v["t"], v["g"], v["lnr"], self.tier, scale, e)
             if sd is None:
                 return None
@@ -496,7 +563,7 @@ class _Hypothesis:
             if cool is None:
                 return None
             comps.append(cool)
-        if self.name in ("giant", "giant_alone"):
+        if self.name in ("giant", "giant_alone", "ms_giant"):
             cool = p.giant(100 * v["tg"], v["gg"], v["mg"], v["lns"], e)
             if cool is None:
                 return None
@@ -508,10 +575,11 @@ class _Hypothesis:
         if out is None:
             return np.inf
         comps, sd, cool, e, z, plx = out
-        value = self.p.likelihood(comps)[0] + self.p.nuisance_penalty(e, z) + self.p.label_penalty(sd, cool)
+        value = (self.p.likelihood(comps)[0] + self.p.nuisance_penalty(e, z)
+                 + self.p.label_penalty(None if self.name == "ms_giant" else sd, cool))
         if self.name == "subgiant":
             value += _subgiant_physics(self.p, cool, plx, e)["mass_penalty"]
-        elif self.name in ("giant", "giant_alone"):
+        elif self.name in ("giant", "giant_alone", "ms_giant"):
             value += _giant_physics(self.p, cool, plx, e)["luminosity_penalty"]
         return value
 
@@ -528,13 +596,17 @@ def _summary(hyp, v, objective, converged):
     p = hyp.p
     comps, sd, cool, e, z, plx = hyp.components(v)
     minus2lnl, chi2 = p.likelihood(comps)
-    label = {"fgk": "fgk", "giant_alone": "giant", "sdb": "sdb"}.get(hyp.name, f"sdb+{hyp.name}")
+    label = {"fgk": "fgk", "giant_alone": "giant", "sdb": "sdb", "ms_giant": "ms+giant"}.get(hyp.name, f"sdb+{hyp.name}")
+    hot = "ms" if hyp.name == "ms_giant" else "subdwarf"
     out = dict(hypothesis=label,
                objective=float(objective), minus2lnL=minus2lnl, chi2=chi2, n_fit=len(p.y),
                converged=bool(converged), extinction_e=float(e), parallax_mas=float(plx), z=float(z),
-               nuisance_penalty=float(p.nuisance_penalty(e, z)), label_penalty=float(p.label_penalty(sd, cool)),
+               nuisance_penalty=float(p.nuisance_penalty(e, z)),
+               label_penalty=float(p.label_penalty(None if hot == "ms" else sd, cool)),
                model=sum(c["flux"] for c in comps))
-    if sd is not None:
+    if hot == "ms":
+        out["ms"] = {k: sd[k] for k in ("teff", "logg", "radius", "mass", "age_gyr", "luminosity", "M_G")}
+    elif sd is not None:
         radius = float(np.exp(v["lnr"]))
         mass, lum = physical(sd["teff"], sd["logg"], radius)
         out["subdwarf"] = dict(teff=sd["teff"], logg=sd["logg"], radius=radius, mass=mass, luminosity=lum,
@@ -542,24 +614,24 @@ def _summary(hyp, v, objective, converged):
     if cool is not None:
         keep = ("teff", "logg", "radius", "mass", "age_gyr", "feh", "scale")
         out["companion"] = {k: cool[k] for k in keep if k in cool}
-        out["companion"]["kind"] = {"fgk": "dwarf", "giant_alone": "giant"}.get(hyp.name, hyp.name)
+        out["companion"]["kind"] = {"fgk": "dwarf", "giant_alone": "giant", "ms_giant": "giant"}.get(hyp.name, hyp.name)
         if hyp.name == "subgiant":
             out["companion"].update({k: v for k, v in _subgiant_physics(p, cool, plx, e).items()
                                      if k != "mass_penalty"})
-        elif hyp.name in ("giant", "giant_alone"):
+        elif hyp.name in ("giant", "giant_alone", "ms_giant"):
             out["companion"].update(_giant_physics(p, cool, plx, e))
     if sd is not None and cool is not None:
         total_coarse = sd["coarse"] + cool["coarse"]
         out["fractions"] = {f"beta_{b}": float(p.sdm.passband(sd["coarse"], b) / p.sdm.passband(total_coarse, b))
                             for b in ("G", "BP", "RP")}
         out["fractions"]["channels"] = sd["full"] / (sd["full"] + cool["full"])
-        out["coarse"] = dict(subdwarf=sd["coarse"], companion=cool["coarse"])
+        out["coarse"] = {hot: sd["coarse"], "companion": cool["coarse"]}
     elif sd is not None:
         out["fractions"] = dict(beta_G=1.0, beta_BP=1.0, beta_RP=1.0, channels=np.ones(168))
         out["coarse"] = dict(subdwarf=sd["coarse"])
     else:
         out["coarse"] = dict(companion=cool["coarse"])
-    out["components"] = dict(subdwarf=None if sd is None else sd["full"], companion=None if cool is None else cool["full"])
+    out["components"] = {hot: None if sd is None else sd["full"], "companion": None if cool is None else cool["full"]}
     return out
 
 
@@ -617,7 +689,7 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
                            template=None, giant_template=None, parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
                            dust_prior=None, subdwarf_prior=None, companion_prior=None, companion_age_gyr=None,
                            companion_feh=None, companion_mass=None, use_wise=False, use_spherex=False, blue=None,
-                           galex=None):
+                           galex=None, hot_ms=False):
     """Compare a single cool star, a single hot subdwarf and a subdwarf with a cool companion.
 
     companions: any of "dwarf" (PARSEC + J-CAPS network), "subgiant" (GiantTemplate, log g 3.2-3.8, free
@@ -641,7 +713,13 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     GALEX needs the pure-hydrogen tier, the only one with NUV. A companion's GALEX flux, and its blue XP
     flux unless it is a giant, is a blackbody joined to its XP spectrum (COMPANION_UV_ERROR).
 
-    Returns dict(hypotheses={"fgk" or "giant", "sdb", "sdb+dwarf", "sdb+subgiant", "sdb+giant"}, delta,
+    hot_ms=True (with "giant" in companions) adds "ms+giant": the template giant plus a hot star of solar [M/H]
+    on the PARSEC isochrones through StellarModel(hot=True), 7000-30000 K and log g 3-4.75, with free mass and
+    age and its radius from the isochrone, at the shared parallax and extinction. Its blue XP channels and
+    GALEX fluxes come from the hot UV table (HotUV: CK04 and TLUSTY through the XP operator, relative to its
+    392 nm channel; MS_BLUE_ERROR, MS_GALEX_ERROR). The single giant is re-polished from it as from sdb+giant.
+
+    Returns dict(hypotheses={"fgk" or "giant", "sdb", "sdb+dwarf", "sdb+subgiant", "sdb+giant", "ms+giant"}, delta,
     preferred, n_fit, mask):
     each hypothesis holds the objective (-2 ln L + penalties), minus2lnL, chi2, E, parallax, the subdwarf's
     Teff, log g, radius, mass and luminosity, the companion's labels, the subdwarf fractions beta_G/BP/RP
@@ -652,7 +730,7 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     problem, e0, age_kw = _prepare(sed, companions, tiers, model, stellar, template, giant_template, parallax,
                                    fit_parallax, extinction, extinction_prior, dust_prior, subdwarf_prior,
                                    companion_prior, companion_age_gyr, companion_feh, companion_mass, use_wise,
-                                   use_spherex, blue, galex)
+                                   use_spherex, blue, galex, hot_ms)
     companions, tiers = tuple(companions), tuple(tiers)
     results = {}
     if companions != ("giant",):
@@ -662,8 +740,12 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     results["sdb"] = _fit_subdwarf(problem, "sdb", tiers, age_kw, e0)
     for name in companions:
         results[f"sdb+{name}"] = _fit_subdwarf(problem, name, tiers, age_kw, e0)
+    if hot_ms:
+        results["ms+giant"] = _fit_ms_giant(problem, e0)
     if "giant" in companions:
         results["giant"] = _repolish_giant(problem, results["giant"], results["sdb+giant"])
+    if hot_ms:
+        results["giant"] = _repolish_giant(problem, results["giant"], results["ms+giant"])
     best = min(r["objective"] for r in results.values())
     return dict(hypotheses=results, delta={k: r["objective"] - best for k, r in results.items()},
                 preferred=min(results, key=lambda k: results[k]["objective"]), n_fit=len(problem.y),
@@ -673,7 +755,7 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
 
 def _prepare(sed, companions, tiers, model, stellar, template, giant_template, parallax, fit_parallax, extinction,
              extinction_prior, dust_prior, subdwarf_prior, companion_prior, companion_age_gyr, companion_feh,
-             companion_mass, use_wise, use_spherex, blue, galex):
+             companion_mass, use_wise, use_spherex, blue, galex, hot_ms=False):
     """Checked inputs of fit_subdwarf_companion: the data problem, the starting E and the dwarf settings."""
     sdm = SubdwarfModel() if model is None else model
     stellar = StellarModel() if stellar is None else stellar
@@ -685,6 +767,8 @@ def _prepare(sed, companions, tiers, model, stellar, template, giant_template, p
         raise ValueError(f"tiers must be drawn from {TIERS}")
     if "subgiant" in companions and template is None:
         template = GiantTemplate()
+    if hot_ms and "giant" not in companions:
+        raise ValueError("hot_ms compares a hot main-sequence star with the sdB beside a giant: add 'giant'")
     if "giant" in companions and giant_template is None:
         giant_template = GiantTemplate(blue=True)
     parallax = (sed.parallax_mas, sed.parallax_error_mas) if parallax is None else tuple(map(float, parallax))
@@ -710,7 +794,7 @@ def _prepare(sed, companions, tiers, model, stellar, template, giant_template, p
     dust = (None if dust_prior is None else dict(dust_prior) if isinstance(dust_prior, dict)
             else _dust_table(dust_prior, sed, parallax))
     problem = _Problem(sed, sdm, stellar, template, giant_template, mask, blue, galex, parallax, fit_parallax,
-                       extinction, extinction_prior, dust, priors)
+                       extinction, extinction_prior, dust, priors, StellarModel(hot=True) if hot_ms else None)
     e0 = (extinction if extinction is not None else
           extinction_prior[0] if extinction_prior is not None else float(dust["mean"][len(DUST_Z_GRID) // 2]))
     e0 = max(e0, 0.0)
@@ -726,7 +810,7 @@ def _start_values(hyp, e0):
     prior = p.priors["companion"]
     if "feh" in prior and hyp.feh is None:
         start["feh"] = float(np.clip(prior["feh"][0], -1.0, 0.5))
-    if hyp.name == "giant":    # sdb+giant starts from the single giant's nuisances
+    if hyp.name in ("giant", "ms_giant"):    # the giant pairs start from the single giant's nuisances
         start.update(p.giant_nuisance)
     return start
 
@@ -784,6 +868,51 @@ def _fit_giant(p, e0):
     p.giant_seed = {k: v[k] for k in ("tg", "gg", "mg", "lns")}
     p.giant_nuisance = {k: v[k] for k in ("e", "z") if k in v}
     return _summary(hyp, v, best.fun, best.success)
+
+
+def _fit_ms_giant(p, e0):
+    """Hot main-sequence star + template giant. Each MS_MASSES x MS_AGES lattice star is paired with every
+    GIANT_LATTICE giant and the single giant's, each scaled by linear least squares to the data minus the hot
+    star; the three best giants per star by weighted chi2 get the full objective, and the N_POLISH best
+    points are polished in all parameters."""
+    hyp = _Hypothesis(p, "ms_giant")
+    base = _start_values(hyp, e0)
+    giants, shapes = [dict(p.giant_seed)], []
+    giants += [dict(tg=t / 100, gg=g, mg=m) for t in GIANT_LATTICE[0] for g in GIANT_LATTICE[1]
+               for m in GIANT_LATTICE[2]]
+    keep = []
+    for g in giants:
+        c = p.giant(100 * g["tg"], g["gg"], g["mg"], 0.0, base["e"])
+        if c is not None:
+            keep.append(g)
+            shapes.append(c["flux"])
+    shapes = np.array(shapes)
+    w = 1 / (p.sigma2 + (0.03 * p.y)**2)
+    plx = p.parallax(base.get("z", 0.0))
+    trials = []
+    for mass in MS_MASSES:
+        for age in MS_AGES:
+            ms = p.hot_ms(mass, age, (plx / 100)**2, base["e"])
+            if ms is None:
+                continue
+            residual = p.y - ms["flux"]
+            amp = (shapes * w) @ residual / ((shapes**2) @ w)
+            chi2 = np.sum((residual - amp[:, None] * shapes)**2 * w, axis=1)
+            chi2[amp <= 0] = np.inf
+            for i in np.argsort(chi2)[:3]:
+                if not np.isfinite(chi2[i]):
+                    continue
+                v = dict(base, **keep[i], lns=np.log(amp[i]), lnm=np.log(mass), lnage=np.log(age))
+                x0 = [v[n] for n in hyp.names]
+                f = hyp.objective(x0)
+                if np.isfinite(f):
+                    trials.append((f, x0))
+    if not trials:
+        raise ValueError("no supported hot main-sequence star for these data")
+    trials.sort(key=lambda t: t[0])
+    best = min((hyp.minimize(x0, maxfev=4000) for _, x0 in trials[:N_POLISH]), key=lambda r: r.fun)
+    best = min(best, hyp.minimize(best.x, maxfev=4000), key=lambda r: r.fun)   # Nelder-Mead restart
+    return _summary(hyp, hyp.unpack(best.x), best.fun, best.success)
 
 
 def _repolish_giant(p, giant, composite):
