@@ -154,7 +154,11 @@ and absolute Gaia fluxes of 294 single DAs. On 289 independent stars,
 with extinction and parallax constraints, the cooling-relation fit gives
 1.4% temperature bias and 3.5% robust scatter. Its absolute-flux bias is
 1.9%, with about 14% source scatter. Masses remain conditional on the
-C/O cooling relation and reference gravity scale. See the
+C/O cooling relation and reference gravity scale. For 126 SDSS DA+M
+systems the WD temperature scatter is 13.9%, and the composite statistic
+exceeds its threshold of 11 for 99 of them. For 29 Gaia/RV WD+MS orbits,
+the allowed WD light moves the orbit's WD mass by a median 0.037 solar
+masses (0.025 with GALEX caps). See the
 [composite/orbit benchmarks](docs/validation-whitedwarf.md).
 
 Single stars:
@@ -336,8 +340,15 @@ Hypotheses of one region share one data vector and likelihood, so their
 objectives compare directly; objectives of different regions do not. In the
 `ms` region MS+MS is one component with fully correlated model errors, as in
 `fit`. `preferred` is the simplest hypothesis within `tie=1` of the lowest
-objective; no composite-detection threshold is calibrated for the `ms`
-region. `region=` overrides the location and `options=` passes arguments to
+objective. In the `ms` region `detection_statistic` gives
+objective(dwarf) − objective(composite) for MS+MS and DA+dwarf. Fitted with
+`feh=None, fit_parallax=True` and a fitted extinction, an MS+MS statistic
+above the returned `threshold` of 59 occurs for 0 of 197 independent
+RV-constant dwarfs and 22 per cent of 755 Gaia DR3 SB2s; near-twin pairs
+mostly stay below it. DA+dwarf has no calibrated threshold in this
+region: a WD giving about 1 per cent of the G light is not detected, and
+WD-dominated pairs belong to the `wd` region
+([validation](docs/validation-whitedwarf.md#main-sequence-region-of-fit_star)). `region=` overrides the location and `options=` passes arguments to
 the route. Age is free by default (`age_gyr=None`); location is sensitive to
 extinction beyond about 200 pc.
 

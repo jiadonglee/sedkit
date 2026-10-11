@@ -57,6 +57,21 @@ def test_single_star_is_not_promoted_to_a_composite():
     result = fit_star(_mock_binary(.8, 0))
     assert result["preferred"] == "dwarf"
     assert result["delta"]["ms+ms"] < 2
+    assert result["detection_statistic"]["ms+ms"] < 2
+    assert result["threshold"] is None
+
+
+def test_ms_threshold_in_its_calibrated_configuration():
+    result = fit_star(_mock_binary(.9, .7), feh=None, fit_parallax=True, extinction=None,
+                      extinction_prior=(0., .03))
+    statistic, threshold = result["detection_statistic"], result["threshold"]
+    assert threshold == {"ms+ms": 59.0, "wd+dwarf": None}
+    assert statistic["ms+ms"] > threshold["ms+ms"]
+    assert statistic["ms+ms"] == pytest.approx(result["objectives"]["dwarf"] - result["objectives"]["ms+ms"])
+    single = fit_star(_mock_binary(.8, 0), feh=None, fit_parallax=True, extinction=None,
+                      extinction_prior=(0., .03))
+    assert single["detection_statistic"]["ms+ms"] < threshold["ms+ms"]
+    assert fit_star(SED.load(FIXTURE), region="sdb")["detection_statistic"] is None
 
 
 def test_unsupported_and_label_free_giant_return_no_fit():
