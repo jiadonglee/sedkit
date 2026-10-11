@@ -649,6 +649,32 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     the span of each parameter over the Teff_sd profile points within 1 of the minimum. delta is each
     objective minus the lowest. Results are constrained best fits, not posterior samples.
     """
+    problem, e0, age_kw = _prepare(sed, companions, tiers, model, stellar, template, giant_template, parallax,
+                                   fit_parallax, extinction, extinction_prior, dust_prior, subdwarf_prior,
+                                   companion_prior, companion_age_gyr, companion_feh, companion_mass, use_wise,
+                                   use_spherex, blue, galex)
+    companions, tiers = tuple(companions), tuple(tiers)
+    results = {}
+    if companions != ("giant",):
+        results["fgk"] = _fit_fgk(problem, age_kw, e0)
+    if "giant" in companions:
+        results["giant"] = _fit_giant(problem, e0)
+    results["sdb"] = _fit_subdwarf(problem, "sdb", tiers, age_kw, e0)
+    for name in companions:
+        results[f"sdb+{name}"] = _fit_subdwarf(problem, name, tiers, age_kw, e0)
+    if "giant" in companions:
+        results["giant"] = _repolish_giant(problem, results["giant"], results["sdb+giant"])
+    best = min(r["objective"] for r in results.values())
+    return dict(hypotheses=results, delta={k: r["objective"] - best for k, r in results.items()},
+                preferred=min(results, key=lambda k: results[k]["objective"]), n_fit=len(problem.y),
+                mask=problem.mask, data=dict(y=problem.y, error=np.sqrt(problem.sigma2), kind=problem.kind),
+                source_id=sed.source_id)
+
+
+def _prepare(sed, companions, tiers, model, stellar, template, giant_template, parallax, fit_parallax, extinction,
+             extinction_prior, dust_prior, subdwarf_prior, companion_prior, companion_age_gyr, companion_feh,
+             companion_mass, use_wise, use_spherex, blue, galex):
+    """Checked inputs of fit_subdwarf_companion: the data problem, the starting E and the dwarf settings."""
     sdm = SubdwarfModel() if model is None else model
     stellar = StellarModel() if stellar is None else stellar
     companions = tuple(companions)
@@ -690,20 +716,7 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     e0 = max(e0, 0.0)
     age_kw = dict(free_age=companion_age_gyr is None, free_feh=companion_feh is None,
                   age=companion_age_gyr, feh=companion_feh, mass=companion_mass)
-
-    results = {}
-    if companions != ("giant",):
-        results["fgk"] = _fit_fgk(problem, age_kw, e0)
-    if "giant" in companions:
-        results["giant"] = _fit_giant(problem, e0)
-    results["sdb"] = _fit_subdwarf(problem, "sdb", tiers, age_kw, e0)
-    for name in companions:
-        results[f"sdb+{name}"] = _fit_subdwarf(problem, name, tiers, age_kw, e0)
-    best = min(r["objective"] for r in results.values())
-    return dict(hypotheses=results, delta={k: r["objective"] - best for k, r in results.items()},
-                preferred=min(results, key=lambda k: results[k]["objective"]), n_fit=len(problem.y),
-                mask=mask, data=dict(y=problem.y, error=np.sqrt(problem.sigma2), kind=problem.kind),
-                source_id=sed.source_id)
+    return problem, e0, age_kw
 
 
 def _start_values(hyp, e0):
@@ -771,6 +784,19 @@ def _fit_giant(p, e0):
     p.giant_seed = {k: v[k] for k in ("tg", "gg", "mg", "lns")}
     p.giant_nuisance = {k: v[k] for k in ("e", "z") if k in v}
     return _summary(hyp, v, best.fun, best.success)
+
+
+def _repolish_giant(p, giant, composite):
+    """Polish the single giant from the giant of sdb+giant and keep it if its objective is lower: the composite
+    with a vanishing subdwarf is the single giant, so the single giant's minimum cannot lie above it."""
+    hyp = _Hypothesis(p, "giant_alone")
+    c = composite["companion"]
+    v = dict(tg=c["teff"] / 100, gg=c["logg"], mg=c["feh"], lns=np.log(c["scale"]), e=composite["extinction_e"],
+             z=composite["z"])
+    r = hyp.minimize([v[n] for n in hyp.names], maxfev=4000)
+    if r.fun < giant["objective"]:
+        return _summary(hyp, hyp.unpack(r.x), r.fun, r.success)
+    return giant
 
 
 def _sd_start(hyp, teff, tier, base, cool_v=None):
