@@ -30,6 +30,16 @@ class FakeQuery:
         return 0.05 if mode == "mean" else 0.02
 
 
+class DistanceQuery:
+    """Map stand-in whose mean grows with distance, so the in-fit dust grid matters."""
+
+    integrated = True
+    n_samples = None
+
+    def __call__(self, coords, mode="mean"):
+        return 0.02 + 1e-3 * coords.distance.pc if mode == "mean" else 0.01
+
+
 @pytest.fixture(scope="module")
 def model():
     return StellarModel()
@@ -195,6 +205,41 @@ def test_fit_matches_numpy(model, sed):
             np.testing.assert_allclose(result[kind][field], reference[kind][field],
                                        rtol=1e-4)
         assert result[kind]["converged"]
+
+
+@pytest.mark.parametrize("fit_parallax", [True, False])
+def test_fit_distance_dependent_dust_matches_numpy(model, sed, fit_parallax):
+    """Free E under a dust prior whose mean moves across the parallax range."""
+    prior = EdenhoferPrior(DistanceQuery(), sigma=0.01)
+    reference = numpy_fit(sed, model=model, fit_parallax=fit_parallax, extinction=None,
+                          dust_prior=prior)
+    result = jax_fit(sed, model=model, fit_parallax=fit_parallax, extinction=None,
+                     dust_prior=prior)
+    for kind in ("single", "binary"):
+        assert result[kind]["objective"] <= reference[kind]["objective"] + 0.01
+        np.testing.assert_allclose(result[kind]["objective"],
+                                   reference[kind]["objective"], atol=1e-3)
+        for field in ("m1", "q", "parallax_mas", "extinction_e"):
+            np.testing.assert_allclose(result[kind][field], reference[kind][field],
+                                       rtol=1e-3)
+        distance = 1000 / result[kind]["parallax_mas"]
+        assert result[kind]["dust_prior_mean"] == pytest.approx(0.02 + 1e-3 * distance)
+    if not fit_parallax:
+        assert result["single"]["parallax_mas"] == sed.parallax_mas
+
+
+def test_fit_ignores_unobserved_channels(model, sed):
+    """Bands without data carry NaN flux and error, as real XP + 2MASS SEDs do."""
+    flux, error, mask = sed.flux.copy(), sed.error.copy(), sed.mask.copy()
+    flux[64:], error[64:], mask[64:] = np.nan, np.nan, False
+    partial = SED(flux, error, mask, sed.parallax_mas, sed.parallax_error_mas,
+                  metadata=dict(sed.metadata))
+    reference = numpy_fit(partial, model=model)
+    result = jax_fit(partial, model=model)
+    for kind in ("single", "binary"):
+        assert result[kind]["n_fit"] == reference[kind]["n_fit"]
+        np.testing.assert_allclose(result[kind]["objective"], reference[kind]["objective"],
+                                   atol=1e-4)
 
 
 def test_fit_fixed_parameters_matches_numpy(model, sed):
