@@ -43,5 +43,15 @@
     },
     "density": "M_Ks histogram in 0.05 mag bins smoothed by 0.15 mag, mixed with a uniform floor over the M_Ks range of the kernel's points padded by 1 mag so that the penalty there is at most 6; beyond the range it rises as (distance / 0.5 mag)**2",
     "constrained_nodes": 5461
+  },
+  "blue": {
+    "file": "giant_blue.npz",
+    "source": "run",
+    "channels": "XP61 + J/H/Ks/W1/W2 + XP 332-382 nm in 10 nm steps (72); GaiaXPy, truncation off, as blue_xp",
+    "dereddening": "E = 0.86 SFD E(B-V); ZGR23 above 392 nm, the G23 curve of SubdwarfModel.blue_curve below",
+    "clipping": "4 robust sigma in XP61 rms residual, and one-sided in the mean blue residual",
+    "covariance": "fractional; 6 eigen-columns of the joint 72-channel covariance plus a diagonal per node",
+    "support": "giant-v1 criteria and a positive blue template; 6537 nodes",
+    "training_stars": 76210
   }
 }

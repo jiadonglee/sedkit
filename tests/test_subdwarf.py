@@ -109,13 +109,53 @@ def test_subgiant_companion_drops_spherex_and_reports_fractions(sdm, stellar):
     assert h["companion"]["radius"] > 0 and 3.2 <= h["companion"]["logg"] <= 3.8
 
 
+def _giant_mock(sdm, radius, parallax=1.0, e=0.15, noise=0.01):
+    """A template giant (4700 K, log g 2.5, [M/H] -0.2, ~2.6 Msun at this scale) plus a 28 kK subdwarf."""
+    from sedkit.giant import GiantTemplate
+    shape = GiantTemplate(blue=True).evaluate(4700.0, 2.5, -0.2)[0] * 3e3
+    k = extinction_curve(sdm.wavelength_um[:66])
+    flux = np.full(168, np.nan)
+    flux[:66] = shape[:66] * np.exp(-e * k)
+    blue = shape[66:] * np.exp(-e * sdm.blue_curve)
+    if radius:
+        sd = sdm.predict(28000.0, 5.6, radius, "H")
+        flux[:66] += sd["flux"][:66] * (parallax / 100)**2 * np.exp(-e * k)
+        blue = blue + sd["blue"] * (parallax / 100)**2 * np.exp(-e * sdm.blue_curve)
+    rng = np.random.default_rng(5)
+    mask = np.zeros(168, bool)
+    mask[:64] = True
+    observed = np.where(mask, flux * (1 + noise * rng.standard_normal(168)), 1.0)
+    blue_obs = blue * (1 + 2 * noise * rng.standard_normal(6))
+    return SED(observed, np.where(mask, noise * flux, 1.0), mask, parallax, 0.03, "1"), (blue_obs, 2 * noise * blue)
+
+
+def test_giant_companion_is_nested_in_the_single_giant(sdm, stellar):
+    kw = dict(model=sdm, stellar=stellar, companions=("giant",), tiers=("H",), fit_parallax=True,
+              extinction_prior=(0.15, 0.05))
+    sed, blue = _giant_mock(sdm, 0.0)
+    r = fit_subdwarf_companion(sed, blue=blue, **kw)
+    assert set(r["hypotheses"]) == {"giant", "sdb", "sdb+giant"}
+    assert r["n_fit"] == 64 + 6
+    assert r["hypotheses"]["giant"]["objective"] - r["hypotheses"]["sdb+giant"]["objective"] < 3
+    g = r["hypotheses"]["giant"]["companion"]
+    assert abs(g["teff"] - 4700) < 150 and g["kind"] == "giant" and np.isfinite(g["parsec_penalty"])
+
+    sed, blue = _giant_mock(sdm, 0.2)
+    r = fit_subdwarf_companion(sed, blue=blue, **kw)
+    h = r["hypotheses"]["sdb+giant"]
+    assert r["hypotheses"]["giant"]["objective"] - h["objective"] > 25
+    # blue XP alone sits on the Rayleigh-Jeans side of the subdwarf: its Teff and radius trade off
+    assert 0.1 < h["subdwarf"]["radius"] < 0.3
+    assert 0 <= h["companion"]["logg"] <= 3.8 and 0 < h["fractions"]["beta_G"] < 0.2
+
+
 def test_inputs_outside_the_route_are_refused(sdm, stellar):
     sed, _ = _mock(sdm, stellar, (31000.0, 5.7, 0.16, "H"))
     galex = {"FUV": (15.0, 0.05, True), "NUV": (15.2, 0.03, True)}
     with pytest.raises(ValueError):       # the helium tiers have no NUV spectrum
         fit_subdwarf_companion(sed, model=sdm, companions=(), tiers=("H", "He"), extinction=0.0, galex=galex)
     with pytest.raises(ValueError):
-        fit_subdwarf_companion(sed, model=sdm, companions=("giant",), extinction=0.0)
+        fit_subdwarf_companion(sed, model=sdm, companions=("whitedwarf",), extinction=0.0)
     with pytest.raises(ValueError):       # a fitted E needs one prior
         fit_subdwarf_companion(sed, model=sdm, companions=())
 
