@@ -111,7 +111,8 @@ def _nelder_mead(objective, simplex, bounds, maxiter=1600, xatol=1e-5, fatol=1e-
 
     Clipped evaluations, the reflect-then-clip initial-simplex treatment, the
     reflect/expand/contract/shrink rules with rho=1, chi=2, psi=sigma=0.5, and
-    the top-of-loop xatol/fatol termination.
+    the top-of-loop xatol/fatol termination. Returns the final simplex sorted
+    by value (vertex 0 is scipy's result), its values and the converged flag.
     """
     lo, hi = bounds[:, 0], bounds[:, 1]
     simplex = jnp.where(simplex > hi, 2 * hi - simplex, simplex)
@@ -170,7 +171,7 @@ def _nelder_mead(objective, simplex, bounds, maxiter=1600, xatol=1e-5, fatol=1e-
 
     simplex, values, _, done = jax.lax.while_loop(
         keep_going, body, (simplex, values, 1, jnp.asarray(False)))
-    return simplex[0], values[0], done
+    return simplex, values, done
 
 
 def _bfgs(u0, bounds, template, free_idx, problem):
@@ -403,6 +404,7 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
         if not supported.any():
             raise ValueError("no supported stellar model for this age, metallicity and q")
         starts = thetas[np.argsort(np.where(supported, scores, np.inf))[:5]]
+        n_free = len(free)
 
         free_bounds = one_bounds[free_idx]
         steps = np.array([STEP[name] for name in free])
@@ -420,9 +422,12 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
             nm_solution, nm_values, done = _nm_compiled(
                 jnp.asarray(simplices), jnp.asarray(free_bounds),
                 jnp.asarray(template), jnp.asarray(free_idx), problem)
-            solution = np.concatenate([solution, np.asarray(nm_solution)])
-            values = np.concatenate([values, np.asarray(nm_values)])
-            converged_flags = np.concatenate([converged_flags, np.asarray(done)])
+            # Every final vertex is a candidate: they lie within the tolerances
+            # of the best one, which matters when that one fails numpy's check.
+            solution = np.concatenate([solution, np.asarray(nm_solution).reshape(-1, n_free)])
+            values = np.concatenate([values, np.asarray(nm_values).ravel()])
+            converged_flags = np.concatenate([converged_flags,
+                                              np.repeat(np.asarray(done), n_free + 1)])
         elif optimizer in ("bfgs", "bfgs+nm"):
             bfgs_solution, bfgs_values, bfgs_done = _bfgs_compiled(
                 jnp.asarray(starts), jnp.asarray(one_bounds), jnp.asarray(template),
@@ -445,19 +450,30 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
                 pol_solution, pol_values, pol_done = _nm_compiled(
                     jnp.asarray(polish), jnp.asarray(free_bounds),
                     jnp.asarray(template), jnp.asarray(free_idx), problem, 1600)
-                bfgs_solution = np.concatenate([bfgs_solution, np.asarray(pol_solution)])
-                bfgs_values = np.concatenate([bfgs_values, np.asarray(pol_values)])
-                converged_flags = np.concatenate([converged_flags, np.asarray(pol_done)])
+                bfgs_solution = np.concatenate([bfgs_solution,
+                                                np.asarray(pol_solution).reshape(-1, n_free)])
+                bfgs_values = np.concatenate([bfgs_values, np.asarray(pol_values).ravel()])
+                converged_flags = np.concatenate([converged_flags,
+                                                  np.repeat(np.asarray(pol_done), n_free + 1)])
             solution = np.concatenate([solution, bfgs_solution])
             values = np.concatenate([values, bfgs_values])
         else:
             raise ValueError("optimizer must be 'nm', 'bfgs' or 'bfgs+nm'")
         values = np.where(np.isfinite(values) & (values < 1e29), values, np.inf)
-        best = int(np.argmin(values))
-        if not np.isfinite(values[best]):
+        # An optimum pressed against a domain edge can sit an ulp inside it
+        # for the compiled model and outside it for numpy; the result is
+        # reported with numpy, so take the best candidate numpy supports.
+        for best in np.argsort(values, kind="stable"):
+            if not np.isfinite(values[best]):
+                raise ValueError("no supported stellar model for this age, metallicity and q")
+            theta = starts[0].copy()  # the starts differ only in free parameters
+            theta[free_idx] = solution[best]
+            mass, age, metal, ratio, _, _, _ = _unpack(
+                theta, sed, parallax_free, low_age, high_age)
+            if model.evaluate(mass, ratio, age, metal) is not None:
+                break
+        else:
             raise ValueError("no supported stellar model for this age, metallicity and q")
-        theta = starts[best % len(starts)].copy()
-        theta[free_idx] = solution[best]
         converged = bool(converged_flags[best])
 
         return _report(sed, model, mask, curve, theta, bounds, free, age_prior,

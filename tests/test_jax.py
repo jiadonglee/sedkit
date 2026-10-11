@@ -146,9 +146,9 @@ def test_nelder_mead_matches_scipy():
         reference = minimize(host, x0, method="Nelder-Mead", bounds=bounds,
                              options={"maxiter": 1600, "xatol": 1e-5, "fatol": 1e-5,
                                       "initial_simplex": simplex})
-        _, value, done = jax.jit(lambda s, b: _nelder_mead(device, s, b))(
+        _, values, done = jax.jit(lambda s, b: _nelder_mead(device, s, b))(
             jnp.asarray(simplex), jnp.asarray(bounds))
-        assert float(value) == pytest.approx(reference.fun, abs=1e-8)
+        assert float(values[0]) == pytest.approx(reference.fun, abs=1e-8)
         assert bool(done) == bool(reference.success)
 
 
@@ -240,6 +240,26 @@ def test_fit_ignores_unobserved_channels(model, sed):
         assert result[kind]["n_fit"] == reference[kind]["n_fit"]
         np.testing.assert_allclose(result[kind]["objective"], reference[kind]["objective"],
                                    atol=1e-4)
+
+
+def test_fit_skips_endpoints_numpy_rejects(sed):
+    """A compiled-model endpoint that numpy calls unsupported falls back to the next."""
+
+    class EdgeModel(StellarModel):
+        rejected = []
+
+        def evaluate(self, m1, q=0.0, age_gyr=5.0, feh=0.0):
+            if not self.rejected:
+                self.rejected.append(m1)
+                return None
+            return super().evaluate(m1, q, age_gyr, feh)
+
+    edge = EdgeModel()
+    result = jax_fit(sed, "single", model=edge)
+    reference = jax_fit(sed, "single", model=StellarModel())
+    assert len(edge.rejected) == 1 and result["m1"] != edge.rejected[0]
+    assert np.isfinite(result["objective"])
+    assert result["objective"] >= reference["objective"] - 1e-9
 
 
 def test_fit_fixed_parameters_matches_numpy(model, sed):
