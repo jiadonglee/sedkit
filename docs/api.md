@@ -246,8 +246,8 @@ and without `fgk` when `companions=("giant",)`), `delta` (each objective minus t
   `companions=("giant",)` compares `giant` with `sdb+giant`; the
   detection statistic objective(giant) - objective(sdb+giant) has
   threshold 38 with `tiers=("H",)`, `fit_parallax=True`,
-  `subdwarf_prior=dict(logg=(5.6, 0.3))` and `blue=`
-  ([sdB + giant report](../reports/sdb_giant_20261011/report.md)). `companion_age_gyr`,
+  `subdwarf_prior=dict(logg=(5.6, 0.3))` and `blue=`, calibrated on
+  APOGEE RV-constant giants (false-positive rate below 0.25%). `companion_age_gyr`,
   `companion_feh` and `companion_mass` fix the dwarf's parameters.
 - Parallax: catalogue value by default; `fit_parallax=True` fits it within
   3 sigma with penalty z^2; `parallax=(mean, sigma)` replaces the SED's.
