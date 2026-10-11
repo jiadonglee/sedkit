@@ -168,14 +168,19 @@ The companion is a dwarf from `StellarModel()` (PARSEC mass, age and [M/H]
 through the network, supported Teff 2800--7498 K) or a subgiant from
 `GiantTemplate` with log g 3.2--3.8 and a free scale; its luminosity and
 radius follow from its Ks flux, the parallax and the PARSEC BC_Ks, and its
-mass g R^2 / G is held to 0.7--3 solar masses by walls of 0.1 dex. The two
+mass g R^2 / G is held to 0.7--3 solar masses by walls of 0.1 dex. A red
+giant companion uses `GiantTemplate(blue=True)` at log g 0--3.8: the
+template extended to the six blue XP channels at 332--382 nm, with its
+covariance decomposed jointly over all 72 channels; its M_Ks from the
+parallax carries the PARSEC M_Ks prior of the giant route. The two
 stars share the parallax and ZGR23 E, nothing else. The single-FGK
-hypothesis is one `StellarModel()` star. All hypotheses use one data
+hypothesis is one `StellarModel()` star, the single giant one template
+giant. All hypotheses use one data
 vector: XP and J/H/Ks (W1/W2 with `use_wise`, SPHEREx with `use_spherex`
 and without the subgiant), plus optional blue XP and GALEX points. Below
 392 nm the extinction curve is Gordon et al. (2023) R_V = 3.1 scaled to
-ZGR23 over 392--550 nm. A companion's flux below 392 nm is a blackbody
-joined to its 392--412 nm flux, with a 50 per cent error.
+ZGR23 over 392--550 nm. A dwarf or subgiant companion's flux below 392 nm
+is a blackbody joined to its 392--412 nm flux, with a 50 per cent error.
 
 Light fractions use a 2 nm spectrum of each component on the XP channel
 scale: the channels in 392--992 nm, the model spectrum beyond, joined at

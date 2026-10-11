@@ -225,12 +225,13 @@ print(result["delta"], best["subdwarf"], best["companion"], best["fractions"]["b
 
 `fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"),
 tiers=("H", "mid", "He"), model=None, stellar=None, template=None,
-parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
+giant_template=None, parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
 dust_prior=None, subdwarf_prior=None, companion_prior=None,
 companion_age_gyr=None, companion_feh=None, companion_mass=None,
-use_wise=False, use_spherex=False, blue=None, galex=None)` fits four
+use_wise=False, use_spherex=False, blue=None, galex=None)` fits its
 hypotheses on one data vector and returns `hypotheses` (`fgk`, `sdb`,
-`sdb+dwarf`, `sdb+subgiant`), `delta` (each objective minus the lowest),
+`sdb+dwarf`, `sdb+subgiant`; with `"giant"` also `giant` and `sdb+giant`,
+and without `fgk` when `companions=("giant",)`), `delta` (each objective minus the lowest),
 `preferred`, `n_fit`, `mask` and the fitted `data`; see the
 [subdwarf route](model.md#subdwarf-route).
 
@@ -238,8 +239,15 @@ hypotheses on one data vector and returns `hypotheses` (`fgk`, `sdb`,
   subdwarf hypothesis reports `subdwarf` with `teff`, `logg`, `radius`,
   `mass` (g R^2 / G), `luminosity`, `tier` and `log_he_h`.
 - The companion is `"dwarf"` (mass, age and [M/H] on PARSEC through the
-  network) or `"subgiant"` (`GiantTemplate` at log g 3.2--3.8 with a free
-  scale). `companions=()` fits the subdwarf alone. `companion_age_gyr`,
+  network), `"subgiant"` (`GiantTemplate` at log g 3.2--3.8 with a free
+  scale) or `"giant"` (`GiantTemplate(blue=True)` at log g 0--3.8, free
+  scale, PARSEC M_Ks prior on its luminosity; its blue XP flux comes from
+  the template). `companions=()` fits the subdwarf alone. For red giants,
+  `companions=("giant",)` compares `giant` with `sdb+giant`; the
+  detection statistic objective(giant) - objective(sdb+giant) has
+  threshold 38 with `tiers=("H",)`, `fit_parallax=True`,
+  `subdwarf_prior=dict(logg=(5.6, 0.3))` and `blue=`
+  ([sdB + giant report](../reports/sdb_giant_20261011/report.md)). `companion_age_gyr`,
   `companion_feh` and `companion_mass` fix the dwarf's parameters.
 - Parallax: catalogue value by default; `fit_parallax=True` fits it within
   3 sigma with penalty z^2; `parallax=(mean, sigma)` replaces the SED's.
