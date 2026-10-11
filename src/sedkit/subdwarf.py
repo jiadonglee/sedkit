@@ -877,7 +877,7 @@ def _fit_ms_giant(p, e0):
     points are polished in all parameters."""
     hyp = _Hypothesis(p, "ms_giant")
     base = _start_values(hyp, e0)
-    giants, shapes = [dict(p.giant_seed)], []
+    giants, shapes = [{k: p.giant_seed[k] for k in ("tg", "gg", "mg")}], []
     giants += [dict(tg=t / 100, gg=g, mg=m) for t in GIANT_LATTICE[0] for g in GIANT_LATTICE[1]
                for m in GIANT_LATTICE[2]]
     keep = []
