@@ -190,6 +190,51 @@ def test_objective_and_grid_match_numpy(model, arrays, sed):
     assert grid.shape == (38 * 3 * 3 * 6, 6)
 
 
+@pytest.mark.parametrize("hot", [False, True])
+def test_reduced_layouts_match_full_layout(arrays, sed, hot):
+    """Primary-only and 66-channel compilations reproduce the full-layout objective."""
+    model_arrays = ModelArrays.build(StellarModel(hot=True)) if hot else arrays
+    flux = np.where(np.arange(168) < 64, sed.flux, np.nan)  # XP + 2MASS, as real SEDs
+    error = np.where(np.arange(168) < 64, sed.error, np.nan)
+    mask = jnp.asarray((np.arange(168) < 64).astype(float))
+
+    def problem(pair, channels):
+        return Problem(
+            arr=model_arrays, sed_flux=jnp.asarray(flux), sed_error=jnp.asarray(error),
+            mask=mask,
+            parallax_mas=jnp.asarray(sed.parallax_mas),
+            parallax_error_mas=jnp.asarray(sed.parallax_error_mas), template=jnp.zeros(6),
+            bounds=jnp.asarray(np.array([
+                (np.log(0.08), np.log(19.9)), (np.log(0.01), np.log(13.0)), (-1.0, 0.5),
+                (0.0, 1.0), (0.0, np.inf), (-3.0, 3.0)])),
+            dust_par=jnp.ones(161), dust_mean=jnp.zeros(161) + 0.05,
+            dust_sigma=jnp.ones(161) * 0.02, dust_fail=jnp.zeros(161),
+            dust_flag=jnp.asarray(1.0), prior_mean=jnp.zeros(3),
+            prior_sigma=jnp.ones(3), prior_flag=jnp.zeros(3), pair=pair, channels=channels)
+
+    rng = np.random.default_rng(5)
+    thetas = np.column_stack([
+        rng.uniform(np.log(0.2), np.log(4.0), 400), rng.uniform(np.log(0.05), np.log(9.0), 400),
+        rng.uniform(-0.9, 0.4, 400), rng.choice([0.0, 0.5], 400),
+        rng.uniform(0.0, 0.2, 400), rng.uniform(-2.0, 2.0, 400)])
+    values = jax.jit(jax.vmap(_objective, in_axes=(0, None)))
+    full = np.asarray(values(jnp.asarray(thetas), problem(True, 168)))
+    narrow = np.asarray(values(jnp.asarray(thetas), problem(True, 66)))
+    single = thetas[:, 3] == 0
+    primary = np.asarray(values(jnp.asarray(thetas[single]), problem(False, 66)))
+    supported = full < 1e29
+    assert supported[single].sum() > 40 and supported[~single].sum() > 40
+    if hot:  # the hot-table branch contributes to some supported points
+        weight = jax.vmap(lambda t: stellar.evaluate(
+            model_arrays, jnp.exp(t[0]), t[3], jnp.exp(t[1]), t[2]).hot_weight[0])(
+                jnp.asarray(thetas))
+        assert np.sum(supported & (np.asarray(weight) > 0)) > 10
+    np.testing.assert_array_equal(narrow < 1e29, supported)
+    np.testing.assert_allclose(narrow[supported], full[supported], rtol=1e-12)
+    np.testing.assert_array_equal(primary < 1e29, supported[single])
+    np.testing.assert_allclose(primary[supported[single]], full[single & supported], rtol=1e-12)
+
+
 def test_fit_matches_numpy(model, sed):
     """The headline free route: age, [M/H], parallax and extinction all fitted."""
     prior = EdenhoferPrior(FakeQuery(), sigma=0.02)
