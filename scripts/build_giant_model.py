@@ -8,7 +8,7 @@ The run (giant_grid_20261006 on the Garching nodes) provides:
   work/calib.csv        per-star E against SFD E(B-V), which sets the dereddening factor
   scripts/              the build (s1_select, s2_xp, s3_phot, s4_build)
 
-The template is cut to sedkit's XP61 + J/H/Ks/W1/W2 channels. A node stays supported only where its
+The template is cut to spbin's XP61 + J/H/Ks/W1/W2 channels. A node stays supported only where its
 template is positive and its fractional scatter is below MAX_SIGMA on every XP channel; the cool,
 low-gravity corner where blue XP flux reaches zero falls outside. The template and diagonal are stored
 as float32 and the covariance columns as float16, cropped to the supported box.
@@ -22,7 +22,7 @@ from pathlib import Path
 
 import numpy as np
 
-OUT = Path(__file__).resolve().parents[1] / "src/sedkit/models/giant"
+OUT = Path(__file__).resolve().parents[1] / "src/spbin/models/giant"
 MAX_SIGMA = 0.3
 VERSION = "giant-v1"
 

@@ -3,8 +3,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel, WhiteDwarfModel
-from sedkit.hrd import _region, fit_star, locate
+from spbin import SED, StellarModel, WhiteDwarfModel
+from spbin.hrd import _region, fit_star, locate
 
 FIXTURE = Path(__file__).parent / "fixtures" / "gaia_dr3_5148853253106611200.npz"
 

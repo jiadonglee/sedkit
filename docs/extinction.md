@@ -1,7 +1,7 @@
 # Extinction fitting with a 3D dust prior
 
 ```python
-from sedkit import EdenhoferPrior, download, fit
+from spbin import EdenhoferPrior, download, fit
 
 sed = download("858860697467058688", cache_dir="data")
 prior = EdenhoferPrior()  # load once, reuse across sources

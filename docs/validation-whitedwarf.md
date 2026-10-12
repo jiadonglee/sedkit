@@ -312,4 +312,4 @@ exposed for sensitivity comparisons.
 
 ## Reproduction
 
-The runtime tables are bundled in `src/sedkit/models/whitedwarf/`.
+The runtime tables are bundled in `src/spbin/models/whitedwarf/`.

@@ -2,7 +2,7 @@
   "version": "subdwarf-v1",
   "source": "Tuebingen TMAP NLTE spectra (Rauch; TheoSSA, GAVO)",
   "units": "ln F_lambda at 10 pc for R = 1 Rsun, 1e-18 W m^-2 nm^-1",
-  "channels": "168 sedkit channels; XP through the J-CAPS phase-0 forward operator; J/H/Ks/W1/W2 sampled at the sedkit wavelengths; SPHEREx averaged between channel midpoints",
+  "channels": "168 spbin channels; XP through the J-CAPS phase-0 forward operator; J/H/Ks/W1/W2 sampled at the spbin wavelengths; SPHEREx averaged between channel midpoints",
   "blue_xp": "six XP channels at 332-382 nm through the same operator",
   "tiers": {
     "H": {

@@ -83,7 +83,7 @@ def query_gaia(query, *, cache_dir="data/gaia-query", tap="esa", maxrec=1000000,
                wait=600, timeout=(30, 180)):
     """Run an asynchronous ADQL query and return an Astropy Table.
 
-    Requires sedkit[download]. ``tap`` is 'esa', 'ari', or a TAP URL.
+    Requires spbin[download]. ``tap`` is 'esa', 'ari', or a TAP URL.
     The directory stores the job URL and original VOTable for resumption.
     Repeating the same request reuses its result; changed requests require
     a new directory. Server truncation raises rather than returning a
@@ -174,7 +174,7 @@ def download_gaia(source_ids, *, products=("XP_CONTINUOUS",),
     Accepts integer/string IDs (duplicates removed in input order).
     ``products`` is a product name or sequence of names, e.g.
     XP_CONTINUOUS, RVS, EPOCH_PHOTOMETRY for DR3. Names must match DataLink.
-    ``data_structure`` is RAW or INDIVIDUAL. Requires sedkit[download].
+    ``data_structure`` is RAW or INDIVIDUAL. Requires spbin[download].
 
     Returns one dict per batch/product: product, source_ids (delivered),
     unavailable_source_ids (not advertised), path (Path or None), cached.

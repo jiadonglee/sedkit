@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel, GiantTemplate, fit_giant_companion
-from sedkit.giant import CHANNELS, _companion, tilted_transmission
+from spbin import SED, StellarModel, GiantTemplate, fit_giant_companion
+from spbin.giant import CHANNELS, _companion, tilted_transmission
 
 
 @pytest.fixture(scope="module")
@@ -90,7 +90,7 @@ class FlatQuery:
 
 def parsec_mock(template, hot, m2, parallax=1.0, extinction=0.3, brighter_mag=0.0):
     """Giant at (4800 K, 2.5, -0.3) with the PARSEC mode of M_Ks there, optionally made brighter."""
-    from sedkit.giant import _parsec_prior, _ks_zero_point, KS
+    from spbin.giant import _parsec_prior, _ks_zero_point, KS
     wave = hot.wavelength_um[:CHANNELS]
     prior = _parsec_prior()
     node = tuple(int(np.argmin(np.abs(a - x))) for a, x in zip(template.axes, (4800.0, 2.5, -0.3)))
@@ -134,7 +134,7 @@ def test_mass_walls_charge_an_overluminous_giant(template, hot):
 
 
 def test_dust_prior_inside_and_beyond_the_map(template, hot):
-    from sedkit import EdenhoferPrior
+    from spbin import EdenhoferPrior
     inside = fit_giant_companion(parsec_mock(template, hot, 0, parallax=1.0), (4800, 100), (2.5, 0.2),
                                  (-0.3, 0.15), m2_grid=(), template=template, model=hot,
                                  luminosity="parsec", dust_prior=EdenhoferPrior(FlatQuery(0.3)))
@@ -150,7 +150,7 @@ def test_dust_prior_inside_and_beyond_the_map(template, hot):
 
 
 def test_luminosity_options_are_validated(template, hot):
-    from sedkit import EdenhoferPrior
+    from spbin import EdenhoferPrior
     sed = parsec_mock(template, hot, 0)
     kw = dict(m2_grid=(), template=template, model=hot)
     with pytest.raises(ValueError):

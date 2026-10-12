@@ -35,7 +35,7 @@ LOG_AGE_RANGES = ((6.6, 8.45, 0.05), (8.5, 10.0, 0.05))
 COLUMNS = ("Mass", "logTe", "logL", "Ksmag", "Gmag")
 HOOK_WINDOW, HOOK_DEPTH = 0.1, 0.002  # Msun below the terminal mass; dex in logTe
 LOGG_MIN = 3.0  # above the Teff maximum
-OUT = Path(__file__).resolve().parents[1] / "src/sedkit/models/parsec_mh_tracks.npz"
+OUT = Path(__file__).resolve().parents[1] / "src/spbin/models/parsec_mh_tracks.npz"
 
 
 def raw_path(directory, mh, ages):

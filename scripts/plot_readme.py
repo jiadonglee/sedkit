@@ -6,8 +6,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-from sedkit import SED, EdenhoferPrior, plot
-from sedkit.plot import BINARY, SINGLE, INK, INK2, PAPER_STYLE
+from spbin import SED, EdenhoferPrior, plot
+from spbin.plot import BINARY, SINGLE, INK, INK2, PAPER_STYLE
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "examples/results/extinction_20261003"

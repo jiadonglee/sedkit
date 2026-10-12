@@ -53,7 +53,7 @@ multiplies the table: per channel, `exp(a + W b + s c)`, with W the Balmer
 cool-edge weight, 1 at 7000 K falling smoothly to 0 at 9000 K. a and b
 correct mainly the XP operator, not the synthetic spectra; c is set by
 1 kpc IRFM dwarfs at 7000--7500 K held at their IRFM Teff, the PARSEC log g
-of their network fit and the Edenhofer map E, the conditions of a sedkit
+of their network fit and the Edenhofer map E, the conditions of a spbin
 fit, so the table shares the Teff scale of the network at the seam
 ([hot validation](validation-hot.md)).
 

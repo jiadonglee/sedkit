@@ -5,7 +5,7 @@
 and conditional G-band light envelopes for a WD companion.
 
 ```python
-from sedkit import WhiteDwarfModel, fit_whitedwarf_companion
+from spbin import WhiteDwarfModel, fit_whitedwarf_companion
 
 result = fit_whitedwarf_companion(sed, companion_feh=0.)
 composite = result["hypotheses"]["wd+dwarf"]
@@ -101,8 +101,8 @@ faint-WD mode with the luminous dwarf as star 1.
 ## Conditional WD light limits
 
 ```python
-from sedkit import whitedwarf_light_limit
-from sedkit.orbit import solve_dark_companion
+from spbin import whitedwarf_light_limit
+from spbin.orbit import solve_dark_companion
 
 limit = whitedwarf_light_limit(
     sed, masses=[0.6, 0.8, 1.0], delta=9.,

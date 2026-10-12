@@ -18,8 +18,8 @@ second solution hides.
 ## Three checks
 
 ```python
-from sedkit import download
-from sedkit.orbit import solve_orbit, rank_roots
+from spbin import download
+from spbin.orbit import solve_orbit, rank_roots
 
 # LP 769-9: Gaia DR3 Orbital solution, two-body parallax 13.913 mas
 roots = solve_orbit(a0_mas=0.6978, parallax_mas=13.913, period_day=339.57, m1=0.686)
@@ -49,8 +49,8 @@ for r in rank_roots(sed, roots, parallax_mas=13.913, fit_parallax=True):
 Command line, for the first check:
 
 ```bash
-python -m sedkit.orbit --a0 0.6978 --parallax 13.913 --period 339.57 --m1 0.686
-python -m sedkit.orbit --amrf 0.14 --m1 0.50
+python -m spbin.orbit --a0 0.6978 --parallax 13.913 --period 339.57 --m1 0.686
+python -m spbin.orbit --amrf 0.14 --m1 0.50
 ```
 
 ## Two observed candidates
@@ -83,7 +83,7 @@ For B > beta_G the photocentre moves with the companion, for B < beta_G
 with the subdwarf.
 
 ```python
-from sedkit.orbit import solve_luminous_pair, branch_from_rv, campbell
+from spbin.orbit import solve_luminous_pair, branch_from_rv, campbell
 for row in solve_luminous_pair(a0_mas=0.30, parallax_mas=2.0, period_day=800,
                                m2=1.1, beta=0.45, errors=dict(beta=0.03, a0=0.02)):
     print(row["branch"], row["m1"], row["B"], row["sigma_m1"], row["dm1_dbeta"])

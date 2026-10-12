@@ -1,6 +1,6 @@
 # Visual identity
 
-The sedkit logo uses a blue primary, a coral-orange secondary and one
+The spbin logo uses a blue primary, a coral-orange secondary and one
 shared spectral curve. The lowercase wordmark is charcoal on white.
 
 The plotting palette uses blue `#024397`, coral orange `#f9654e`,
@@ -9,7 +9,7 @@ orange; coeval-binary fits are blue. Line styles also distinguish the models.
 
 ## Homepage assets
 
-- [Logo](assets/sedkit-logo.png).
+- [Logo](assets/spbin-logo.png).
 - [SED example](assets/sed-example.png), also available as [PDF](assets/sed-example.pdf).
 - [Extinction and parallax priors](assets/extinction-parallax-priors.png),
   also available as [PDF](assets/extinction-parallax-priors.pdf).

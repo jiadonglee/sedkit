@@ -1,19 +1,19 @@
 <p align="center">
-  <img src="docs/assets/sedkit-logo.png" width="280" alt="sedkit logo">
+  <img src="docs/assets/spbin-logo.png" width="280" alt="spbin logo">
 </p>
 <p align="center">Download and fit stellar spectral energy distributions.</p>
 
-sedkit combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
-AllWISE photometry. Its stellar model is a hybrid SED emulator: a network
-trained on real spectra where stars with good labels exist, synthetic
-atmospheres calibrated on real stars where they do not, and PARSEC stellar
-evolution tying both to mass, age and metallicity. It predicts absolute
-fluxes at the Gaia parallax for a single star or a coeval binary, tests red
-giants for hot companions, fits hot subdwarfs with or without a cool
-companion, and tells whether a Gaia astrometric orbit comes from a faint
-companion, a hidden near-equal-mass twin or a luminous star of another kind. The package runs
-on NumPy and SciPy, with no J-CAPS installation, JAX, GPU or separate model
-download.
+spbin (spectrophotometric binaries) combines public Gaia DR3 XP spectra
+with Gaia-linked 2MASS and AllWISE photometry. Its stellar model is a
+hybrid SED emulator: a network trained on real spectra where stars with
+good labels exist, synthetic atmospheres calibrated on real stars where
+they do not, and PARSEC stellar evolution tying both to mass, age and
+metallicity. It predicts absolute fluxes at the Gaia parallax for a single
+star or a coeval binary, tests red giants for hot companions, fits hot
+subdwarfs with or without a cool companion, and tells whether a Gaia
+astrometric orbit comes from a faint companion, a hidden near-equal-mass
+twin or a luminous star of another kind. The package runs on NumPy and
+SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
 
 ## How the model is built
 
@@ -283,7 +283,7 @@ Other measurements:
 ## Install
 
 ```bash
-pip install "sedkit[download] @ git+https://github.com/jiadonglee/sedkit.git"
+pip install "spbin[download] @ git+https://github.com/jiadonglee/spbin.git"
 ```
 
 For a local checkout, use `pip install -e ".[download]"`. Plain
@@ -294,7 +294,7 @@ acquisition, add the `spherex` extra; see [SPHEREx downloads](docs/spherex.md).
 ## One source
 
 ```python
-from sedkit import download, fit, plot
+from spbin import download, fit, plot
 
 sed = download("858860697467058688", cache_dir="data")
 result = fit(sed, age_gyr=5.0, feh=0.0)
@@ -316,7 +316,7 @@ match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 ## One star, located first
 
 ```python
-from sedkit import download, fit_star
+from spbin import download, fit_star
 
 sed = download("1521154374020165376", cache_dir="data")
 result = fit_star(sed)
@@ -359,7 +359,7 @@ Prepare the Edenhofer posterior-sample map once on a server with enough
 memory; the full map is about 19 GB and is not downloaded by the fit.
 
 ```python
-from sedkit import EdenhoferPrior
+from spbin import EdenhoferPrior
 
 prior = EdenhoferPrior()  # load the existing map once and reuse it
 result = fit(sed, extinction=None, dust_prior=prior, fit_parallax=True)
@@ -392,7 +392,7 @@ epoch photometry and cache behaviour.
 ## Is a Gaia substellar candidate a hidden twin?
 
 A Gaia photocentre orbit constrains mass ratio and light ratio together.
-`sedkit.orbit.solve_orbit` finds the faint and luminous solutions;
+`spbin.orbit.solve_orbit` finds the faint and luminous solutions;
 `rank_roots` compares their absolute SEDs. XP and 2MASS prefer the luminous
 solution for a followed-up binary and the dark solution for LP 769-9.
 See [the method and worked example](docs/orbit.md) and

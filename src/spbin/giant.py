@@ -1,7 +1,7 @@
 """Hot main-sequence companions to red giants against an empirical giant template.
 
 The giant is not a PARSEC star: its flux is an empirical template in Teff, log g and [M/H] with a free scale.
-The companion is a sedkit main-sequence star of mass M2 at the Gaia parallax. The two share extinction and
+The companion is a spbin main-sequence star of mass M2 at the Gaia parallax. The two share extinction and
 nothing else: no common age and no q <= 1. Optionally the parallax is fitted and the giant's luminosity is
 tied to it by a PARSEC M_Ks prior or by bounds on its implied mass, and E by the Edenhofer dust map.
 """

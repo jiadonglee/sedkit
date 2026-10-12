@@ -20,7 +20,7 @@ import numpy as np
 
 from build_subdwarf_model import Reducer, _screen, _uv_curve, COARSE, FILTERS, XP_SAMPLING, ROOT
 
-OUT = ROOT / "src/sedkit/models/whitedwarf"
+OUT = ROOT / "src/spbin/models/whitedwarf"
 SVO = "https://svo2.cab.inta-csic.es/theory/newov2/"
 MONTREAL = "https://www.astro.umontreal.ca/~bergeron/CoolingModels/CoolingModels/"
 
@@ -57,7 +57,7 @@ def fetch(work, operator, hot_run, threads):
     (work / "reduced").mkdir(exist_ok=True)
     np.savez_compressed(work / "filters.npz", **{f"{k}_{c}": v for k, (lam, tr) in reducer.filters.items()
                                                  for c, v in (("wave_nm", lam), ("trans", tr))})
-    from sedkit.model import StellarModel
+    from spbin.model import StellarModel
     wave_nm = StellarModel().wavelength_um * 1000
 
     def one(node):
