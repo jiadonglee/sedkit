@@ -47,14 +47,6 @@ def search(grid, x, side="left"):
     return jnp.searchsorted(grid, x, side=side, method="compare_all")
 
 
-def interp_clamped(grid, values, x):
-    """np.interp of x on grid (columns of values), by gather on a traced grid."""
-    index = jnp.clip(search(grid, x) - 1, 0, grid.shape[0] - 2)
-    x0, x1 = grid[index], grid[index + 1]
-    t = jnp.clip((x - x0) / (x1 - x0), 0, 1)
-    return values[index] + t * (values[index + 1] - values[index])
-
-
 def bilinear(teff_ax, logg_ax, values, teff, logg):
     """Bilinear interpolation of values (n_teff, n_logg[, n]) at a scalar point."""
     i = jnp.clip(search(teff_ax, teff) - 1, 0, teff_ax.shape[0] - 2)
@@ -81,20 +73,27 @@ def track(arr, masses, age_gyr, feh):
     age_weight = jnp.clip(
         (log_age - arr.log_ages[h - 1]) / (arr.log_ages[h] - arr.log_ages[h - 1]), 0, 1)
 
-    def one_metal(metal):
-        lo = jnp.maximum(arr.track_lo[metal, h - 1], arr.track_lo[metal, h])
-        hi = jnp.minimum(arr.track_hi[metal, h - 1], arr.track_hi[metal, h])
-        valid = (masses >= lo) & (masses <= hi)
-
-        def one_age(age):
-            grid = arr.track_mass[metal, age]
-            values = arr.track_values[metal, age]
-            return jax.vmap(lambda m: interp_clamped(grid, values, m))(masses)
-
-        return ((1 - age_weight) * one_age(h - 1) + age_weight * one_age(h), valid)
-
-    low_pars, low_valid = one_metal(k - 1)
-    high_pars, high_valid = one_metal(k)
+    # The four bracketing tracks (metal, age) = (k-1, h-1), (k-1, h), (k, h-1),
+    # (k, h), interpolated in mass as np.interp does. One gather fetches the
+    # two nodes around each mass on all four tracks: a whole track row per
+    # track dominates the cost once the objective is vmapped.
+    metal = jnp.stack([k - 1, k - 1, k, k])
+    age = jnp.stack([h - 1, h, h - 1, h])
+    grid = arr.track_mass[metal, age]
+    index = jnp.clip(jax.vmap(lambda row: search(row, masses))(grid) - 1,
+                     0, grid.shape[1] - 2)
+    x0 = jnp.take_along_axis(grid, index, axis=1)
+    x1 = jnp.take_along_axis(grid, index + 1, axis=1)
+    t = jnp.clip((masses - x0) / (x1 - x0), 0, 1)[..., None]
+    low = arr.track_values[metal[:, None], age[:, None], index]
+    high = arr.track_values[metal[:, None], age[:, None], index + 1]
+    interp = low + t * (high - low)
+    low_pars = (1 - age_weight) * interp[0] + age_weight * interp[1]
+    high_pars = (1 - age_weight) * interp[2] + age_weight * interp[3]
+    lo = jnp.maximum(arr.track_lo[metal, age][::2], arr.track_lo[metal, age][1::2])
+    hi = jnp.minimum(arr.track_hi[metal, age][::2], arr.track_hi[metal, age][1::2])
+    low_valid = (masses >= lo[0]) & (masses <= hi[0])
+    high_valid = (masses >= lo[1]) & (masses <= hi[1])
     pars = ((1 - metal_weight) * jnp.where(low_valid[:, None], low_pars, 0.0)
             + metal_weight * jnp.where(high_valid[:, None], high_pars, 0.0))
     valid = jnp.where(metal_weight < 1e-9, low_valid,
