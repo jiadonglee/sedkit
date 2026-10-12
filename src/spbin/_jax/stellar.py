@@ -40,9 +40,14 @@ def _sqrt_weight_jvp(primals, tangents):
     return jnp.sqrt(weight), jnp.where(weight > 0, 0.5 / jnp.sqrt(safe), 0.0) * dweight
 
 
+def search(grid, x, side="left"):
+    """jnp.searchsorted by one comparison against every node (the grids are short)."""
+    return jnp.searchsorted(grid, x, side=side, method="compare_all")
+
+
 def interp_clamped(grid, values, x):
     """np.interp of x on grid (columns of values), by gather on a traced grid."""
-    index = jnp.clip(jnp.searchsorted(grid, x) - 1, 0, grid.shape[0] - 2)
+    index = jnp.clip(search(grid, x) - 1, 0, grid.shape[0] - 2)
     x0, x1 = grid[index], grid[index + 1]
     t = jnp.clip((x - x0) / (x1 - x0), 0, 1)
     return values[index] + t * (values[index + 1] - values[index])
@@ -50,8 +55,8 @@ def interp_clamped(grid, values, x):
 
 def bilinear(teff_ax, logg_ax, values, teff, logg):
     """Bilinear interpolation of values (n_teff, n_logg[, n]) at a scalar point."""
-    i = jnp.clip(jnp.searchsorted(teff_ax, teff) - 1, 0, teff_ax.shape[0] - 2)
-    j = jnp.clip(jnp.searchsorted(logg_ax, logg) - 1, 0, logg_ax.shape[0] - 2)
+    i = jnp.clip(search(teff_ax, teff) - 1, 0, teff_ax.shape[0] - 2)
+    j = jnp.clip(search(logg_ax, logg) - 1, 0, logg_ax.shape[0] - 2)
     x = (teff - teff_ax[i]) / (teff_ax[i + 1] - teff_ax[i])
     y = (logg - logg_ax[j]) / (logg_ax[j + 1] - logg_ax[j])
     corners = values[i, j], values[i + 1, j], values[i, j + 1], values[i + 1, j + 1]
@@ -66,12 +71,11 @@ def track(arr, masses, age_gyr, feh):
     masses is a fixed-length (2,) of component masses; returns per-component
     labels, logg, radius and a validity mask equal to the numpy NaN case.
     """
-    k = jnp.clip(jnp.searchsorted(arr.metals, feh, side="right"), 1, arr.metals.shape[0] - 1)
+    k = jnp.clip(search(arr.metals, feh, side="right"), 1, arr.metals.shape[0] - 1)
     metal_weight = jnp.clip(
         (feh - arr.metals[k - 1]) / (arr.metals[k] - arr.metals[k - 1]), 0, 1)
     log_age = jnp.log10(age_gyr) + 9
-    h = jnp.clip(jnp.searchsorted(arr.log_ages, log_age, side="right"), 1,
-                 arr.log_ages.shape[0] - 1)
+    h = jnp.clip(search(arr.log_ages, log_age, side="right"), 1, arr.log_ages.shape[0] - 1)
     age_weight = jnp.clip(
         (log_age - arr.log_ages[h - 1]) / (arr.log_ages[h] - arr.log_ages[h - 1]), 0, 1)
 
