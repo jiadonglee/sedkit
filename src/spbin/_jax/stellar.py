@@ -4,7 +4,8 @@ Every function here is compiled with fixed shapes: a coeval pair is two
 components whose fluxes add with weight zero for a single star (a fit whose
 q is fixed at 0 compiles the one-component layout instead), channel masks
 are 0/1 weights, and the low-rank model-error basis always has all 12
-columns (4 per error term).
+columns (4 per error term). A fit with no SPHEREx channel compiles the
+first 66 channels (XP61, J/H/Ks, W1/W2) only.
 Outside their domain the components return safe finite values and a `valid`
 flag; the objective turns the flag into one large finite value.
 """
@@ -107,24 +108,29 @@ def track(arr, masses, age_gyr, feh):
     return labels, logg, 10**log_radius, valid
 
 
-def predict_labels(arr, labels):
-    """Absolute 10-pc channel fluxes for one labels row [Teff, M_Ks, G-Ks, [M/H]]."""
+def predict_labels(arr, labels, channels=None):
+    """Absolute 10-pc channel fluxes for one labels row [Teff, M_Ks, G-Ks, [M/H]].
+
+    channels=66 (static) returns the XP-head channels only; the default is all 168.
+    """
     hidden = (labels[jnp.array([0, 2, 3])] - arr.x_center) / arr.x_scale
     for index, (weight, bias) in enumerate(zip(arr.trunk_weights, arr.trunk_biases)):
         hidden = hidden @ weight.T + bias
         if index < len(arr.trunk_weights) - 1:
             hidden = gelu(hidden)
-    values = jnp.concatenate([
-        (hidden @ arr.xp_weight.T + arr.xp_bias) * arr.y_scale[:66] + arr.y_center[:66],
-        (hidden @ arr.spherex_weight.T + arr.spherex_bias) * arr.y_scale[66:]
-        + arr.y_center[66:]])
+    values = (hidden @ arr.xp_weight.T + arr.xp_bias) * arr.y_scale[:66] + arr.y_center[:66]
+    if channels != 66:
+        values = jnp.concatenate([
+            values, (hidden @ arr.spherex_weight.T + arr.spherex_bias) * arr.y_scale[66:]
+            + arr.y_center[66:]])
     log_flux = values - values[63] + arr.ks0_log - 0.4 * labels[1]
     temperature = (labels[0] - 2600) / 500
     color = labels[2] - 5.5
     gate = 1 - smoothstep((labels[0] - 2800) / 600)
     features = jnp.array([1.0, temperature, color, temperature * color,
                           temperature**2, color**2])
-    log_flux += gate * ((features @ arr.cal_coefficients) @ arr.cal_spectral_basis.T)
+    basis = arr.cal_spectral_basis[:values.shape[0]]
+    log_flux += gate * ((features @ arr.cal_coefficients) @ basis.T)
     return 10**log_flux
 
 
@@ -162,22 +168,23 @@ class Evaluation(NamedTuple):
     radius: jax.Array  # (n,)
     mg: jax.Array  # (n,)
     hot_weight: jax.Array  # (n,)
-    components: jax.Array  # (n, 168)
-    flux_10pc: jax.Array  # (168,)
+    components: jax.Array  # (n, c), c = 168 channels or 66 (XP head)
+    flux_10pc: jax.Array  # (c,)
     beta_g: jax.Array
     a_phot_over_a1: jax.Array
     valid: jax.Array
 
 
-def evaluate(arr, m1, q, age_gyr, feh, pair=True):
+def evaluate(arr, m1, q, age_gyr, feh, pair=True, channels=None):
     """One star (q=0) or a coeval pair on the fixed two-component layout.
 
     The second component participates only when q > 0; its flux and its
     domain checks are ignored for a single star, matching numpy's
     one-component branch. pair=False (static) evaluates the primary alone
     and ignores q, which gives the same result as q=0 without the second
-    track lookup and network pass. Returns safe finite values with `valid`
-    False wherever numpy would return None.
+    track lookup and network pass. channels=66 (static) predicts the
+    XP-head channels only. Returns safe finite values with `valid` False
+    wherever numpy would return None.
     """
     masses = jnp.array([m1, m1 * jnp.maximum(q, 1e-30)] if pair else [m1])
     labels, logg, radius, track_valid = track(arr, masses, age_gyr, feh)
@@ -193,14 +200,14 @@ def evaluate(arr, m1, q, age_gyr, feh, pair=True):
     ok = component_ok[0] & (~participate | component_ok[-1])
 
     safe_labels = jnp.where(track_valid[:, None], labels, jnp.array([5000.0, 4.0, 1.5, 0.0]))
-    cool = jax.vmap(lambda row: predict_labels(arr, row))(safe_labels)
+    cool = jax.vmap(lambda row: predict_labels(arr, row, channels))(safe_labels)
     if arr.hot:
         safe_teff = jnp.clip(labels[:, 0], arr.hot_box[0, 0], arr.hot_box[0, 1])
         safe_logg = jnp.clip(logg, arr.hot_box[1, 0], arr.hot_box[1, 1])
         safe_radius = jnp.where(track_valid, radius, 1.0)
         hot64 = jax.vmap(lambda t, g, r: predict_hot(arr, t, g, r))(
             safe_teff, safe_logg, safe_radius)
-        hot = jnp.zeros((len(masses), arr.support.shape[0])).at[:, :HOT_CHANNELS].set(hot64)
+        hot = jnp.zeros(cool.shape).at[:, :HOT_CHANNELS].set(hot64)
         components = (1 - weight[:, None]) * cool + weight[:, None] * hot
     else:
         components = cool
@@ -215,7 +222,7 @@ def evaluate(arr, m1, q, age_gyr, feh, pair=True):
 
 
 def error_factors(arr, teff, flux_10pc, scale):
-    """Low-rank model-error columns (168, 12) and diagonal variance, all terms.
+    """Low-rank model-error columns (n, 12) and diagonal variance for the first n channels.
 
     The primary's Teff selects the term weights: v2.1_cold below 3800 K,
     v2.1_warm above 4200 K, smoothstep blend in between, and with hot=True a
@@ -231,6 +238,7 @@ def error_factors(arr, teff, flux_10pc, scale):
         for weight, columns in zip((cold, warm_term, hot_term), arr.error_columns)])
     weights = jnp.array([cold, warm_term, hot_term])
     flux = flux_10pc * scale
-    columns = flux[:, None] * arr.error_basis * column_scale
-    variance = jnp.sum(weights * (flux[:, None] * arr.error_diag)**2, axis=1)
+    n = flux.shape[0]
+    columns = flux[:, None] * arr.error_basis[:n] * column_scale
+    variance = jnp.sum(weights * (flux[:, None] * arr.error_diag[:n])**2, axis=1)
     return columns, variance
