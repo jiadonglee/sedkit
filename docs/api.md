@@ -228,7 +228,7 @@ tiers=("H", "mid", "He"), model=None, stellar=None, template=None,
 giant_template=None, parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
 dust_prior=None, subdwarf_prior=None, companion_prior=None,
 companion_age_gyr=None, companion_feh=None, companion_mass=None,
-use_wise=False, use_spherex=False, blue=None, galex=None)` fits its
+use_wise=False, use_spherex=False, blue=None, galex=None, hot_ms=False, fg_ms=False)` fits its
 hypotheses on one data vector and returns `hypotheses` (`fgk`, `sdb`,
 `sdb+dwarf`, `sdb+subgiant`; with `"giant"` also `giant` and `sdb+giant`,
 and without `fgk` when `companions=("giant",)`), `delta` (each objective minus the lowest),
@@ -249,6 +249,15 @@ and without `fgk` when `companions=("giant",)`), `delta` (each objective minus t
   `subdwarf_prior=dict(logg=(5.6, 0.3))` and `blue=`, calibrated on
   APOGEE RV-constant giants (false-positive rate below 0.25%). `companion_age_gyr`,
   `companion_feh` and `companion_mass` fix the dwarf's parameters.
+- With `"giant"`, two main-sequence alternatives to the sdB can be added.
+  - `hot_ms=True` adds `ms+giant`: a hot star of solar [M/H] from
+    `StellarModel(hot=True)`, 7000--30000 K, whose blue XP and GALEX fluxes come
+    from the hot UV table. It reports `ms`.
+  - `fg_ms=True` adds `fg+giant`: an F/G/K star from `StellarModel()`, coeval
+    with the giant and at its [M/H], whose blue XP channels come from an
+    empirical colour table of APOGEE dwarfs (`CoolUV`, 4400--6900 K). It
+    reports `fg`.
+  - The single giant is re-polished from each pair.
 - Parallax: catalogue value by default; `fit_parallax=True` fits it within
   3 sigma with penalty z^2; `parallax=(mean, sigma)` replaces the SED's.
 - Extinction: a number fixes ZGR23 E; with `extinction=None`, give

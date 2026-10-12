@@ -5,7 +5,7 @@ from sedkit import SED, StellarModel
 from sedkit.extinction import extinction_curve
 from sedkit.orbit import (branch_from_rv, campbell, mass_from_rv, photocentre_a0, solve_dark_companion,
                           solve_luminous_pair, thiele_innes)
-from sedkit.subdwarf import (GALEX_BRIGHT, H_C_OVER_K_NM, HotUV, SubdwarfModel, fit_subdwarf_companion,
+from sedkit.subdwarf import (GALEX_BRIGHT, H_C_OVER_K_NM, CoolUV, HotUV, SubdwarfModel, fit_subdwarf_companion,
                              physical)
 
 
@@ -192,6 +192,44 @@ def test_hot_main_sequence_companion_of_a_giant(sdm):
     assert r["preferred"] == "sdb+giant" and r["delta"]["ms+giant"] > 25
 
 
+def test_cool_uv_table_reproduces_nodes():
+    uv = CoolUV()
+    assert uv(7600.0, 0.0) is None and uv(5800.0, 0.8) is None
+    t = uv.table
+    i, j = int(np.searchsorted(t["teff_ax"], 5800.0)), int(np.searchsorted(t["mh_ax"], 0.0))
+    ln_blue, scatter = uv(5800.0, 0.0)
+    np.testing.assert_allclose(ln_blue, t["ln_blue"][i, j], rtol=1e-6)
+    assert np.all(scatter > 0) and ln_blue[0] > ln_blue[1]      # the 332 nm channel carries the BP-edge feature
+    # the 392 nm channel sits in Ca II H and K, deeper in a cooler dwarf; 382 nm falls with Teff below it
+    assert uv(5000.0, 0.0)[0][5] < uv(6500.0, 0.0)[0][5]
+
+
+def _fg_mock(sdm, mass, age, feh=-0.2, parallax=1.0, e=0.15):
+    """The template giant of _giant_mock plus an F/G/K main-sequence star at the giant's [M/H] and parallax."""
+    sed, (blue, blue_error) = _giant_mock(sdm, 0.0, parallax, e)
+    star = StellarModel().evaluate(mass, 0.0, age, feh)
+    scale = (parallax / 100)**2
+    flux = sed.flux.copy()
+    flux[:64] += star["flux_10pc"][:64] * scale * np.exp(-e * extinction_curve(sdm.wavelength_um[:64]))
+    blue = blue + star["flux_10pc"][0] * scale * np.exp(CoolUV()(star["teff"][0], feh)[0] - e * sdm.blue_curve)
+    return SED(flux, sed.error, sed.mask, parallax, 0.03, "1"), (blue, blue_error), star
+
+
+def test_fg_main_sequence_companion_of_a_giant(sdm):
+    kw = dict(model=sdm, companions=("giant",), tiers=("H",), fit_parallax=True, extinction_prior=(0.15, 0.05),
+              fg_ms=True)
+    sed, blue, star = _fg_mock(sdm, 1.3, 2.0)           # a 6.9 kK, 1.5 Rsun F star
+    r = fit_subdwarf_companion(sed, blue=blue, **kw)
+    assert set(r["hypotheses"]) == {"giant", "sdb", "sdb+giant", "fg+giant"}
+    h = r["hypotheses"]["fg+giant"]
+    assert r["preferred"] == "fg+giant" and r["delta"]["sdb+giant"] > 15 and r["delta"]["giant"] > 40
+    assert abs(h["fg"]["teff"] - star["teff"][0]) < 400 and h["companion"]["kind"] == "giant"
+
+    sed, blue = _giant_mock(sdm, 0.2)                  # a 28 kK, 0.2 Rsun subdwarf
+    r = fit_subdwarf_companion(sed, blue=blue, **kw)
+    assert r["preferred"] == "sdb+giant" and r["delta"]["fg+giant"] > 25
+
+
 def test_inputs_outside_the_route_are_refused(sdm, stellar):
     sed, _ = _mock(sdm, stellar, (31000.0, 5.7, 0.16, "H"))
     galex = {"FUV": (15.0, 0.05, True), "NUV": (15.2, 0.03, True)}
@@ -201,6 +239,8 @@ def test_inputs_outside_the_route_are_refused(sdm, stellar):
         fit_subdwarf_companion(sed, model=sdm, companions=("whitedwarf",), extinction=0.0)
     with pytest.raises(ValueError):       # the hot main-sequence star is the giant's alternative to the sdB
         fit_subdwarf_companion(sed, model=sdm, companions=("dwarf",), extinction=0.0, hot_ms=True)
+    with pytest.raises(ValueError):
+        fit_subdwarf_companion(sed, model=sdm, companions=("dwarf",), extinction=0.0, fg_ms=True)
     with pytest.raises(ValueError):       # a fitted E needs one prior
         fit_subdwarf_companion(sed, model=sdm, companions=())
 

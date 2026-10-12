@@ -195,6 +195,31 @@ reported quantity over the profile points and the interpolated crossings
 within 1 of the minimum: a profile interval in Teff, not a marginal
 posterior.
 
+
+Two main-sequence alternatives to an sdB beside a giant share the giant's
+parallax and E.
+
+- **Hot star (`hot_ms`).** 7000--30000 K on the PARSEC isochrones through
+  `StellarModel(hot=True)`. Its blue XP channels and coarse spectrum come
+  from CK04 and TLUSTY spectra through the XP operator, relative to its
+  392 nm channel and calibrated on hot anchors (5 per cent on the blue
+  channels, 10 per cent on GALEX).
+- **F/G/K star (`fg_ms`).** From `StellarModel()`, coeval with the giant
+  and at its [M/H].
+  - Its blue XP channels are its 392 nm channel times an empirical colour
+    ln(F / F_392), the kernel-weighted median of 35 k APOGEE DR17 dwarfs
+    within 500 pc at E < 0.05. The table spans 4400--6900 K and [M/H] -1 to
+    0.5 (`models/stellar/cool_blue.npz`, `scripts/build_cool_blue.py`).
+  - Its error is the star-to-star scatter, 5--9 per cent at 5200--6800 K
+    and 11--14 per cent below 5200 K, plus 2 per cent in quadrature. On a
+    hold-out half the median residual is below 0.002 in ln.
+  - The 392 nm channel lies on Ca II H and K, so these colours do not
+    follow a blackbody.
+- **Separation from an sdB.** Between 6900 and 7000 K neither table applies.
+  On XP and blue XP alone an F star near 6800 K and an sdB beside the same
+  giant differ by only 30--60 in objective, so the UV is what separates
+  them.
+
 ## Limitations
 
 - Fits are exploratory local optima. No posterior uncertainty, calibrated
