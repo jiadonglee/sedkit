@@ -48,6 +48,7 @@ class Problem(eqx.Module):
     prior_mean: jax.Array  # (3,) prior means: log10(age/yr), primary logg, primary Teff
     prior_sigma: jax.Array  # (3,)
     prior_flag: jax.Array  # (3,) 0/1 for age, logg, Teff
+    pair: bool = eqx.field(static=True, default=True)  # False: q fixed at 0, primary only
 
 
 def _objective(theta, problem):
@@ -62,7 +63,7 @@ def _objective(theta, problem):
     z = jnp.clip(theta[5], bounds[5, 0], bounds[5, 1])
     parallax = problem.parallax_mas + z * problem.parallax_error_mas
 
-    prediction = stellar.evaluate(arr, mass, ratio, age, metal)
+    prediction = stellar.evaluate(arr, mass, ratio, age, metal, pair=problem.pair)
     attenuation = jnp.exp(-extinction * arr.extinction_curve)
     columns, variance = stellar.error_factors(
         arr, prediction.labels[0, 0], prediction.flux_10pc, (parallax / 100.0)**2)
@@ -391,7 +392,8 @@ def fit(sed, kind="both", *, model=None, age_gyr=5.0, feh=0.0, q=None,
                 1.0 if teff_prior is None else teff_prior[1]]),
             prior_flag=jnp.asarray([
                 float(age_prior is not None and age_gyr is None),
-                float(logg_prior is not None), float(teff_prior is not None)]))
+                float(logg_prior is not None), float(teff_prior is not None)]),
+            pair=binary)
 
         cfg = dict(binary=binary, age_free=age_gyr is None, feh_free=feh is None,
                    q_free=binary and q is None, extinction_free=extinction_free,

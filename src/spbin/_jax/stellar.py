@@ -1,7 +1,8 @@
 """Pure-JAX stellar forward model: PARSEC tracks, network, hot table, likelihood atoms.
 
-Every function here is compiled with fixed shapes: a coeval pair is always two
-components whose fluxes add with weight zero for a single star, channel masks
+Every function here is compiled with fixed shapes: a coeval pair is two
+components whose fluxes add with weight zero for a single star (a fit whose
+q is fixed at 0 compiles the one-component layout instead), channel masks
 are 0/1 weights, and the low-rank model-error basis always has all 12
 columns (4 per error term).
 Outside their domain the components return safe finite values and a `valid`
@@ -68,7 +69,7 @@ def bilinear(teff_ax, logg_ax, values, teff, logg):
 def track(arr, masses, age_gyr, feh):
     """Labels [Teff, M_Ks, G-Ks, [M/H]], log g and radius from the PARSEC grid.
 
-    masses is a fixed-length (2,) of component masses; returns per-component
+    masses is a fixed-length (n,) of component masses; returns per-component
     labels, logg, radius and a validity mask equal to the numpy NaN case.
     """
     k = jnp.clip(search(arr.metals, feh, side="right"), 1, arr.metals.shape[0] - 1)
@@ -102,7 +103,7 @@ def track(arr, masses, age_gyr, feh):
     log_radius = 0.5 * pars[:, 1] - 2 * jnp.log10(teff / SOLAR_TEFF)
     logg = SOLAR_LOGG + jnp.log10(masses) - 2 * log_radius
     labels = jnp.stack([teff, pars[:, 2], pars[:, 3] - pars[:, 2],
-                        jnp.full((2,), feh)], axis=1)
+                        jnp.full(masses.shape, feh)], axis=1)
     return labels, logg, 10**log_radius, valid
 
 
@@ -154,43 +155,44 @@ def in_hot_domain(arr, teff, logg, feh):
 
 
 class Evaluation(NamedTuple):
-    """Forward model of one coeval system on the fixed two-component layout."""
+    """Forward model of one coeval system on the n-component layout (n = 2, or 1)."""
 
-    labels: jax.Array  # (2, 4)
-    logg: jax.Array  # (2,)
-    radius: jax.Array  # (2,)
-    mg: jax.Array  # (2,)
-    hot_weight: jax.Array  # (2,)
-    components: jax.Array  # (2, 168)
+    labels: jax.Array  # (n, 4)
+    logg: jax.Array  # (n,)
+    radius: jax.Array  # (n,)
+    mg: jax.Array  # (n,)
+    hot_weight: jax.Array  # (n,)
+    components: jax.Array  # (n, 168)
     flux_10pc: jax.Array  # (168,)
     beta_g: jax.Array
     a_phot_over_a1: jax.Array
     valid: jax.Array
 
 
-def evaluate(arr, m1, q, age_gyr, feh):
+def evaluate(arr, m1, q, age_gyr, feh, pair=True):
     """One star (q=0) or a coeval pair on the fixed two-component layout.
 
     The second component participates only when q > 0; its flux and its
     domain checks are ignored for a single star, matching numpy's
-    one-component branch. Returns safe finite values with `valid` False
-    wherever numpy would return None.
+    one-component branch. pair=False (static) evaluates the primary alone
+    and ignores q, which gives the same result as q=0 without the second
+    track lookup and network pass. Returns safe finite values with `valid`
+    False wherever numpy would return None.
     """
-    masses = jnp.array([m1, m1 * jnp.maximum(q, 1e-30)])
+    masses = jnp.array([m1, m1 * jnp.maximum(q, 1e-30)] if pair else [m1])
     labels, logg, radius, track_valid = track(arr, masses, age_gyr, feh)
     weight = (smoothstep((labels[:, 0] - HOT_BLEND_K[0])
                          / (HOT_BLEND_K[1] - HOT_BLEND_K[0])) if arr.hot
-              else jnp.zeros((2,)))
+              else jnp.zeros(masses.shape))
     domain = jax.vmap(lambda row: in_domain(arr, row))(labels)
     component_ok = track_valid & ((weight == 1) | domain)
     if arr.hot:
         hot_domain = jax.vmap(lambda t, g: in_hot_domain(arr, t, g, feh))(labels[:, 0], logg)
         component_ok &= (weight == 0) | hot_domain
-    participate = q > 0
-    ok = component_ok[0] & (~participate | component_ok[1])
+    participate = (q > 0) & pair
+    ok = component_ok[0] & (~participate | component_ok[-1])
 
-    safe_labels = jnp.where(track_valid[:, None], labels,
-                            jnp.array([[5000.0, 4.0, 1.5, 0.0], [5000.0, 4.0, 1.5, 0.0]]))
+    safe_labels = jnp.where(track_valid[:, None], labels, jnp.array([5000.0, 4.0, 1.5, 0.0]))
     cool = jax.vmap(lambda row: predict_labels(arr, row))(safe_labels)
     if arr.hot:
         safe_teff = jnp.clip(labels[:, 0], arr.hot_box[0, 0], arr.hot_box[0, 1])
@@ -198,14 +200,14 @@ def evaluate(arr, m1, q, age_gyr, feh):
         safe_radius = jnp.where(track_valid, radius, 1.0)
         hot64 = jax.vmap(lambda t, g, r: predict_hot(arr, t, g, r))(
             safe_teff, safe_logg, safe_radius)
-        hot = jnp.zeros((2, arr.support.shape[0])).at[:, :HOT_CHANNELS].set(hot64)
+        hot = jnp.zeros((len(masses), arr.support.shape[0])).at[:, :HOT_CHANNELS].set(hot64)
         components = (1 - weight[:, None]) * cool + weight[:, None] * hot
     else:
         components = cool
     components = jnp.where(component_ok[:, None], components, 0.0)
     flux_10pc = components.sum(axis=0)
     mg = labels[:, 1] + labels[:, 2]
-    beta = jnp.where(participate, 10**(-0.4 * (mg[1] - mg[0])), 0.0)
+    beta = jnp.where(participate, 10**(-0.4 * (mg[-1] - mg[0])), 0.0)
     denominator = jnp.where(participate, q * (1 + beta), 1.0)
     a_phot = jnp.where(participate, (q - beta) / denominator, 0.0)
     return Evaluation(labels, logg, radius, mg, weight, components, flux_10pc,
