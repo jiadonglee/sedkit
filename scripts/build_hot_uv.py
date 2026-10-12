@@ -15,8 +15,10 @@ Stored per (Teff, log g) node, relative to the synthetic 392 nm XP channel of th
 A component's 392 nm channel (hot table, with its operator correction) times exp(ln_blue) gives its blue
 channels, so the table carries only the synthetic colour below 392 nm.
 
-The synthetic Balmer jump is too deep in XP: at 7-11 kK the observed 342-372 nm channels of the hot-table
-anchors lie 0.3-0.45 in ln above it, and 0-0.16 at 342-382 nm above 15 kK. `calibrate` fits that offset per blue
+The table starts at 6750 K so that a main-sequence star beside a giant meets the F/G/K colour table (CoolUV, to
+6900 K) without a gap. The synthetic Balmer jump is too deep in XP: at 7-11 kK the observed 342-372 nm channels
+of the hot-table anchors lie 0.3-0.45 in ln above it, and 0-0.16 at 342-382 nm above 15 kK. The anchors start at
+7000 K, so below the first node the offset is held at its value there. `calibrate` fits that offset per blue
 channel as the median residual in Teff bins of the training anchors (BLUE_BINS_K), interpolated linearly in
 log Teff between the bins' median Teff and held flat beyond, and reports the residuals of the held-out anchors.
 ANCHORS.csv holds the anchors' hot-table MAP labels (teff, logg, e = ZGR23 E), the holdout flag and the
@@ -42,9 +44,9 @@ from build_subdwarf_model import COARSE, N_BLUE, SCALE_10PC, XPOperator, _mean
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "src/sedkit/models/hot"
-TEFF_AX = np.arange(7000.0, 30001.0, 250.0)
+TEFF_AX = np.arange(6750.0, 30001.0, 250.0)
 LOGG_AX = np.arange(3.0, 4.7501, 0.25)
-CK04_TEFF = np.r_[np.arange(7000.0, 13001.0, 250.0), 14000.0, 15000.0]
+CK04_TEFF = np.r_[np.arange(6750.0, 13001.0, 250.0), 14000.0, 15000.0]
 CK04_LOGG = np.array([3.0, 3.5, 4.0, 4.5, 5.0])
 SEAM_T, SEAM_COLD = 15000.0, 11000.0
 SEAM_LOGG = np.array([3.5, 4.0, 4.5])

@@ -191,6 +191,12 @@ def test_hot_main_sequence_companion_of_a_giant(sdm):
     r = fit_subdwarf_companion(sed, blue=blue, **kw)
     assert r["preferred"] == "sdb+giant" and r["delta"]["ms+giant"] > 25
 
+    sed, blue, hot = _ms_mock(sdm, 1.4, 0.5)          # a 6.96 kK star below the hot route, from the network
+    r = fit_subdwarf_companion(sed, blue=blue, **kw)
+    h = r["hypotheses"]["ms+giant"]
+    assert r["preferred"] == "ms+giant" and r["delta"]["sdb+giant"] > 10
+    assert abs(h["ms"]["teff"] - hot["teff"][0]) < 250
+
 
 def test_cool_uv_table_reproduces_nodes():
     uv = CoolUV()

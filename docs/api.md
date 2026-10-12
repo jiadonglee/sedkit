@@ -251,7 +251,7 @@ and without `fgk` when `companions=("giant",)`), `delta` (each objective minus t
   `companion_feh` and `companion_mass` fix the dwarf's parameters.
 - With `"giant"`, two main-sequence alternatives to the sdB can be added.
   - `hot_ms=True` adds `ms+giant`: a hot star of solar [M/H] from
-    `StellarModel(hot=True)`, 7000--30000 K, whose blue XP and GALEX fluxes come
+    `StellarModel(hot=True)`, 6800--30000 K, whose blue XP and GALEX fluxes come
     from the hot UV table. It reports `ms`.
   - `fg_ms=True` adds `fg+giant`: an F/G/K star from `StellarModel()`, coeval
     with the giant and at its [M/H], whose blue XP channels come from an

@@ -36,8 +36,12 @@ IR_ERROR, BLUE_ERROR, GALEX_ERROR = 0.03, 0.05, 0.05
 COMPANION_UV_ERROR = 0.5
 # Fractional error of a hot main-sequence star's blue XP channels and GALEX fluxes from the hot UV table.
 MS_BLUE_ERROR, MS_GALEX_ERROR = 0.05, 0.10
+# The hot main-sequence star reaches down to MS_TEFF_MIN, where the F/G/K colour table (CoolUV) ends. Below
+# MS_ANCHOR_TEFF the hot UV table has no anchors (its offset is held at the first node); there its blue channels
+# lie up to 0.1 in ln above both CoolUV and APOGEE dwarfs at 6.8 kK, and carry MS_BLUE_ERROR_EDGE.
+MS_TEFF_MIN, MS_ANCHOR_TEFF, MS_BLUE_ERROR_EDGE = 6800.0, 7000.0, 0.12
 # Starting lattice of the hot main-sequence star of ms+giant: masses (Msun) and ages (Gyr).
-MS_MASSES = np.geomspace(1.5, 15.0, 14)
+MS_MASSES = np.geomspace(1.3, 15.0, 15)
 MS_AGES = 10**np.arange(-2.4, 0.61, 0.5)
 # Fractional error floor of an F/G/K main-sequence star's blue XP channels, added in quadrature to the star-to-star
 # scatter of the empirical colour table.
@@ -433,9 +437,9 @@ class _Problem:
     def hot_ms(self, mass, age, scale, e):
         """A hot star of solar [M/H] on the PARSEC isochrones through StellarModel(hot=True): XP61 and J/H/Ks
         from the hot route, its blue XP channels and coarse spectrum from the hot UV table times its 392 nm
-        channel. None below 7000 K or outside the route."""
+        channel. None below MS_TEFF_MIN or outside the route."""
         prediction = self.hot_stellar.evaluate(mass, 0.0, age, 0.0)
-        if prediction is None or prediction["teff"][0] < self.hot_stellar.hot_summary["support"]["teff"][0]:
+        if prediction is None or prediction["teff"][0] < MS_TEFF_MIN:
             return None
         teff, logg = float(prediction["teff"][0]), float(prediction["logg"][0])
         full = prediction["flux_10pc"] * scale
@@ -446,7 +450,8 @@ class _Problem:
         ln_blue, ln_coarse = self.hot_uv(teff, logg)
         blue = full[0] * np.exp(ln_blue - e * self.sdm.blue_curve)
         model_coarse = full[0] * np.exp(ln_coarse - e * self.sdm.coarse_curve)
-        xf, xv = self._extras(model_coarse, blue, MS_BLUE_ERROR, MS_GALEX_ERROR)
+        xf, xv = self._extras(model_coarse, blue, MS_BLUE_ERROR if teff >= MS_ANCHOR_TEFF else MS_BLUE_ERROR_EDGE,
+                              MS_GALEX_ERROR)
         columns_full, variance_full = self.hot_stellar.error_factors(prediction, scale)
         columns = np.zeros((len(self.y), columns_full.shape[1]))
         columns[:self.n_channel] = np.nan_to_num(columns_full[self.idx]) * att_full[self.idx, None]
@@ -790,7 +795,7 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     flux unless it is a giant, is a blackbody joined to its XP spectrum (COMPANION_UV_ERROR).
 
     hot_ms=True (with "giant" in companions) adds "ms+giant": the template giant plus a hot star of solar [M/H]
-    on the PARSEC isochrones through StellarModel(hot=True), 7000-30000 K and log g 3-4.75, with free mass and
+    on the PARSEC isochrones through StellarModel(hot=True), 6800-30000 K and log g 3-4.75, with free mass and
     age and its radius from the isochrone, at the shared parallax and extinction. Its blue XP channels and
     GALEX fluxes come from the hot UV table (HotUV: CK04 and TLUSTY through the XP operator, relative to its
     392 nm channel; MS_BLUE_ERROR, MS_GALEX_ERROR). The single giant is re-polished from it as from sdb+giant.
@@ -799,7 +804,7 @@ def fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"), tiers=TIERS
     through StellarModel, coeval with the giant and at its [M/H] (clipped to -1-0.5), with free mass and age. Its
     blue XP channels come from the empirical colour table of APOGEE dwarfs (CoolUV, 4400-7500 K; table scatter and
     FG_BLUE_FLOOR), its GALEX fluxes from a blackbody joined to XP (COMPANION_UV_ERROR). This is the cool
-    alternative to the sdB that the hot main-sequence star (>= 7000 K) does not cover.
+    alternative to the sdB below the hot main-sequence star (>= 6800 K), whose range it meets.
 
     Returns dict(hypotheses={"fgk" or "giant", "sdb", "sdb+dwarf", "sdb+subgiant", "sdb+giant", "ms+giant",
     "fg+giant"}, delta,

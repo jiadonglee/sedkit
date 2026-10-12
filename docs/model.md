@@ -199,11 +199,14 @@ posterior.
 Two main-sequence alternatives to an sdB beside a giant share the giant's
 parallax and E.
 
-- **Hot star (`hot_ms`).** 7000--30000 K on the PARSEC isochrones through
-  `StellarModel(hot=True)`. Its blue XP channels and coarse spectrum come
-  from CK04 and TLUSTY spectra through the XP operator, relative to its
-  392 nm channel and calibrated on hot anchors (5 per cent on the blue
-  channels, 10 per cent on GALEX).
+- **Hot star (`hot_ms`).** 6800--30000 K on the PARSEC isochrones through
+  `StellarModel(hot=True)`; below 7000 K the network supplies its fluxes.
+  - Its blue XP channels and coarse spectrum come from CK04 and TLUSTY spectra
+    through the XP operator, relative to its 392 nm channel and calibrated on
+    hot anchors (5 per cent on the blue channels, 10 per cent on GALEX).
+  - The anchors start at 7000 K, so below that the offset is held at the first
+    node. At 6.8 kK the blue channels then lie up to 0.1 in ln above CoolUV and
+    above APOGEE dwarfs, and carry 12 per cent error.
 - **F/G/K star (`fg_ms`).** From `StellarModel()`, coeval with the giant
   and at its [M/H].
   - Its blue XP channels are its 392 nm channel times an empirical colour
@@ -215,10 +218,10 @@ parallax and E.
     hold-out half the median residual is below 0.002 in ln.
   - The 392 nm channel lies on Ca II H and K, so these colours do not
     follow a blackbody.
-- **Separation from an sdB.** Between 6900 and 7000 K neither table applies.
-  On XP and blue XP alone an F star near 6800 K and an sdB beside the same
-  giant differ by only 30--60 in objective, so the UV is what separates
-  them.
+- **Separation from an sdB.** The two stars overlap at 6800--6900 K, so
+  every Teff from 4400 K to 30 kK has a main-sequence alternative. On XP and
+  blue XP alone an F star near 6800 K and an sdB beside the same giant differ
+  by only 30--60 in objective, so the UV is what separates them.
 
 ## Limitations
 
