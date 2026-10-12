@@ -182,22 +182,26 @@ def evaluate(arr, m1, q, age_gyr, feh):
                          / (HOT_BLEND_K[1] - HOT_BLEND_K[0])) if arr.hot
               else jnp.zeros((2,)))
     domain = jax.vmap(lambda row: in_domain(arr, row))(labels)
-    hot_domain = jax.vmap(lambda t, g: in_hot_domain(arr, t, g, feh))(labels[:, 0], logg)
-    component_ok = (track_valid & ((weight == 1) | domain)
-                    & ((weight == 0) | hot_domain))
+    component_ok = track_valid & ((weight == 1) | domain)
+    if arr.hot:
+        hot_domain = jax.vmap(lambda t, g: in_hot_domain(arr, t, g, feh))(labels[:, 0], logg)
+        component_ok &= (weight == 0) | hot_domain
     participate = q > 0
     ok = component_ok[0] & (~participate | component_ok[1])
 
     safe_labels = jnp.where(track_valid[:, None], labels,
                             jnp.array([[5000.0, 4.0, 1.5, 0.0], [5000.0, 4.0, 1.5, 0.0]]))
     cool = jax.vmap(lambda row: predict_labels(arr, row))(safe_labels)
-    safe_teff = jnp.clip(labels[:, 0], arr.hot_box[0, 0], arr.hot_box[0, 1])
-    safe_logg = jnp.clip(logg, arr.hot_box[1, 0], arr.hot_box[1, 1])
-    safe_radius = jnp.where(track_valid, radius, 1.0)
-    hot64 = jax.vmap(lambda t, g, r: predict_hot(arr, t, g, r))(
-        safe_teff, safe_logg, safe_radius)
-    hot = jnp.zeros((2, arr.support.shape[0])).at[:, :HOT_CHANNELS].set(hot64)
-    components = (1 - weight[:, None]) * cool + weight[:, None] * hot
+    if arr.hot:
+        safe_teff = jnp.clip(labels[:, 0], arr.hot_box[0, 0], arr.hot_box[0, 1])
+        safe_logg = jnp.clip(logg, arr.hot_box[1, 0], arr.hot_box[1, 1])
+        safe_radius = jnp.where(track_valid, radius, 1.0)
+        hot64 = jax.vmap(lambda t, g, r: predict_hot(arr, t, g, r))(
+            safe_teff, safe_logg, safe_radius)
+        hot = jnp.zeros((2, arr.support.shape[0])).at[:, :HOT_CHANNELS].set(hot64)
+        components = (1 - weight[:, None]) * cool + weight[:, None] * hot
+    else:
+        components = cool
     components = jnp.where(component_ok[:, None], components, 0.0)
     flux_10pc = components.sum(axis=0)
     mg = labels[:, 1] + labels[:, 2]
