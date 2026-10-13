@@ -1,12 +1,12 @@
 <p align="center">
   <img src="docs/assets/spbin-logo.png" width="280" alt="spbin logo">
 </p>
-<p align="center">Download and fit stellar spectral energy distributions.</p>
+<p align="center">Spectrophotometric binaries: fit Gaia XP and infrared SEDs of single stars and unresolved binaries.</p>
 
-spbin (spectrophotometric binaries) combines public Gaia DR3 XP spectra
-with Gaia-linked 2MASS and AllWISE photometry. Its stellar model is a
-hybrid SED emulator: a network trained on real spectra where stars with
-good labels exist, synthetic atmospheres calibrated on real stars where
+spbin fits single stars and unresolved binaries to public Gaia DR3 XP
+spectra combined with Gaia-linked 2MASS and AllWISE photometry. Its stellar
+model is a hybrid SED emulator: a network trained on real spectra where stars
+with good labels exist, synthetic atmospheres calibrated on real stars where
 they do not, and PARSEC stellar evolution tying both to mass, age and
 metallicity. It predicts absolute fluxes at the Gaia parallax for a single
 star or a coeval binary, tests red giants for hot companions, fits hot
