@@ -2080,8 +2080,29 @@
 
 <h1 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h1>
 <h2 id="observations">Observations<a class="headerlink" href="#observations" title="Permanent link">&para;</a></h2>
-<p><code>download(source_id, cache_dir="data", refresh=False)</code> returns an <code>SED</code>.
+<p><code>download(source_id, cache_dir="data", refresh=False, uv=False)</code> returns an <code>SED</code>.
 Alternatively use <code>download(ra=..., dec=..., radius_arcsec=2)</code>.</p>
+<p><code>uv=True</code> attaches archival GALEX, Swift/UVOT and XMM-OM crossmatches in
+<code>sed.metadata['uv']</code>. <code>download_uv(sed, cache_dir="data")</code> adds the same
+records to an existing SED. Save it with <code>sed.save(...)</code> to retain them.</p>
+<p><code>crossmatch_uv(sources, cache_dir="data/uv", catalogues=("galex", "swift", "xmm"),
+radius_arcsec=3, refresh=False)</code> accepts an Astropy Table with <code>source_id</code>,
+<code>ra</code>, <code>dec</code> in degrees and optional <code>pmra</code>, <code>pmdec</code> in mas/yr, <code>ref_epoch</code>
+in Julian years (default 2016). It returns records keyed by source ID.
+VizieR catalogues are <a href="https://cdsarc.cds.unistra.fr/ftp/II/335/ReadMe">GALEX GR6/7 AIS</a>,
+<a href="https://heasarc.gsfc.nasa.gov/w3browse/all/swuvotssc.html">UVOTSSC</a> and
+<a href="https://cdsarc.cds.unistra.fr/ftp/II/370/ReadMe">XMM-SUSS5.0</a>.
+Each keeps every matched observation, separation, AB magnitude, magnitude
+error and raw row. <code>usable</code> requires measured positive errors and clean
+quality flags; Swift/XMM also require point-source flags. GALEX applies
+the existing bright-source thresholds. Multiple distinct matched sources
+are marked <code>ambiguous</code> and their bands are excluded. ECSV tables and
+<code>uv.json</code> are cached; changed positions or radius require <code>refresh=True</code>.</p>
+<p>UV records are diagnostic photometry, separate from the 168 fitting
+channels. No catalogue match supplies no upper limit or coverage statement.
+Proper motion uses approximate observing epochs: 2007 for GALEX, 2007.5
+for Swift and 2010 for XMM. High-proper-motion associations need individual
+observation epochs; clean photometric flags do not establish a UV excess.</p>
 <p><code>SED(flux, error, mask, parallax_mas, parallax_error_mas=0, source_id="")</code>
 accepts a user's own observations. Arrays have 168 channels:
 XP61, J/H/Ks/W1/W2, SPHEREx102. Flux and error are in
