@@ -1,0 +1,2495 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Absolute-flux SED modelling for stars and binaries">
+      
+      
+      
+        <link rel="canonical" href="https://jiadonglee.github.io/spbin/validation-whitedwarf/">
+      
+      
+        <link rel="prev" href="../validation-subdwarf/">
+      
+      
+        <link rel="next" href="../extinction-validation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>White dwarfs - spbin</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#white-dwarf-validation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="spbin" class="md-header__button md-logo" aria-label="spbin" data-md-component="logo">
+      
+  <img src="../assets/spbin-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            spbin
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              White dwarfs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jiadonglee/spbin" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jiadonglee/spbin
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../en/" class="md-tabs__link">
+          
+  
+  
+  English
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../zh/" class="md-tabs__link">
+          
+  
+  
+  中文
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/" class="md-tabs__link">
+          
+  
+  
+  Technical reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../validation/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="spbin" class="md-nav__button md-logo" aria-label="spbin" data-md-component="logo">
+      
+  <img src="../assets/spbin-logo.png" alt="logo">
+
+    </a>
+    spbin
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jiadonglee/spbin" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jiadonglee/spbin
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    English
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    English
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data and downloads
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/stellar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stellar fitting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/companions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Companion models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/extinction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extinction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/orbits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orbits and likelihoods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/plotting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API signatures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ and examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中文
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    中文
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目介绍
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速开始
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    数据与下载
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/stellar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    恒星拟合
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/companions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    伴星模型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/extinction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消光
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/orbits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    轨道与联合似然
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/plotting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    绘图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API 签名
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    验证
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    适用范围
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zh/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题与示例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data provenance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gaia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gaia
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spherex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPHEREx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whitedwarf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    White dwarfs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extinction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extinction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../orbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Photocentre orbits
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../orblet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    orblet integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appearance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visual style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation-warm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Warm stars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation-hot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hot stars
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation-giant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Giants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation-subdwarf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subdwarfs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    White dwarfs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    White dwarfs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#anchors-and-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anchors and availability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-da-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single DA calibration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blue-xp-and-galex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blue XP and GALEX
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#null-checks-and-composite-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Null checks and composite recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-sequence-region-of-fit_star" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main-sequence region of fit_star
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orbits-and-injections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orbits and injections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extinction-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extinction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#anchors-and-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anchors and availability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-da-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single DA calibration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blue-xp-and-galex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blue XP and GALEX
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#null-checks-and-composite-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Null checks and composite recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-sequence-region-of-fit_star" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main-sequence region of fit_star
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orbits-and-injections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orbits and injections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="white-dwarf-validation">White-dwarf validation<a class="headerlink" href="#white-dwarf-validation" title="Permanent link">&para;</a></h1>
+<p>The DA route measures <code>beta_G = F_WD/(F_primary+F_WD)</code> and conditional
+light envelopes for photocentre-orbit calculations. Validation below
+uses the bundled <code>WhiteDwarfModel()</code>: Koester DA spectra calibrated on
+the absolute XP flux of real single DAs, with Bédard C/O-core cooling
+tracks. The criteria were recorded before fitting in the WD plan.
+The composite-detection thresholds of <code>fit_whitedwarf_companion</code> and of
+the main-sequence region of <code>fit_star</code> are calibrated on this model.</p>
+<p><img alt="DA, control, composite and orbit comparisons" src="../assets/whitedwarf-validation.png" /></p>
+<h2 id="anchors-and-availability">Anchors and availability<a class="headerlink" href="#anchors-and-availability" title="Permanent link">&para;</a></h2>
+<p>Gaia EDR3 identifiers are joined directly to DR3 <code>has_xp_continuous</code>.
+SDSS plate/MJD/fibre IDs use the proper-motion-aware crossmatch of
+Gentile Fusillo et al. (2021). Brightness does not replace the XP flag:
+DR3 contains an additional faint WD selection.</p>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th style="text-align: right;">Parameter rows</th>
+<th style="text-align: right;">With XP</th>
+<th style="text-align: right;">DA candidates in the model box</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manser et al. (2024), DESI DA</td>
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">1043</td>
+<td style="text-align: right;">974</td>
+</tr>
+<tr>
+<td>Kepler et al. (2021), SDSS DR16</td>
+<td style="text-align: right;">555</td>
+<td style="text-align: right;">425</td>
+<td style="text-align: right;">416</td>
+</tr>
+<tr>
+<td>Gianninas et al. (2011), MWDD</td>
+<td style="text-align: right;">1264</td>
+<td style="text-align: right;">1240</td>
+<td style="text-align: right;">1210</td>
+</tr>
+<tr>
+<td>Kilic et al. (2025), MWDD</td>
+<td style="text-align: right;">3146</td>
+<td style="text-align: right;">3060</td>
+<td style="text-align: right;">photometric labels</td>
+</tr>
+<tr>
+<td>Manser et al. (2024), DESI DB</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">outside the DA route</td>
+</tr>
+</tbody>
+</table>
+<p>The spectroscopic DA union has 2524 distinct sources, 2064 with
+Teff &gt;= 13 kK or catalogue 3D-corrected labels, and 2005 also passing
+RUWE &lt; 1.4 and parallax/error &gt; 10. These counts define availability.
+Kilic labels are photometric. SDSS DR16 gravities use a Gaia parallax
+constraint and omit 3D corrections; they are excluded from the
+spectroscopic calibration cohort.</p>
+<p>Additional checks find XP for 14852 of 16676 Gentile Fusillo high-probability
+(Pwd &gt; .75), parallax &gt; 10 mas candidates, and for all 9786 sources in
+the Shahaf non-class-I parent catalogue. The latter includes classes II
+and III, rather than exclusively class III or RV-confirmed WDs.
+The <a href="https://zenodo.org/records/14799795">updated Shahaf table</a> uses a
+64% red-probability threshold, giving 3145 no-colour-excess candidates;
+all have XP. The Nayak et al. (2024) sample is photometrically selected,
+not independent XP spectral decomposition, and is not included in the
+calibration or measured coverage counts.</p>
+<p>The SDSS WDMS comparison uses 478 distinct Gaia IDs matched by spectrum
+key to the author catalogue; 170 have XP and 156 have atmospheric labels
+within the DA box. The tested subset has 126 exact DA/M classifications,
+a reported M subtype and parallax/error &gt; 10. It is not the full SDSS
+WDMS population.</p>
+<h2 id="single-da-calibration">Single DA calibration<a class="headerlink" href="#single-da-calibration" title="Permanent link">&para;</a></h2>
+<p>The calibration uses 294 single DAs within 100 pc at |b| &gt; 30 degrees
+with DESI or Gianninas spectral labels, Gaia parallax and native
+Edenhofer extinction; 289 independent DAs at 100--150 pc with a
+reference mass test it. Known double stars are excluded. Cool labels
+use available 3D corrections, and folds are grouped by source ID.
+The correction is linear between seven knots in log Teff (7--80 kK)
+with a linear gravity term; it is fitted to absolute XP flux at the
+spectral labels and keeps each source's normalization. The out-of-fold,
+grey-normalized shape RMS is 6.20%. The absolute XP flux has median
+offset −0.22% and source scatter 10.1% out of fold, and +1.88% and
+13.9% on the independent stars.</p>
+<table>
+<thead>
+<tr>
+<th>Fit</th>
+<th>Sample</th>
+<th style="text-align: right;">Median Teff offset</th>
+<th style="text-align: right;">Robust scatter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free radius</td>
+<td>294, out of fold</td>
+<td style="text-align: right;">+0.61%</td>
+<td style="text-align: right;">3.86%</td>
+</tr>
+<tr>
+<td>Thick-H mass–radius relation</td>
+<td>294, out of fold</td>
+<td style="text-align: right;">+0.86%</td>
+<td style="text-align: right;">3.99%</td>
+</tr>
+<tr>
+<td>Free radius</td>
+<td>289 independent</td>
+<td style="text-align: right;">+1.22%</td>
+<td style="text-align: right;">3.36%</td>
+</tr>
+<tr>
+<td>Thick-H mass–radius relation</td>
+<td>289 independent</td>
+<td style="text-align: right;">+1.40%</td>
+<td style="text-align: right;">3.54%</td>
+</tr>
+</tbody>
+</table>
+<p>The mass–radius fits use extinction priors and catalogue parallax
+constraints and no spectral-label prior. Their mass offset is +0.013
+solar masses with scatter 0.039 out of fold and +0.009 with scatter
+0.053 on the independent stars. The reference mass is implied by
+spectral Teff/log g and the same cooling tracks; it is not a dynamical
+mass. The results meet the median-temperature &lt;= 3%, scatter &lt;= 8% and
+mass-scatter &lt;= 0.08 criteria.</p>
+<p>On the independent stars the mass–radius temperature offset is
++1.95% (scatter 2.76%) for 105 stars below 13 kK, +0.83% (3.97%) for
+128 at 13--25 kK and +1.39% (4.15%) for 48 at 25--40 kK. The eight
+stars above 40 kK give −6.9% and 8.8%; the calibration does not
+establish hot-WD precision.</p>
+<p>A physical-model comparison uses 84 pure-H
+<a href="https://archive.stsci.edu/hlsp/wd-grid">TLUSTY207 NLTE nodes</a> at 30--80 kK,
+log g 7--9.5, through the same XP forward operator. On seven hot
+spectroscopic anchors, raw Koester and raw TLUSTY spectra give
+temperature biases +17.9% and +19.8% with robust scatters 12.6% and
+11.8%; two raw TLUSTY fits reach the 80-kK grid boundary. Neither
+atmosphere family reaches 3% hot-temperature precision on XP; the runtime
+atmosphere remains the calibrated DA table.</p>
+<h2 id="blue-xp-and-galex">Blue XP and GALEX<a class="headerlink" href="#blue-xp-and-galex" title="Permanent link">&para;</a></h2>
+<p>The six XP channels at 332--382 nm carry their own calibrated correction
+and shape error. They are optional and are not validated as a default
+for composites: on the SDSS WD+M systems below, adding them changes the
+WD temperature scatter from 14.88% to 16.18%.</p>
+<p>The bundled FUV/NUV passband corrections come from 71 training DAs with
+clean GALEX measurements (61 FUV, 57 NUV), fitted at the spectral labels,
+cooling radius, Gaia parallax and native extinction. The log corrections
+are −0.206 (FUV) and −0.071 (NUV), with fractional model errors 11.6%
+and 15.1%. The anchors cover 6.8--41.4 kK. Matches propagate Gaia
+positions to 2007 and require proper motion &lt; 80 mas/yr, one candidate
+within 3 arcsec, no artifact/extraction flags, unsaturated magnitudes
+and magnitude errors &lt; 0.2. GALEX is not supplied by default. Outside
+the tested temperature range, the UV likelihood uses an adopted 0.5
+fractional model-error floor.</p>
+<h2 id="null-checks-and-composite-recovery">Null checks and composite recovery<a class="headerlink" href="#null-checks-and-composite-recovery" title="Permanent link">&para;</a></h2>
+<p>The detection statistic of <code>fit_whitedwarf_companion</code> is the better
+single-star objective minus the composite objective. Its threshold of 11
+is the first integer above the maximum statistic of 230 APOGEE
+RV-constant training controls, fitted on XP with free age and
+metallicity under a spectroscopic metallicity prior, a dust-map
+extinction prior and a fitted parallax. The independent sample contains
+200 new Gaia IDs, within 150 pc and |b| &gt; 30 degrees, with 4500--7000 K,
+log g &gt; 4.1, at least five good RVs, RV scatter &lt; 0.3 km/s and S/N &gt; 100.
+It shares no IDs with the training sample. The DA samples are fitted
+with their native extinction priors.</p>
+<table>
+<thead>
+<tr>
+<th>Sample</th>
+<th style="text-align: right;">Above 11</th>
+<th style="text-align: right;">One-sided 95% binomial upper bound</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>294 training DAs, out-of-fold calibration</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.01%</td>
+</tr>
+<tr>
+<td>289 independent DAs</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3.14%</td>
+</tr>
+<tr>
+<td>230 training FGK controls</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.29%</td>
+</tr>
+<tr>
+<td>200 independent FGK controls</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2.35%</td>
+</tr>
+</tbody>
+</table>
+<p>The independent samples give false-positive rates of 1.4% (DAs) and
+0.5% (FGK), but their 95% upper bounds exceed the 2% control-sample
+criterion. RV constancy and a DA classification do not prove that every
+control lacks a companion. The threshold applies to XP fits with these
+nuisance priors.</p>
+<p>On 126 SDSS DA/M systems, default solar-metallicity, 5-Gyr dwarf fits
+give a WD temperature offset of −0.86% and robust scatter 13.90%, meeting
+the 15% temperature criterion. Using the Pecaut/Mamajek temperature
+scale, inferred M subtype has a +0.62-subclass median offset and
+0.99-subclass robust scatter; 75/126 lie within one subclass. A reliable
+one-subclass estimate for every companion is not established.
+Only 39 systems have an accepted 2MASS band. Adding those data (14.88%
+scatter) or freeing the WD radius under a spectral gravity prior (16.35%)
+does not improve the full-sample temperature scatter. Broadening the extinction prior from 0.03 to
+0.10 E gives 20.12% WD temperature scatter and 76/126 subtypes within one
+subclass. Fitting metallicity with a 0.0 +/- 0.3 dex prior reduces the
+median subtype offset to +0.07 but increases its scatter to 1.19
+subclasses (75/126 within one); WD temperature scatter rises to 19.67%,
+with +3.55% median bias.
+The detection statistic exceeds 11 for 99/126; this is a catalogue-subset
+recovery fraction, not population completeness.</p>
+<p>For 123 systems with usable SDSS WD decomposition distances, transfer
+its WD angular normalization to Gaia G using the DA spectral shape.
+The median XP-minus-reference fraction is −0.0220, robust scatter
+0.0851, and 54/123 agree within 0.05. The median-bias criterion is met.
+Twenty-three normalization estimates exceed unity, showing the uncertainty
+and cross-observation systematics of this reference; they remain in the
+reported comparison and are not physical WD fractions. This normalization
+is independent of Gaia parallax but shares a DA atmosphere family;
+it is not independent atmospheric-model validation.
+Observed XP covers all but 0.37% of the G-passband weight.</p>
+<h2 id="main-sequence-region-of-fit_star">Main-sequence region of <code>fit_star</code><a class="headerlink" href="#main-sequence-region-of-fit_star" title="Permanent link">&para;</a></h2>
+<p>In the <code>ms</code> region <code>fit_star</code> compares a dwarf, a coeval MS+MS pair
+(free q, one component with fully correlated model errors) and DA+dwarf
+in the WD-route frame. <code>validate_ms.py</code> fits four samples with
+<code>fit_star(region="ms", fit_parallax=True)</code> on XP and accepted 2MASS
+JHKs, with free age (0.5--10 Gyr) and fitted extinction: the training
+controls under their dust-map moments, the other samples under
+0 +/- 0.03 E (the orbits under their literature reddening). The
+statistics are objective(dwarf) − objective(ms+ms) and
+objective(dwarf) − objective(wd+dwarf). Thresholds are the first integer
+above the training statistic that at most 2% of the training controls
+exceed; the controls are the APOGEE stars that <code>locate</code> places in the
+<code>ms</code> region with spectroscopic log g &gt; 4.1: 154 training and 197
+independent.</p>
+<table>
+<thead>
+<tr>
+<th>[M/H] in the fit</th>
+<th style="text-align: right;">Threshold ms+ms</th>
+<th style="text-align: right;">Independent above</th>
+<th style="text-align: right;">Threshold wd+dwarf</th>
+<th style="text-align: right;">Independent above</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>free, −1 to +0.5 (<code>feh=None</code>)</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">0/197 (95% bound 1.5%)</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">7/197 (3.6%)</td>
+</tr>
+<tr>
+<td>solar (<code>feh=0</code>, default)</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">1/197 (2.4%)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">29/197 (14.7%)</td>
+</tr>
+<tr>
+<td>spectroscopic +/- 0.1 dex</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">1/197 (2.4%)</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">3/197 (1.5%)</td>
+</tr>
+</tbody>
+</table>
+<p>With free [M/H], the ms+ms threshold of 59 holds the 2% criterion on the
+independent controls, and <code>fit_star</code> returns it in that configuration.
+No wd+dwarf threshold does: fixing [M/H] at solar lets a WD absorb
+metallicity mismatch (independent controls reach 89), and with free
+[M/H] the independent maximum, 23, lies above the training maximum, 13.
+A threshold on the training maximum would be 121 for ms+ms and 14 for
+wd+dwarf; set on the independent controls instead, the free-[M/H]
+thresholds would be 35 and 13. The 64 training stars at log g 3.9--4.1
+that <code>locate</code> places in the <code>ms</code> region stay below 49 (ms+ms) and 16
+(wd+dwarf).</p>
+<p>On the controls the free-[M/H] statistics have medians 7.4 (training) and
+1.5 (independent) for ms+ms, and 0.8 and 0.9 for wd+dwarf. The ms+ms pair
+has the same covariance determinant as the single dwarf, so its
+statistic is chi2 and prior terms only. Splitting light between a DA
+and a dwarf with independent model errors lowers the determinant:
+across the 351 controls this contributes a median 0.16 (95th percentile
+0.32, maximum 0.39) to the wd+dwarf statistic, against a chi2 term with
+median 0.65 and 95th percentile 7.9.</p>
+<p>Gaia DR3 SB2 orbits within 200 pc at |b| &gt; 20 degrees with XP and both
+semi-amplitudes measured to 20% give 805 systems; <code>locate</code> places 755
+in the <code>ms</code> region (24 giant, 25 unsupported, 1 hot). Their median RV
+mass ratio K_bright/K_faint is 0.95. Above the ms+ms threshold of 59
+with free [M/H] are 167/755 (22%): 4/53 at q &lt; 0.8, 31/139 at 0.8--0.9,
+44/173 at 0.9--0.95 and 88/390 above 0.95. For the detected systems the
+fitted q lies a median 0.08 below the RV ratio (5--95%: −0.22 to +0.06).
+Near-twin pairs have the shape of one star at twice its flux; at free
+age and [M/H] a single star accounts for most of them.</p>
+<p>The 29 Gaia/RV-consistent Yamaguchi et al. (2024) WD+MS orbits are the
+dwarf-dominated WD composites of this region: 28 are placed in <code>ms</code>, one
+lacks Ks. Their fitted WD G fractions have median 0.011, and the
+wd+dwarf statistic stays below 9.3 for all of them. A WD that
+contributes about one per cent of the G light is not detected by the SED
+in this region; <code>whitedwarf_light_limit</code> bounds its light instead.
+The 126 SDSS DA/M systems are WD-dominated (fitted beta_G 0.67--0.97).
+<code>locate</code> places 62 in the <code>wd</code> region from M_G and BP-RP alone and 1 in
+<code>ms</code>; 48 are unsupported for lack of an accepted Ks, and 15 fall below
+the supported main sequence. In the <code>ms</code> frame
+their wd+dwarf statistic is at least 121. Without 2MASS, such systems
+need <code>region="wd"</code>, where the <code>fit_whitedwarf_companion</code> statistic and
+its threshold apply.</p>
+<h2 id="orbits-and-injections">Orbits and injections<a class="headerlink" href="#orbits-and-injections" title="Permanent link">&para;</a></h2>
+<p>The Yamaguchi et al. (2024) sample contains 31 XP sources. Two Gaia
+orbits, J1834+1525 and J1922-4624, disagree with follow-up RVs in the
+paper and are excluded from the 29-system consistency comparison.
+The profile uses the literature joint WD mass, fitted primary age,
+shared parallax/extinction and literature metallicity/reddening.
+The primary is refitted at each WD temperature. Extinction converts
+A_V = 3.1 E(B-V) to native E, with an adopted 0.03 E prior width.</p>
+<p>The operational envelope uses delta=9 and retains disconnected regions.
+A zero-light orbit mass and the mass at its allowed WD G-light ratio
+are evaluated at the same literature primary mass and DR3 orbit.
+All 31 sources have accepted 2MASS measurements. For the 29 consistent
+orbits, the median beta_G envelope is 0.0182. The median permitted mass
+shift is 0.0373 solar masses, ranging from 0.0080 to 0.1204. Only 6/29
+meet the 0.02 criterion; XP alone gives 5/29 and a 0.0370 median.
+Adding 2MASS therefore does not solve this precision shortfall. A coeval
+MS companion at the literature WD mass, fitted with the primary as one
+component with fully correlated model errors, is rejected at delta&gt;9 in
+28/29 cases. These are conditional, fixed-orbit comparisons, not a joint
+SED/RV/astrometry posterior or independent WD confirmation.</p>
+<p>Measured total GALEX light adds a one-sided WD-only UV constraint, without
+using the primary's UV continuation. Gaia positions are propagated to
+2007; proper motion &lt;300 mas/yr, a unique match within 3 arcsec, clean
+artifact/extraction flags, unsaturated magnitudes and errors &lt;0.2 are
+required. GR6/7 AIS supplies 10 systems, nine of them Gaia/RV consistent.
+GR5 MIS adds no usable bands; its magnitudes are converted to the GR6
+scale by +0.033 FUV and +0.043 NUV, following the
+<a href="https://www.galex.caltech.edu/researcher/data.html">GALEX calibration notes</a>.</p>
+<p>The cap is observed total flux plus three measurement errors. The WD
+lower UV prediction includes three model-error allowances, with an
+adopted 0.5 log-flux floor outside the calibrated 6.8--41.4 kK range.
+Extinction and parallax are refitted under the bound. Both sides of that
+UV calibration range are sampled, retaining high-temperature allowed
+islands. Six of the nine consistent systems with UV meet the 0.02 mass
+criterion, with median mass shift 0.0112 solar masses. Across all 29
+consistent systems, retaining the XP+2MASS envelope where UV is absent,
+11/29 meet it and the median is 0.0247 solar masses. The remaining 20
+have no usable UV measurement; no survey-depth bound is assigned.
+These remain conditional envelopes, rather than calibrated 95% limits.</p>
+<p>There are 48 injection fits: 36 WD+M and 12 FGK+WD, with 2% measurement
+noise, matched models or a 5% temperature-scale shift, thin-H cooling,
+and an offset extinction prior. The largest composite G-fraction error
+is 0.012 (0.008 with matched models). All 12 dark profiles contain the
+injected G fraction and orbit mass, a small conditional check rather
+than calibrated confidence coverage. Thin-H injections fitted with
+thick-H models have a median WD mass offset of +0.08 solar masses. Both cooling choices are therefore
+exposed for sensitivity comparisons.</p>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Precise hot-WD temperatures above 40 kK, all companion subtypes and
+  universally negligible WD light in photocentre orbits are not established.
+  The remaining orbit mass uncertainty must be carried into analysis.</li>
+<li>Atmospheres are nonmagnetic DA. DB/DC/DQ/DZ, magnetic WDs, helium-core
+  cooling, gravities below 7, Teff below 6 kK, double degenerates and triples
+  need other models. Low-mass C/O-track results remain conditional on core
+  composition; they do not establish helium-core masses or cooling ages.</li>
+<li>The envelope's delta threshold is not a 95% WD-light upper limit.
+  Its domain, error model, mass grid and extinction prior affect the result.
+  A comparison against one specified coeval MS mass excludes only that
+  hypothesis. Astrometric selection and spectral fits do not confirm a WD
+  by themselves.</li>
+<li>Composite detection has no threshold that holds a 2% false-positive
+  rate for wd+dwarf in the <code>ms</code> region, and the WD-route threshold of 11
+  has 95% upper bounds of 2.4--3.1% on the independent controls. The
+  ms+ms threshold recovers 22% of Gaia SB2s; near-twin pairs and q &lt; 0.8
+  companions mostly stay below it. Thresholds hold only in their
+  calibrated data and nuisance configuration.</li>
+<li>SDSS WDMS labels, angular normalizations and M-subtype scales have their
+  own systematics; fibre/epoch differences, unresolved blending and
+  irradiated companions can affect comparisons. WD-only UV correction
+  does not validate the dwarf's blackbody UV continuation in composites.</li>
+<li>W1/W2 and SPHEREx beyond 3 microns are unsupported. Short SPHEREx
+  channels have atmosphere predictions but no WD empirical calibration.</li>
+</ul>
+<h2 id="reproduction">Reproduction<a class="headerlink" href="#reproduction" title="Permanent link">&para;</a></h2>
+<p>The runtime tables are bundled in <code>src/spbin/models/whitedwarf/</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
