@@ -1,0 +1,87 @@
+site_name: spbin
+site_description: Absolute-flux SED modelling for stars and binaries
+site_url: https://jiadonglee.github.io/spbin/
+repo_url: https://github.com/jiadonglee/spbin
+repo_name: jiadonglee/spbin
+edit_uri: edit/main/docs/
+theme:
+  name: material
+  logo: assets/spbin-logo.png
+  font: false
+  palette:
+    - scheme: default
+      primary: custom
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+plugins:
+  - search:
+      lang: [en, zh]
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+extra_css:
+  - stylesheets/extra.css
+nav:
+  - Home: index.md
+  - English:
+      - Overview: en/index.md
+      - Getting started: en/getting-started.md
+      - Data and downloads: en/data.md
+      - Stellar fitting: en/stellar.md
+      - Companion models: en/companions.md
+      - Extinction: en/extinction.md
+      - Orbits and likelihoods: en/orbits.md
+      - Plotting: en/plotting.md
+      - API signatures: en/api.md
+      - Validation: en/validation.md
+      - Limitations: en/limitations.md
+      - FAQ and examples: en/faq.md
+  - 中文:
+      - 项目介绍: zh/index.md
+      - 快速开始: zh/getting-started.md
+      - 数据与下载: zh/data.md
+      - 恒星拟合: zh/stellar.md
+      - 伴星模型: zh/companions.md
+      - 消光: zh/extinction.md
+      - 轨道与联合似然: zh/orbits.md
+      - 绘图: zh/plotting.md
+      - API 签名: zh/api.md
+      - 验证: zh/validation.md
+      - 适用范围: zh/limitations.md
+      - 常见问题与示例: zh/faq.md
+  - Technical reference:
+      - API: api.md
+      - Models: model.md
+      - Data provenance: data.md
+      - Gaia: gaia.md
+      - SPHEREx: spherex.md
+      - White dwarfs: whitedwarf.md
+      - Extinction: extinction.md
+      - Photocentre orbits: orbit.md
+      - orblet integration: orblet.md
+      - Visual style: appearance.md
+  - Benchmarks:
+      - Overview: validation.md
+      - Warm stars: validation-warm.md
+      - Hot stars: validation-hot.md
+      - Giants: validation-giant.md
+      - Subdwarfs: validation-subdwarf.md
+      - White dwarfs: validation-whitedwarf.md
+      - Extinction: extinction-validation.md

@@ -32,7 +32,7 @@ Their PARSEC Teff lies 6 and 51 K below IRFM at 6000--6500 and 6500--7000 K
 and 135 K below at 7000--7500 K. The network reproduces the SED shapes;
 the PARSEC isochrone at the literature cluster age is hotter than these
 stars at their luminosity. An unresolved companion gives the same free-age
-signature (see the [warm-primary notebook](../examples/03_warm_binaries.ipynb)), but freeing the age lowers chi2
+signature (see the [warm-primary notebook](https://github.com/jiadonglee/spbin/blob/main/examples/03_warm_binaries.ipynb)), but freeing the age lowers chi2
 by more than 20 per cent for 19 of 26 stars at 6500--7000 K and all 15 at
 7000--7500 K, with fitted ages within 1.1--1.7 Gyr (interquartile): a
 common offset rather than a binary subset. Below 7000 K the offset comes

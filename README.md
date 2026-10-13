@@ -417,6 +417,8 @@ comparing zero-extinction and Edenhofer-prior fits of a real SB2.
 
 ## Documentation
 
+[Website](https://jiadonglee.github.io/spbin/) · [English guide](https://jiadonglee.github.io/spbin/en/) · [中文文档](https://jiadonglee.github.io/spbin/zh/)
+
 - [API](docs/api.md): observations, predictions and fitting options.
 - [Model and limitations](docs/model.md): physical assumptions and support.
 - [Extinction](docs/extinction.md): fitting E with an Edenhofer 3D dust prior.

@@ -28,7 +28,7 @@ arguments, cache reuse and explicit refresh.
 
 ## Example notebooks
 
-On 2026-10-08, the first three [example notebooks](../examples) executed top to bottom
+On 2026-10-08, the first three [example notebooks](https://github.com/jiadonglee/spbin/tree/main/examples) executed top to bottom
 with Python 3.11, the warm network and the 2MASS training scale; the
 cached SEDs were rebuilt from the cached catalogue products. The SB2 fit
 gives q=0.840 against the Gaia NSS RV ratio 0.868 (binary chi2/N 1.02).
@@ -41,13 +41,13 @@ giants and companion injections.
 
 The [warm-star validation](validation-warm.md) records the warm-network,
 cluster, binary-mock and vertical-action checks in
-[notebook 03](../examples/03_warm_binaries.ipynb).
+[notebook 03](https://github.com/jiadonglee/spbin/blob/main/examples/03_warm_binaries.ipynb).
 The [hot-star validation](validation-hot.md) records the hot-route holdout,
 CALSPEC and end-to-end anchor fits and the network seam.
 
 ## Extinction and parallax
 
-On 2026-10-03, [notebook 05](../examples/05_extinction_parallax.ipynb)
+On 2026-10-03, [notebook 05](https://github.com/jiadonglee/spbin/blob/main/examples/05_extinction_parallax.ipynb)
 ran top to bottom on Garching with Python 3.12 and the full Edenhofer
 posterior-sample map. It compares fixed E/parallax, fitted E at fixed
 parallax and jointly fitted E/parallax, showing parameters, absolute SEDs

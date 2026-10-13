@@ -12,3 +12,6 @@ cache/
 
 # Analysis reports, paper plans and run outputs stay local
 reports/
+
+# Generated documentation
+site/

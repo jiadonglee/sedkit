@@ -20,9 +20,9 @@ Recreate the scientific figures from the repository root:
 python scripts/plot_readme.py
 ```
 
-The [plotting script](../scripts/plot_readme.py) reads the saved observations,
+The [plotting script](https://github.com/jiadonglee/spbin/blob/main/scripts/plot_readme.py) reads the saved observations,
 model fluxes, masks and prior moments for Gaia DR3 `858860697467058688` in
-[the real-map example](../examples/results/extinction_20261003).
+[the real-map example](https://github.com/jiadonglee/spbin/tree/main/examples/results/extinction_20261003).
 It requires no new fitting, catalogue acquisition or dust-map loading.
 The prior curves are input constraints evaluated at the fitted distances,
 not posterior uncertainty distributions. See [the extinction method](extinction.md).

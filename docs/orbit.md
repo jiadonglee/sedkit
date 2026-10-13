@@ -55,7 +55,7 @@ python -m spbin.orbit --amrf 0.14 --m1 0.50
 
 ## Two observed candidates
 
-The [notebook](../examples/02_gaia_orbit_twin.ipynb) applies the three checks to two
+The [notebook](https://github.com/jiadonglee/spbin/blob/main/examples/02_gaia_orbit_twin.ipynb) applies the three checks to two
 Gaia DR3 astrometric substellar candidates with radial-velocity follow-up,
 from downloaded XP and 2MASS photometry.
 
@@ -142,7 +142,7 @@ which the SED decides between.
 This is the check of Sect. 6 of Li et al. (XPS paper, in preparation), where
 the spectra also include SPHEREx.
 
-[API](api.md) · [README](../README.md)
+[API](api.md) · [README](https://github.com/jiadonglee/spbin/blob/main/README.md)
 
 ## Faint white-dwarf companions
 

@@ -8,7 +8,7 @@ All 33 package tests pass locally; an extracted wheel also loads the bundled
 stellar assets and extinction curve.
 
 The target is Gaia DR3 `858860697467058688`, the SB2 in
-[example 01](../examples/01_sed_fit.ipynb), at a catalogue distance of 91.10 pc.
+[example 01](https://github.com/jiadonglee/spbin/blob/main/examples/01_sed_fit.ipynb), at a catalogue distance of 91.10 pc.
 Both hypotheses use the same 64 XP+2MASS channels; W1/W2 are held out.
 Age is fixed at 5 Gyr and [M/H] at zero. Both fits explicitly use
 `fit_parallax=True`, retaining the catalogue Gaussian constraint. The stellar network and fractional model covariance
@@ -26,10 +26,10 @@ parallax bound. Neither dust-constrained fit reaches a fitted-parameter bound.
 Assertions confirm unchanged observation arrays and identical single/binary
 masks; fitted components sum to the attenuated system flux.
 
-The [runnable script](../examples/04_extinction_prior.py) produces
+The [runnable script](https://github.com/jiadonglee/spbin/blob/main/examples/04_extinction_prior.py) produces
 `summary.json`, `sed.npz`, `fits.npz`, `sed_comparison.png/.pdf` and
-`dust_prior.png/.pdf`. The [saved result](../examples/results/extinction_20261003/summary.json)
-and [SED comparison](../examples/results/extinction_20261003/sed_comparison.png)
+`dust_prior.png/.pdf`. The [saved result](https://github.com/jiadonglee/spbin/blob/main/examples/results/extinction_20261003/summary.json)
+and [SED comparison](https://github.com/jiadonglee/spbin/blob/main/examples/results/extinction_20261003/sed_comparison.png)
 retain this experiment. `dust_prior_sigma` is the map-prior width, not an
 uncertainty on the fitted E or q.
 
