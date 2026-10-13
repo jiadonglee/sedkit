@@ -3,8 +3,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel
-from sedkit.orbit import amrf, amrf_observed, dark_mass_ratio, rank_roots, solve_amrf, solve_orbit
+from spbin import SED, StellarModel
+from spbin.orbit import amrf, amrf_observed, dark_mass_ratio, rank_roots, solve_amrf, solve_orbit
 
 FIXTURES = Path(__file__).parent / "fixtures"
 

@@ -1,6 +1,6 @@
 # Real-map extinction check
 
-Checked on 2026-10-03 with the installed sedkit package, Python 3.12.9,
+Checked on 2026-10-03 with the installed spbin package, Python 3.12.9,
 and dustmaps 1.0.14 on Garching. The complete Edenhofer main posterior-sample
 map was downloaded from the official Zenodo record and loaded with
 `integrated=True, load_samples=True`. Its size is 19,516,121,280 bytes.

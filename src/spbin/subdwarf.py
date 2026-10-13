@@ -2,7 +2,7 @@
 
 The subdwarf is a Tuebingen TMAP spectrum (TheoSSA) in one of three helium tiers, passed through the Gaia XP
 forward model of the hot table and tabulated for R = 1 Rsun at 10 pc. Its radius is free; M = g R**2 / G
-follows from log g. The companion is a sedkit FGKM dwarf (PARSEC mass, age and [M/H] through the J-CAPS
+follows from log g. The companion is a spbin FGKM dwarf (PARSEC mass, age and [M/H] through the J-CAPS
 network), a subgiant from the empirical GiantTemplate (log g 3.2-3.8, free scale with its implied mass held to
 0.7-3 Msun), or absent. The stars share the parallax and ZGR23 extinction and nothing else.
 fit_subdwarf_companion compares a single FGK star, a single subdwarf and subdwarf + companion on one data vector.
@@ -57,7 +57,7 @@ def _planck(wave_nm, teff):
 class SubdwarfModel:
     """TMAP subdwarf channel tables with the XP operator correction of the hot table.
 
-    predict(teff, logg, radius, tier) returns absolute 10-pc fluxes on the 168 sedkit channels, the six XP
+    predict(teff, logg, radius, tier) returns absolute 10-pc fluxes on the 168 spbin channels, the six XP
     channels at 332-382 nm and a 2 nm spectrum over 130-1100 nm. Teff and log g outside a tier's table
     raise ValueError: the table is not extrapolated. correction="a" applies the per-channel XP operator
     offset of the hot table, "ab" adds its Balmer-index term, None neither. calibration="bundled" adds the

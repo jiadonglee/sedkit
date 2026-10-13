@@ -19,7 +19,7 @@
   "channels": "XP61 + J/H/Ks (64); W1/W2 and SPHEREx are not predicted",
   "units": "ln F_lambda at 10 pc for R = 1 Rsun, 1e-18 W m^-2 nm^-1",
   "grids": "CK04 (Castelli & Kurucz 2003) below 15 kK, TLUSTY BSTAR2006 15-29 kK, solar",
-  "extinction": "ZGR23 E (the sedkit curve) in the calibration",
+  "extinction": "ZGR23 E (the spbin curve) in the calibration",
   "anchors": "hot anchors (RV-constant and SB1, screened) and J-CAPS 1 kpc IRFM dwarfs at 7000-7500 K",
   "holdout_median_rms": {
     "7.5-11.5 kK": {

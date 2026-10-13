@@ -5,8 +5,8 @@ real-data validation is in docs/validation-whitedwarf.md.
 """
 
 import numpy as np
-from sedkit import SED, StellarModel, WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
-from sedkit.orbit import photocentre_a0, solve_dark_companion
+from spbin import SED, StellarModel, WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
+from spbin.orbit import photocentre_a0, solve_dark_companion
 
 wd = WhiteDwarfModel()
 stellar = StellarModel()

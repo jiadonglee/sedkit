@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel, WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
-from sedkit import loglike_whitedwarf_sed
-from sedkit.orbit import photocentre_a0, solve_dark_companion, solve_luminous_pair
+from spbin import SED, StellarModel, WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
+from spbin import loglike_whitedwarf_sed
+from spbin.orbit import photocentre_a0, solve_dark_companion, solve_luminous_pair
 
 
 @pytest.fixture(scope="module")
@@ -152,7 +152,7 @@ def test_uv_total_flux_bound_refines_temperature_boundary(wd):
 
 
 def test_uv_bound_refits_shared_extinction(wd):
-    from sedkit.extinction import extinction_curve
+    from spbin.extinction import extinction_curve
     primary=StellarModel().evaluate(.9,0,5,0)["flux_10pc"]
     pred=wd.predict(18000,.6)
     flux=.01*(primary+pred["flux"])*np.exp(-.15*extinction_curve(wd.wavelength_um))
@@ -167,7 +167,7 @@ def test_uv_bound_refits_shared_extinction(wd):
 
 
 def test_uv_fit_error_outside_calibration_temperature_range(wd):
-    from sedkit.whitedwarf import _prepare
+    from spbin.whitedwarf import _prepare
     sed,_,_,_=mock(wd,teff=60000)
     p=_prepare(sed,wd,None,0.,None,None,None,False,None,{"FUV":(18.,.05,True)},False,None,None)
     hot=p.white_dwarf(60000,.6,None,None,.01,0.)

@@ -80,7 +80,7 @@ below, against 68 per cent for a one-sigma interval.
 
 **The spectroscopic scale.** For the 52 stars in both Dawson et al. and
 Luo et al. (2021), Dawson's Teff lie 1.05 kK below Luo's, with 1.07 kK
-scatter. The correction is fitted on Dawson's scale, and so are sedkit Teff:
+scatter. The correction is fitted on Dawson's scale, and so are spbin Teff:
 44 faint Luo subdwarfs (the GALEX sample below) fit 1.3 kK under Luo's
 Teff. A spectroscopic
 Teff prior needs to be on this scale (see item 2).
@@ -155,8 +155,8 @@ them. SPHEREx is therefore off by default in `fit_subdwarf_companion`.
 **Against the blackbody limits.** The prestudy's 3-sigma limits on a 3500 K
 blackbody companion are R < 0.04--0.17 Rsun (0.49 for J150109). A 3500 K
 dwarf (about 0.37 solar masses, R = 0.36 Rsun at 5 Gyr) is excluded by the
-sedkit limit for 16 of the 20 prestudy stars without SPHEREx and for all but
-J150109 with it, as by the blackbody fits. The sedkit limits are weaker
+spbin limit for 16 of the 20 prestudy stars without SPHEREx and for all but
+J150109 with it, as by the blackbody fits. The spbin limits are weaker
 in radius: the subdwarf's Teff is free here, where the blackbody fits fixed
 it at the spectroscopic value.
 
@@ -193,7 +193,7 @@ companion, M_sdB = q M_MS is 0.517 solar masses (16--84 per cent
 **XP below 392 nm in composites.** Fitted again with the six blue
 channels, the same systems shift: the subdwarf 1.1 kK cooler (scatter
 3.3 kK), the companion 30--80 K cooler, beta_G 0.012 higher (scatter
-0.019), and sedkit minus (1 - Dil) from +0.06 to +0.11. The companion's
+0.019), and spbin minus (1 - Dil) from +0.06 to +0.11. The companion's
 flux below 392 nm is a blackbody joined to its 392--412 nm flux, which
 overstates an F or G star below the Balmer jump. The blue channels are
 therefore validated for single subdwarfs (item 1) and not for composites.
@@ -205,19 +205,19 @@ therefore validated for single subdwarfs (item 1) and not for composites.
 The subdwarf's share of the light at the wavelengths of each external
 measurement, from the item-3 fits:
 
-| System | sedkit beta_G | Vos et al. SED beta_G | Prestudy XP beta_G | 6720--6800 A: sedkit / XTgrid | MRS blue: sedkit / dilution | MRS red: sedkit / dilution | 6000--6260 A: sedkit / Molina |
+| System | spbin beta_G | Vos et al. SED beta_G | Prestudy XP beta_G | 6720--6800 A: spbin / XTgrid | MRS blue: spbin / dilution | MRS red: spbin / dilution | 6000--6260 A: spbin / Molina |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | BD+34 1543 | 0.34 | 0.29--0.39 | 0.41 (0.35--0.48) | 0.25 / 0.57 | 0.40 / 0.38 | 0.26 / 0.14 | 0.29 / 0.40 |
 | BD+29 3070 | 0.30 | 0.33--0.41 | 0.28 (0.22--0.33) | 0.22 / 0.58 | 0.34 / 0.41 | 0.23 / 0.31 | 0.25 / 0.30 |
 | TYC 3871-835-1 (Bal 82800003) | 0.41 (0.37--0.44) | | 0.31 (0.26--0.36) | | 0.48 / 0.32 | 0.33 / -0.07 | 0.37 / 0.39 |
 | HDE 283048 | 0.44 | | 0.33 (0.28--0.63) | | 0.53 / 0.43 | 0.37 / 0.20 | |
 
-Ranges are the Teff-profile ranges (sedkit) and the spread of the prestudy's
+Ranges are the Teff-profile ranges (spbin) and the spread of the prestudy's
 six decomposition routes; the line-dilution fractions carry +-0.15 (blue)
-and +-0.25 (red) per star. sedkit agrees with the SED scales of Vos et al.
+and +-0.25 (red) per star. spbin agrees with the SED scales of Vos et al.
 and the prestudy to 0.11 and with the blue-arm dilution to 0.02--0.16; at
 6720--6800 A it is 0.32 and 0.36 below the XTgrid decomposition of
-Vos et al. For all 29 Molina systems with XP, sedkit minus (1 - Dil) at
+Vos et al. For all 29 Molina systems with XP, spbin minus (1 - Dil) at
 6000--6260 A is +0.06 with 0.13 scatter. For TYC 3871-835-1 the fitted
 subdwarf is cool and large (23.5 kK, 1.3 solar masses at log g 5.6);
 without the subdwarf correction the fit gives 32 kK and beta_G = 0.34, and
@@ -243,7 +243,7 @@ comparison of M_sdB from a0 with M_sdB from q and K therefore waits for
 those orbits. The test made instead combines the DR3 orbit, the NSS
 parallax and the SED:
 
-| System | a0 (mas) | i | SED M_c | SED beta_G | M_sdB, B < beta | M_sdB, B > beta | beta for M_sdB = 0.47 | 6000--6260 A: sedkit / Molina |
+| System | a0 (mas) | i | SED M_c | SED beta_G | M_sdB, B < beta | M_sdB, B > beta | beta for M_sdB = 0.47 | 6000--6260 A: spbin / Molina |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | GALEX J22058-3519 | 0.83 +- 0.15 | 28 deg | 0.85 | 0.74 | 0.59 +- 0.22 | 9.4 | 0.70 | 0.70 / 0.57 |
 | EC 11383-2238 | 0.45 +- 0.16 | 131 deg | 1.02 | 0.56 | 0.51 +- 0.22 | 2.8 | 0.55 | 0.52 / 0.32 |

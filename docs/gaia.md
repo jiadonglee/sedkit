@@ -1,12 +1,12 @@
 # Gaia batch downloads
 
-Install `sedkit[download]`. Two APIs cover catalogue selection and native
+Install `spbin[download]`. Two APIs cover catalogue selection and native
 DataLink products. The existing `download(source_id)` still returns one
 calibrated `SED`; `download_gaia` returns raw product files for catalogue-scale
 work, including joint XP/RVS/astrometry analysis.
 
 ```python
-from sedkit import query_gaia, download_gaia
+from spbin import query_gaia, download_gaia
 
 catalogue = query_gaia("""
     SELECT TOP 100 source_id, parallax, phot_g_mean_mag, bp_rp,

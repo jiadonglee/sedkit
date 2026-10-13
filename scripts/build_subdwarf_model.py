@@ -10,8 +10,8 @@ A few TheoSSA models sit 2-11 per cent off their neighbours in flux; the table s
 nodes by their log g neighbours and lists them in summary.json.
 
 Each spectrum passes through the J-CAPS phase-0 forward model of the Gaia XP external calibration
-(transfer.json, the operator of the hot table) on 332-992 nm in 10 nm steps: the 61 sedkit XP channels and
-six channels below 392 nm. J/H/Ks/W1/W2 are sampled at the sedkit wavelengths, as in the hot table;
+(transfer.json, the operator of the hot table) on 332-992 nm in 10 nm steps: the 61 spbin XP channels and
+six channels below 392 nm. J/H/Ks/W1/W2 are sampled at the spbin wavelengths, as in the hot table;
 SPHEREx channels average F_lambda between the midpoints of neighbouring channels. Each node also stores
 the Balmer index W of the hot table (EW of H-gamma + H-beta over its table maximum), photon-weighted
 G/BP/RP and GALEX FUV/NUV fluxes and a 2 nm binned spectrum over 130-1100 nm for reddened passband
@@ -36,7 +36,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "src/sedkit/models/subdwarf"
+OUT = ROOT / "src/spbin/models/subdwarf"
 SSAP = "http://dc.g-vo.org/theossa/q/ssa/ssap.xml"
 SVO_FPS = "http://svo2.cab.inta-csic.es/theory/fps/fps.php"
 TEFF_SLICES = [(19500, 24999), (25000, 29999), (30000, 32999), (33000, 35999), (36000, 38999),
@@ -46,7 +46,7 @@ TIERS = {"H": dict(family="H", w_he=0.0, teff=np.arange(20000.0, 45001.0, 1000.0
          "mid": dict(family="HHeC", w_he=0.0498, teff=np.arange(32000.0, 45001.0, 1000.0)),
          "He": dict(family="HHeC", w_he=0.7575, teff=np.arange(32000.0, 45001.0, 1000.0))}
 LOGG_TOLERANCE = 0.05          # largest offset of a model from its table node
-XP_SAMPLING = np.arange(332.0, 993.0, 10.0)   # six blue channels (332-382 nm) + the 61 sedkit XP channels
+XP_SAMPLING = np.arange(332.0, 993.0, 10.0)   # six blue channels (332-382 nm) + the 61 spbin XP channels
 N_BLUE = 6
 COARSE = np.arange(130.0, 1100.1, 2.0)        # bin centres, nm
 FILTERS = {"G": "GAIA/GAIA3.G", "BP": "GAIA/GAIA3.Gbp", "RP": "GAIA/GAIA3.Grp",
@@ -154,7 +154,7 @@ class Reducer:
         from gaiaxpy.config.paths import config_path
         from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
         from forward_xp import FILES
-        from sedkit.model import StellarModel
+        from spbin.model import StellarModel
 
         self.V = V
         bases = ContinuousBases()
@@ -284,7 +284,7 @@ def _uv_curve():
     import astropy.units as u
     from dust_extinction.parameter_averages import G23
 
-    zgr = np.loadtxt(ROOT / "src/sedkit/models/extinction_curve.txt")
+    zgr = np.loadtxt(ROOT / "src/spbin/models/extinction_curve.txt")
     overlap = (zgr[:, 0] >= 392) & (zgr[:, 0] <= 550)
     g23 = G23(Rv=3.1)
     ref = g23(zgr[overlap, 0] * u.nm)
@@ -328,7 +328,7 @@ def _missing(coarse):
 
 
 def table(work):
-    from sedkit.model import StellarModel
+    from spbin.model import StellarModel
 
     picks = json.loads((work / "manifest.json").read_text())
     reduced = {}
@@ -401,8 +401,8 @@ def table(work):
     summary = dict(
         version="subdwarf-v1", source="Tuebingen TMAP NLTE spectra (Rauch; TheoSSA, GAVO)",
         units="ln F_lambda at 10 pc for R = 1 Rsun, 1e-18 W m^-2 nm^-1",
-        channels="168 sedkit channels; XP through the J-CAPS phase-0 forward operator; "
-                 "J/H/Ks/W1/W2 sampled at the sedkit wavelengths; SPHEREx averaged between channel midpoints",
+        channels="168 spbin channels; XP through the J-CAPS phase-0 forward operator; "
+                 "J/H/Ks/W1/W2 sampled at the spbin wavelengths; SPHEREx averaged between channel midpoints",
         blue_xp="six XP channels at 332-382 nm through the same operator",
         tiers=summary_tiers,
         uv_extinction=f"G23 R_V=3.1 times {uv_scale:.4f}, the ZGR23 scale over 392-550 nm",

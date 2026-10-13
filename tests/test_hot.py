@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel, fit, loglike_sed
-from sedkit.model import HOT_BLEND_K, HOT_CHANNELS
+from spbin import SED, StellarModel, fit, loglike_sed
+from spbin.model import HOT_BLEND_K, HOT_CHANNELS
 
 
 @pytest.fixture(scope="module")

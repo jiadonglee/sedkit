@@ -104,7 +104,7 @@ def download(source_id=None, *, ra=None, dec=None, radius_arcsec=2.0,
              cache_dir="data", refresh=False):
     """Download one source; coordinates are ICRS degrees at Gaia's epoch.
 
-    Requires sedkit[download]. Uses Gaia's published crossmatches for
+    Requires spbin[download]. Uses Gaia's published crossmatches for
     2MASS/AllWISE. Native fluxes/errors and catalogue quality flags are
     retained; only unambiguous, A-quality photometry enters the default mask.
     Existing source downloads are reused unless refresh=True.

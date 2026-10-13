@@ -2,9 +2,9 @@ import numpy as np
 import pytest
 from scipy.stats import truncnorm
 
-from sedkit import SED, StellarModel, EdenhoferPrior, fit, loglike_sed
-from sedkit.extinction import extinction_curve, transmission
-from sedkit.fit import neg2_log_likelihood
+from spbin import SED, StellarModel, EdenhoferPrior, fit, loglike_sed
+from spbin.extinction import extinction_curve, transmission
+from spbin.fit import neg2_log_likelihood
 
 
 class SampleQuery:

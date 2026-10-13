@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.table import Table
 from dustmaps.edenhofer2023 import Edenhofer2023Query
-from sedkit import EdenhoferPrior, StellarModel, download, fit, plot
+from spbin import EdenhoferPrior, StellarModel, download, fit, plot
 
 SOURCE_ID = "858860697467058688"
 CACHE_DIR = Path("data")
