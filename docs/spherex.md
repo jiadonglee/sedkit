@@ -8,7 +8,7 @@ SPHEREx measurements attached. No XphereX checkout is needed.
 ## Install and run
 
 ```bash
-pip install "sedkit[download,spherex] @ git+https://github.com/jiadonglee/sedkit.git"
+pip install "sedkit[download,spherex] @ git+https://github.com/jiadonglee/spbin.git"
 ```
 
 ```python

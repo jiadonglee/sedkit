@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="docs/assets/sedkit-logo.png" width="280" alt="sedkit logo">
+  <img src="docs/assets/spbin-logo.png" width="280" alt="spbin logo">
 </p>
-<p align="center">Download and fit stellar spectral energy distributions.</p>
+<p align="center">Spectrophotometric binaries: fit Gaia XP and infrared SEDs of single stars and unresolved binaries.</p>
 
-sedkit combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
-AllWISE photometry. Its stellar model is a hybrid SED emulator: a network
+spbin fits single stars and unresolved binaries to public Gaia DR3 XP
+spectra combined with Gaia-linked 2MASS and AllWISE photometry. Its stellar model is a hybrid SED emulator: a network
 trained on real spectra where stars with good labels exist, synthetic
 atmospheres calibrated on real stars where they do not, and PARSEC stellar
 evolution tying both to mass, age and metallicity. It predicts absolute
@@ -13,7 +13,7 @@ giants for hot companions, fits hot subdwarfs with or without a cool
 companion, and tells whether a Gaia astrometric orbit comes from a faint
 companion, a hidden near-equal-mass twin or a luminous star of another kind. The package runs
 on NumPy and SciPy, with no J-CAPS installation, JAX, GPU or separate model
-download.
+download, and is imported in Python as `sedkit`.
 
 ## How the model is built
 
@@ -283,7 +283,7 @@ Other measurements:
 ## Install
 
 ```bash
-pip install "sedkit[download] @ git+https://github.com/jiadonglee/sedkit.git"
+pip install "sedkit[download] @ git+https://github.com/jiadonglee/spbin.git"
 ```
 
 For a local checkout, use `pip install -e ".[download]"`. Plain
