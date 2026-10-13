@@ -313,6 +313,11 @@ Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
 at Gaia's reference epoch. Coordinate lookup requires exactly one Gaia
 match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 
+Use `download(source_id, uv=True)` to also crossmatch GALEX, Swift/UVOT
+and XMM-OM. AB magnitudes, errors, quality flags and all matched observations
+are cached in `sed.metadata["uv"]` as diagnostics. UV photometry remains
+separate from the fitting channels; see the [UV API](docs/api.md#observations).
+
 ## One star, located first
 
 ```python

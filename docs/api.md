@@ -2,8 +2,32 @@
 
 ## Observations
 
-`download(source_id, cache_dir="data", refresh=False)` returns an `SED`.
+`download(source_id, cache_dir="data", refresh=False, uv=False)` returns an `SED`.
 Alternatively use `download(ra=..., dec=..., radius_arcsec=2)`.
+
+`uv=True` attaches archival GALEX, Swift/UVOT and XMM-OM crossmatches in
+`sed.metadata['uv']`. `download_uv(sed, cache_dir="data")` adds the same
+records to an existing SED. Save it with `sed.save(...)` to retain them.
+
+`crossmatch_uv(sources, cache_dir="data/uv", catalogues=("galex", "swift", "xmm"),
+radius_arcsec=3, refresh=False)` accepts an Astropy Table with `source_id`,
+`ra`, `dec` in degrees and optional `pmra`, `pmdec` in mas/yr, `ref_epoch`
+in Julian years (default 2016). It returns records keyed by source ID.
+VizieR catalogues are [GALEX GR6/7 AIS](https://cdsarc.cds.unistra.fr/ftp/II/335/ReadMe),
+[UVOTSSC](https://heasarc.gsfc.nasa.gov/w3browse/all/swuvotssc.html) and
+[XMM-SUSS5.0](https://cdsarc.cds.unistra.fr/ftp/II/370/ReadMe).
+Each keeps every matched observation, separation, AB magnitude, magnitude
+error and raw row. `usable` requires measured positive errors and clean
+quality flags; Swift/XMM also require point-source flags. GALEX applies
+the existing bright-source thresholds. Multiple distinct matched sources
+are marked `ambiguous` and their bands are excluded. ECSV tables and
+`uv.json` are cached; changed positions or radius require `refresh=True`.
+
+UV records are diagnostic photometry, separate from the 168 fitting
+channels. No catalogue match supplies no upper limit or coverage statement.
+Proper motion uses approximate observing epochs: 2007 for GALEX, 2007.5
+for Swift and 2010 for XMM. High-proper-motion associations need individual
+observation epochs; clean photometric flags do not establish a UV excess.
 
 `SED(flux, error, mask, parallax_mas, parallax_error_mas=0, source_id="")`
 accepts a user's own observations. Arrays have 168 channels:

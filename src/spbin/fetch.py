@@ -101,13 +101,15 @@ def _photometry(rows, wave):
 
 
 def download(source_id=None, *, ra=None, dec=None, radius_arcsec=2.0,
-             cache_dir="data", refresh=False):
+             cache_dir="data", refresh=False, uv=False):
     """Download one source; coordinates are ICRS degrees at Gaia's epoch.
 
     Requires spbin[download]. Uses Gaia's published crossmatches for
     2MASS/AllWISE. Native fluxes/errors and catalogue quality flags are
     retained; only unambiguous, A-quality photometry enters the default mask.
     Existing source downloads are reused unless refresh=True.
+    uv=True also attaches GALEX, Swift/UVOT and XMM-OM crossmatches to
+    metadata['uv']; UV records remain separate from the fitting channels.
     """
     from astropy.table import Table, vstack
 
@@ -120,7 +122,12 @@ def download(source_id=None, *, ra=None, dec=None, radius_arcsec=2.0,
     directory.mkdir(parents=True, exist_ok=True)
     output = directory / "sed.npz"
     if output.exists() and not refresh:
-        return SED.load(output)
+        sed = SED.load(output)
+        if uv:
+            from .uv import download_uv
+            download_uv(sed, cache_dir=cache_dir)
+            sed.save(output)
+        return sed
     if refresh:
         # These are this function's own cached public catalogue products.
         for name in ("gaia.ecsv", "2mass.ecsv", "allwise.ecsv", "xp.xml", "xp.ecsv"):
@@ -188,5 +195,8 @@ def download(source_id=None, *, ra=None, dec=None, radius_arcsec=2.0,
     metadata["xp_error_model"] = "GaiaXPy marginal errors; inter-channel measurement correlations omitted"
     sed = SED(flux, error, mask, metadata["parallax"] or np.nan,
               metadata["parallax_error"] or 0.0, source_id, metadata)
+    if uv:
+        from .uv import download_uv
+        download_uv(sed, cache_dir=cache_dir, refresh=refresh)
     sed.save(output)
     return sed
