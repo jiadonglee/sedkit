@@ -1,5 +1,7 @@
 # spbin
 
+![spbin logo](assets/spbin-logo.png){ .homepage-logo width="240" }
+
 <div class="hero" markdown>
 
 ## Absolute-flux SED modelling for stars and binaries
