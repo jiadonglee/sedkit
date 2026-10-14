@@ -3,6 +3,13 @@
 </p>
 <p align="center">Spectrophotometric binaries: fit Gaia XP and infrared SEDs of single stars and unresolved binaries.</p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/hero-hrd-dark.png">
+    <img src="docs/assets/hero-hrd.png" width="100%" alt="Binary classes across the Gaia HR diagram with their spbin model SEDs">
+  </picture>
+</p>
+
 spbin fits single stars and unresolved binaries to public Gaia DR3 XP
 spectra combined with Gaia-linked 2MASS and AllWISE photometry. Its stellar
 model is a hybrid SED emulator: a network trained on real spectra where stars
