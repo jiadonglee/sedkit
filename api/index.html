@@ -2298,12 +2298,13 @@ thresholds calibrated on control giants are 10 for the default fit and for
 </code></pre></div>
 <p><code>fit_subdwarf_companion(sed, *, companions=("dwarf", "subgiant"),
 tiers=("H", "mid", "He"), model=None, stellar=None, template=None,
-parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
+giant_template=None, parallax=None, fit_parallax=False, extinction=None, extinction_prior=None,
 dust_prior=None, subdwarf_prior=None, companion_prior=None,
 companion_age_gyr=None, companion_feh=None, companion_mass=None,
-use_wise=False, use_spherex=False, blue=None, galex=None)</code> fits four
+use_wise=False, use_spherex=False, blue=None, galex=None, hot_ms=False, fg_ms=False)</code> fits its
 hypotheses on one data vector and returns <code>hypotheses</code> (<code>fgk</code>, <code>sdb</code>,
-<code>sdb+dwarf</code>, <code>sdb+subgiant</code>), <code>delta</code> (each objective minus the lowest),
+<code>sdb+dwarf</code>, <code>sdb+subgiant</code>; with <code>"giant"</code> also <code>giant</code> and <code>sdb+giant</code>,
+and without <code>fgk</code> when <code>companions=("giant",)</code>), <code>delta</code> (each objective minus the lowest),
 <code>preferred</code>, <code>n_fit</code>, <code>mask</code> and the fitted <code>data</code>; see the
 <a href="../model/#subdwarf-route">subdwarf route</a>.</p>
 <ul>
@@ -2311,9 +2312,25 @@ hypotheses on one data vector and returns <code>hypotheses</code> (<code>fgk</co
   subdwarf hypothesis reports <code>subdwarf</code> with <code>teff</code>, <code>logg</code>, <code>radius</code>,
   <code>mass</code> (g R^2 / G), <code>luminosity</code>, <code>tier</code> and <code>log_he_h</code>.</li>
 <li>The companion is <code>"dwarf"</code> (mass, age and [M/H] on PARSEC through the
-  network) or <code>"subgiant"</code> (<code>GiantTemplate</code> at log g 3.2--3.8 with a free
-  scale). <code>companions=()</code> fits the subdwarf alone. <code>companion_age_gyr</code>,
+  network), <code>"subgiant"</code> (<code>GiantTemplate</code> at log g 3.2--3.8 with a free
+  scale) or <code>"giant"</code> (<code>GiantTemplate(blue=True)</code> at log g 0--3.8, free
+  scale, PARSEC M_Ks prior on its luminosity; its blue XP flux comes from
+  the template). <code>companions=()</code> fits the subdwarf alone. For red giants,
+  <code>companions=("giant",)</code> compares <code>giant</code> with <code>sdb+giant</code>; the
+  detection statistic objective(giant) - objective(sdb+giant) has
+  threshold 38 with <code>tiers=("H",)</code>, <code>fit_parallax=True</code>,
+  <code>subdwarf_prior=dict(logg=(5.6, 0.3))</code> and <code>blue=</code>, calibrated on
+  APOGEE RV-constant giants (false-positive rate below 0.25%). <code>companion_age_gyr</code>,
   <code>companion_feh</code> and <code>companion_mass</code> fix the dwarf's parameters.</li>
+<li>With <code>"giant"</code>, two main-sequence alternatives to the sdB can be added.</li>
+<li><code>hot_ms=True</code> adds <code>ms+giant</code>: a hot star of solar [M/H] from
+    <code>StellarModel(hot=True)</code>, 6800--30000 K, whose blue XP and GALEX fluxes come
+    from the hot UV table. It reports <code>ms</code>.</li>
+<li><code>fg_ms=True</code> adds <code>fg+giant</code>: an F/G/K star from <code>StellarModel()</code>, coeval
+    with the giant and at its [M/H], whose blue XP channels come from an
+    empirical colour table of APOGEE dwarfs (<code>CoolUV</code>, 4400--6900 K). It
+    reports <code>fg</code>.</li>
+<li>The single giant is re-polished from each pair.</li>
 <li>Parallax: catalogue value by default; <code>fit_parallax=True</code> fits it within
   3 sigma with penalty z^2; <code>parallax=(mean, sigma)</code> replaces the SED's.</li>
 <li>Extinction: a number fixes ZGR23 E; with <code>extinction=None</code>, give
