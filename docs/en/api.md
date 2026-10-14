@@ -55,7 +55,7 @@ GiantTemplate.evaluate(teff, logg, mh)
 ### `spbin.fit_giant_companion`
 
 ```python
-fit_giant_companion(sed, teff, logg, feh, *, m2_grid=(1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0), companion_age_gyr=0.01, extinction_prior=None, tilt_sigma=0.15, use_wise=True, template=None, model=None, threshold=None, luminosity=None, parallax=None, dust_prior=None)
+fit_giant_companion(sed, teff, logg, feh, *, m2_grid=(1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0), companion_age_gyr=0.01, extinction_prior=None, tilt_sigma=0.15, use_wise=True, template=None, model=None, threshold=None, luminosity=None, parallax=None, dust_prior=None, coeval=False)
 ```
 
 [Source / 源码](https://github.com/jiadonglee/spbin/blob/main/src/spbin/giant.py)

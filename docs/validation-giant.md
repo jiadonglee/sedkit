@@ -199,12 +199,17 @@ and `dust_prior=` add these terms ([giant route](model.md#giant-route)):
     offset), 0.12 in log g and 0.15 dex in [M/H].
   - The M_Ks histogram, smoothed by 0.15 mag, is mixed with a uniform floor so
     that any M_Ks PARSEC produces at the labels costs at most 6.
+  - A mass term holds the implied mass to the masses of the same PARSEC
+    giants at the fitted Teff, M_Ks and [M/H], smoothed by 0.06 dex. It costs
+    at most 10 inside their range and rises as (distance / 0.05 dex)^2 beyond.
   - The implied mass is held in 0.2--10 solar masses.
 - **`luminosity="massfree"`:** the implied mass held in 0.2--10 solar
   masses without the PARSEC density, which allows a stripped giant.
 - **`dust_prior=`:** the Edenhofer et al. (2023) E at the trial parallax
   distance, Gaussian with width sqrt(std^2 + 0.04^2) within 1.2 kpc; beyond
   it, a one-sided wall below E(1.2 kpc) - 0.04.
+- **`coeval=True`:** with "parsec", the companion at the main-sequence
+  lifetime of the giant's implied mass, and a wall on M2 above that mass.
 
 Without these keywords the fit is the default one of the sections above.
 
@@ -218,59 +223,85 @@ M_Ks minus the prior median, for the training giants and the controls:
 | -1.0 to -0.5 | 0.09 | 0.11 | 0.26 / 0.29 |
 | -0.5 to 0 | 0.04 | -0.08 | 0.14 / 0.07 |
 
-| Quantity | Default | parsec | parsec + dust | massfree + dust |
-| --- | ---: | ---: | ---: | ---: |
-| Control detection, 95th / 99th percentile / max | 2.1 / 6.3 / 8.8 | 2.2 / 5.6 / 8.9 | 2.2 / 5.5 / 8.9 | 2.1 / 6.7 / 9.1 |
-| Threshold | 10 | 10 | 10 | 11 |
-| Control implied mass, 16 / 50 / 84% (solar masses) | -- | 0.75 / 1.00 / 1.62 | 0.75 / 1.00 / 1.62 | 0.64 / 1.03 / 2.20 |
-| Detection > threshold at 2 / 3 / 4--8 solar masses | 92.9 / 99.2 / 99.6--100% | -- | 97.1 / 99.6 / 100% | 97.1 / 99.6 / 100% |
-| True companion excluded | 2.1% at 8 | -- | 0 | 0 |
+Without the mass term, log g moves within its prior to give the giant any
+mass the luminosity needs, and the capped M_Ks density charges a 17
+solar-mass "giant" at most 6. At 5000 K, M_Ks = -4.0 and solar metallicity,
+the mass term costs 0.1 at 4 solar masses, 9.2 at 2, 10.2 at 8, 24 at 12 and
+56 at 17. For 11177 template training giants (parallax/error > 10), at their
+APOGEE labels it costs 1.0 in median, 9.4 at the 95th percentile and 15.7 at
+the 99th. The tail is at log g < 1.5 and [M/H] < -1.
+
+| Quantity | Default | parsec | parsec + dust | coeval + dust | massfree + dust |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Control detection, 95th / 99th percentile / max | 2.1 / 6.3 / 8.8 | 2.3 / 6.2 / 9.2 | 2.3 / 5.3 / 9.2 | 0 / 0 / 5.4 | 2.1 / 6.7 / 9.7 |
+| Threshold | 10 | 11 | 11 | 11 | 11 |
+| Control implied mass, 16 / 50 / 84% (solar masses) | -- | 0.85 / 0.98 / 1.14 | 0.85 / 0.98 / 1.15 | 0.85 / 0.98 / 1.15 | 0.64 / 1.03 / 2.20 |
+| Giant-alone luminosity penalty, 99th percentile / max | -- | 6.4 / 10.9 | 6.4 / 10.9 | 6.4 / 10.9 | 0 / 0 |
+| Detection > threshold at 2 / 3 / 4--8 solar masses | 92.9 / 99.2 / 99.6--100% | -- | 97.1 / 99.6 / 100% | -- | 97.1 / 99.6 / 100% |
+| True companion excluded | 2.1% at 8 | -- | 0.8% at 3, 4 and 5 | -- | 0 |
 
 Of the 238 controls, 19 lie within the dust prior's 1.2 kpc, so the PARSEC prior
 alone and with the dust prior give nearly the same controls; injections were
-run with the dust prior. The control masses from APOGEE log g are 0.71, 0.97 and 1.55 solar masses at
-the same percentiles. The luminosity penalty of the controls has median 0.5
-and maximum 6.05; inside 1.2 kpc, E_fit - E_map is -0.008 in median
-(16th--84th percentile -0.043 to +0.027). The corrected parallaxes are 3--20
-per cent larger than DR3's, so the injected companions are 6--40 per cent
-brighter than in the default-fit injections.
+run with the dust prior. The control masses from APOGEE log g are 0.71, 0.97
+and 1.55 solar masses at the same percentiles. The corrected parallaxes are
+3--20 per cent larger than DR3's, so the injected companions are 6--40 per
+cent brighter than in the default-fit injections. Every wrongly excluded
+companion comes from two controls with APOGEE log g of 1.1, where a one-step
+lower mass fits the injection to 10.4--13.3 below the injected one. The
+controls are giants of about 1 solar mass, for which every coeval companion
+of the grid is heavier than the giant; they do not test coeval fits of
+heavier giants, so the coeval threshold is that of "parsec".
 
-On the blue-excess targets (detection, and in brackets its -2 ln L part):
+On the blue-excess targets (detection, and in brackets its -2 ln L part), with
+the masses within the threshold of the profile minimum:
 
-| Target | Default | parsec + dust | massfree + dust | Allowed masses |
-| --- | ---: | ---: | ---: | ---: |
-| J060220.03+352147.9 | 36.5 | 34.9 (32) | 35.9 (32) | 2.0--2.5 |
-| J034958.06+433416.6 | 25.5 | 28.0 (22) | 23.7 (21) | 2.0 |
-| TOI-977 | 24.4 | 20.4 (18) | 21.2 (18) | 4--7 |
-| Gaia DR3 206657917727078400 | 14.6 | 17.3 (16) | 14.8 (13) | 2.0--2.5 |
+| Target | Default | parsec + dust | coeval + dust | massfree + dust | Allowed masses, parsec / coeval |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| J060220.03+352147.9 | 36.5 | 32.6 (32) | 34.8 (34) | 35.9 (32) | 2.0--3.0 / 2.0--2.5 |
+| J034958.06+433416.6 | 25.5 | 45.8 (34) | 44.9 (33) | 23.7 (21) | 2.0 / 2.0 |
+| TOI-977 | 24.4 | 14.2 (12) | 14.0 (11) | 21.2 (18) | 2.5--8 / 2.5--7 |
+| Gaia DR3 206657917727078400 | 14.6 | 16.0 (13) | 14.4 (14) | 14.8 (13) | 2.0--2.5 / 2.0 |
 
-The luminosity prior is stored at float16, so its penalties carry about
-0.002 of rounding.
+At their best coeval companions, the giants of J060220.03+352147.9,
+J034958.06+433416.6, TOI-977 and Gaia DR3 206657917727078400 are 2.4, 2.8,
+6.3 and 2.6 solar masses, at 0.60, 0.44, 0.06 and 0.48 Gyr. For these four
+targets, `luminosity="massfree"` with the dust prior gives the same detection,
+-2 ln L part, best mass, E, implied mass and dust penalty as the fits above
+to 0.001. The dust prior was evaluated from the map values of those fits.
 
-- **J034958.06+433416.6:** alone, the giant needs 0.48 solar masses
-  (luminosity penalty 8.5); with the companion, 2.0. At its NSS distance the
-  map gives E = 0.48, and the companion fit's E of 0.39 costs 4.8 against 1.3
-  for the giant alone.
+When the giant alone pays more luminosity penalty than any control (10.9),
+its labels, parallax and PARSEC disagree. A companion then lowers the
+objective partly by easing that tension, so the detection does not measure a
+companion alone. Three targets are in this case: J034958.06+433416.6, Gaia DR3
+465986123215151616 and Gaia DR3 349395937424834432. Per target:
+
+- **J034958.06+433416.6:** the giant alone pays 16.5, 12.8 of it in the mass
+  term: its labels and parallax give 1.0 solar mass where PARSEC expects a
+  heavier giant. With the 2 solar-mass companion the giant is 2.6 solar
+  masses and pays 4.4. At its NSS distance the map gives E = 0.48, and the
+  companion fit's E of 0.40 costs 4.3.
 - **TOI-977:** the zero point moves its parallax from 0.108 to 0.132 mas, and
-  the giant is a bright giant of 5.3--5.6 solar masses and 3700 solar
-  luminosities, which the prior accepts. Its best companion pushes the parallax
-  to +2.9 sigma.
-- **Gaia DR3 465986123215151616:** the detection (21--23) comes mostly from
-  the label and luminosity priors: its -2 ln L part is -2.7 with `massfree`
-  and 10 with `parsec` and the dust prior; the giant alone implies 16 solar
-  masses.
-- **Label--parallax inconsistent:** the spectroscopic labels and parallaxes
-  of Gaia DR3 349395937424834432 (luminosity penalty 9.6 at every M2),
-  TYC 2825-1500-1 (7.3) and Gaia DR3 468681885208015104 (6.5) imply giants of
-  11--12 solar masses.
+  the giant is a bright giant of 5.1--5.5 solar masses that both PARSEC terms
+  accept. Coeval, a 5 solar-mass companion fits beside a 6.3 solar-mass giant
+  at 59 Myr, and 7 solar masses is excluded.
+- **Gaia DR3 465986123215151616:** the giant alone pays 15.7, and its
+  detection is 80.6 under "parsec" (-2 ln L part 57) with a 0.76 solar-mass
+  giant, and 50.0 coeval (29) with a 3.9 solar-mass giant at 175 Myr.
+- **Label--parallax inconsistent:** Gaia DR3 349395937424834432 pays 21 with
+  no companion detected. TYC 2825-1500-1 pays 7.1, and under "parsec" a
+  1.5 solar-mass pre-main-sequence companion that lowers the giant's luminosity
+  reaches 60.7; coeval it reaches 8.9. Gaia DR3 468681885208015104 implies a
+  4.8 solar-mass giant.
 
 ## Limitations
 
 - XP starts at 392 nm in spbin, the hot table and the ZGR23 curve, so the
   Balmer jump (330--390 nm) is not used. The 71-channel test (XP below
   392 nm) leaves 2 solar-mass sensitivity unchanged.
-- The companion is a non-rotating, solar-metallicity star at 10 Myr: on the
-  main sequence from about 2 solar masses, pre-main-sequence below. Be
+- By default the companion is a non-rotating, solar-metallicity star at
+  10 Myr: on the main sequence from about 2 solar masses, pre-main-sequence
+  below. Coeval fits place the system at the youngest age of a giant of the
+  implied mass and clip the companion's [M/H] to +-0.3. Be
   disks, stripped-star accretors and emission are not modelled.
 - A hot companion and a greyer extinction curve both raise the blue end;
   the tilt prior, from disk giants at E 0.1--1, carries that distinction.
@@ -290,4 +321,5 @@ The luminosity prior is stored at float16, so its penalties carry about
 - By default the fit fixes the parallax and leaves the giant's luminosity
   free; `luminosity=` ties them (see Luminosity and parallax). Its PARSEC
   prior remains 0.1--0.17 mag bright at [M/H] < -0.5, and outside [M/H]
-  -1.0 to +0.5 its isochrones are 0.5 dex apart in age.
+  -1.0 to +0.5 its isochrones are 0.5 dex apart in age. Its mass term is
+  least accurate for luminous (log g < 1.5) and metal-poor giants.

@@ -42,7 +42,27 @@
       ]
     },
     "density": "M_Ks histogram in 0.05 mag bins smoothed by 0.15 mag, mixed with a uniform floor over the M_Ks range of the kernel's points padded by 1 mag so that the penalty there is at most 6; beyond the range it rises as (distance / 0.5 mag)**2",
-    "constrained_nodes": 5461
+    "constrained_nodes": 5461,
+    "mass_term": {
+      "source": "giant_grid_20261006 p11_mass_prior.py",
+      "cells": "template Teff and [M/H] axes by M_Ks from -10 to +4 in 0.1 mag",
+      "kernel": {
+        "width": [
+          200.0,
+          0.15,
+          0.15
+        ],
+        "units": [
+          "K",
+          "mag",
+          "dex"
+        ]
+      },
+      "density": "current-mass log10 M histogram in 0.03 dex bins smoothed by 0.06 dex, mixed with a uniform floor over the log M range where the smoothed density exceeds 1e-3 of its peak, padded by 0.1 dex, so that the penalty there is at most 10; beyond the range it rises as (distance / 0.05 dex)**2",
+      "filled": "cells with a kernel weight or effective number below 3 take the curve of the nearest constrained cell within 3 kernel widths",
+      "filled_cells": 15135,
+      "constrained_cells": 59506
+    }
   },
   "blue": {
     "file": "giant_blue.npz",

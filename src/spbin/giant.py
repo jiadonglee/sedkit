@@ -1,9 +1,10 @@
 """Hot main-sequence companions to red giants against an empirical giant template.
 
 The giant is not a PARSEC star: its flux is an empirical template in Teff, log g and [M/H] with a free scale.
-The companion is a spbin main-sequence star of mass M2 at the Gaia parallax. The two share extinction and
-nothing else: no common age and no q <= 1. Optionally the parallax is fitted and the giant's luminosity is
-tied to it by a PARSEC M_Ks prior or by bounds on its implied mass, and E by the Edenhofer dust map.
+The companion is a spbin main-sequence star of mass M2 at the Gaia parallax. By default the two share
+extinction and nothing else: no common age and no q <= 1. Optionally the parallax is fitted and the giant's
+luminosity is tied to it by a PARSEC M_Ks prior or by bounds on its implied mass, and E by the Edenhofer
+dust map; with the PARSEC prior, the companion can also be held coeval with the giant.
 """
 
 import json
@@ -36,11 +37,16 @@ MBOL_SUN, LOGG_SUN, TEFF_SUN = 4.74, 4.438, 5772.0
 MASS_RANGE, MASS_WALL_DEX = (0.2, 10.0), 0.1
 # Beyond the PARSEC M_Ks grid the penalty rises as ((distance) / PARSEC_TAIL_MAG)**2.
 PARSEC_TAIL_MAG = 0.5
+# Beyond the mass term's log M grid the penalty rises as ((distance) / PARSEC_TAIL_DEX)**2.
+PARSEC_TAIL_DEX = 0.05
 # Dust map: width floor out to MAP_EDGE_PC, the last distance queried inside the 1.25 kpc map; beyond it,
 # a one-sided wall below the value there.
 MAP_EDGE_PC = 1200.0
 DUST_FLOOR = DUST_WALL = 0.04
 DUST_Z_GRID = np.linspace(-Z_MAX, Z_MAX, 21)
+# Coeval companion: at the main-sequence lifetime of the giant's implied mass, with [M/H] clipped to the
+# hot route's range; a Gaussian wall of COEVAL_WALL_DEX in log10 M2 above the giant's mass.
+COEVAL_FEH, COEVAL_WALL_DEX = 0.3, 0.02
 
 
 class GiantTemplate:
@@ -113,12 +119,12 @@ def tilted_transmission(wavelength_um, extinction, tilt=0.0):
     return np.exp(-extinction * extinction_curve(wavelength_um) * (wavelength_um / TILT_WAVELENGTH_UM)**tilt)
 
 
-def _companion(model, m2, age_gyr, scale, wavelength_um):
+def _companion(model, m2, age_gyr, scale, wavelength_um, feh=0.0):
     """Observed-scale flux and model-error factors of one main-sequence star on the 66 channels.
 
     The hot route stops at Ks: W1/W2 follow the Rayleigh-Jeans tail of Ks.
     """
-    prediction = model.evaluate(m2, 0.0, age_gyr, 0.0)
+    prediction = model.evaluate(m2, 0.0, age_gyr, feh)
     if prediction is None:
         raise ValueError(f"companion mass {m2} is unsupported at {age_gyr} Gyr")
     flux = prediction["flux_10pc"][:CHANNELS] * scale
@@ -136,10 +142,62 @@ def _companion(model, m2, age_gyr, scale, wavelength_um):
                 radius=float(prediction["radius"][0]), M_G=float(prediction["M_G"][0]))
 
 
-class _ParsecPrior:
-    """PARSEC M_Ks prior on the template grid: -2 ln(p / p_mode) on mks_grid per node, and BC_Ks.
+class _Lifetime:
+    """Main-sequence lifetime against mass at one [M/H], from the turnoff masses of the model's PARSEC tables."""
 
-    Flagged nodes have no PARSEC giants in their kernel; their curve is zero and carries no weight.
+    def __init__(self, model, feh):
+        k = int(np.clip(np.searchsorted(model.metals, feh, side="right"), 1, len(model.metals) - 1))
+        low, high = model.metals[k - 1:k + 1]
+        w = (feh - low) / (high - low)
+        self.log_age = np.array(sorted(model.tracks[low]))
+        self.turnoff = np.array([(1 - w) * model.tracks[low][a][-1, 0] + w * model.tracks[high][a][-1, 0]
+                                 for a in self.log_age])
+
+    def log_age_of(self, mass):
+        """log10(age / yr) at which mass is the turnoff mass (turnoff mass falls with age)."""
+        return float(np.interp(-mass, -self.turnoff, self.log_age))
+
+
+def _companion_series(model, m2, feh, scale, wavelength_um, mask, log_ages):
+    """The companion on the fitted channels at each supported age of log_ages, up to its turnoff."""
+    items = []
+    for log_age in log_ages:
+        try:
+            c = _companion(model, m2, 10**(log_age - 9), scale, wavelength_um, feh)
+        except ValueError:
+            if items:
+                break
+            continue
+        items.append(dict(c, log_age=log_age, **{key: c[key][mask] for key in ("flux", "columns", "variance")}))
+    if not items:
+        raise ValueError(f"companion mass {m2} is unsupported at every age")
+    return dict(m2=m2, log_age=np.array([c["log_age"] for c in items]), items=items)
+
+
+def _at_age(series, log_age):
+    """The companion of a series at log_age, linear between the bracketing ages and clipped to the series.
+
+    Covariance columns of the two ages are stacked with square-root weights, so the covariance is the
+    weighted sum of theirs.
+    """
+    ages, items = series["log_age"], series["items"]
+    x = float(np.clip(log_age, ages[0], ages[-1]))
+    if len(ages) == 1:
+        return items[0]
+    i = int(np.clip(np.searchsorted(ages, x) - 1, 0, len(ages) - 2))
+    w = (x - ages[i]) / (ages[i + 1] - ages[i])
+    a, b = items[i], items[i + 1]
+    mix = lambda key: (1 - w) * a[key] + w * b[key]
+    return dict(flux=mix("flux"), variance=mix("variance"), teff=mix("teff"), radius=mix("radius"),
+                M_G=mix("M_G"), columns=np.concatenate([np.sqrt(1 - w) * a["columns"], np.sqrt(w) * b["columns"]], axis=1))
+
+
+class _ParsecPrior:
+    """PARSEC M_Ks prior on the template grid: -2 ln(p / p_mode) on mks_grid per node, and BC_Ks; and the
+    PARSEC mass term: -2 ln(p / p_mode) of log10 M on mass_logm per cell of Teff (template axis), M_Ks
+    (mass_mks) and [M/H] (template axis).
+
+    Flagged nodes and cells have too few PARSEC giants in their kernel; they carry no weight.
     """
 
     def __init__(self):
@@ -148,6 +206,33 @@ class _ParsecPrior:
             self.pen = archive["pen"]
             self.flag = archive["flag"]
             self.bc = archive["bc"].astype(float)
+            self.mass_mks = archive["mass_mks"].astype(float)
+            self.mass_logm = archive["mass_logm"].astype(float)
+            self.mass_pen = archive["mass_pen"]
+            self.mass_flag = archive["mass_flag"]
+
+    def mass_penalty(self, axes, teff, mks, mh, log_mass):
+        """Mass term at the labels and M_Ks: trilinear over constrained cells, linear in log M, with a
+        (distance / PARSEC_TAIL_DEX)**2 tail beyond the log M grid."""
+        cell_axes = (axes[0], self.mass_mks, axes[2])
+        index, weight = [], []
+        for axis, value in zip(cell_axes, (teff, mks, mh)):
+            value = min(max(value, axis[0]), axis[-1])
+            i = int(np.clip(np.searchsorted(axis, value) - 1, 0, len(axis) - 2))
+            index.append(i)
+            weight.append((value - axis[i]) / (axis[i + 1] - axis[i]))
+        x = min(max(log_mass, self.mass_logm[0]), self.mass_logm[-1])
+        tail = ((log_mass - x) / PARSEC_TAIL_DEX)**2
+        value = 0.0
+        for a in (0, 1):
+            for b in (0, 1):
+                for c in (0, 1):
+                    w = ((weight[0] if a else 1 - weight[0]) * (weight[1] if b else 1 - weight[1])
+                         * (weight[2] if c else 1 - weight[2]))
+                    cell = (index[0] + a, index[1] + b, index[2] + c)
+                    if w > 0 and not self.mass_flag[cell]:
+                        value += w * (float(np.interp(x, self.mass_logm, self.mass_pen[cell].astype(float))) + tail)
+        return value
 
 
 @lru_cache(maxsize=1)
@@ -245,12 +330,15 @@ class _LuminosityProblem(_Problem):
     The giant's M_Ks follows from its scale, the template Ks and the parallax; its luminosity from the
     PARSEC BC_Ks, and its mass from log g and Teff. luminosity selects the penalty: "parsec" adds the
     PARSEC M_Ks prior to the mass walls, "massfree" keeps the walls only, None neither (and fixes z = 0).
-    dust holds the map E on DUST_Z_GRID, or is None.
+    dust holds the map E on DUST_Z_GRID, or is None. With lifetime (a _Lifetime), companions are series
+    over age, placed at the main-sequence lifetime of the giant's implied mass.
     """
 
-    def __init__(self, y, sigma2, wavelength, mask, template, priors, luminosity, parsec, parallax, zp_ks, dust):
+    def __init__(self, y, sigma2, wavelength, mask, template, priors, luminosity, parsec, parallax, zp_ks, dust,
+                 lifetime=None):
         super().__init__(y, sigma2, wavelength, mask, template, priors)
         self.luminosity, self.parsec, self.zp_ks, self.dust = luminosity, parsec, zp_ks, dust
+        self.lifetime = lifetime
         self.plx0, self.plx_sigma = parallax
         self.step = np.r_[STEP, STEP_Z] if luminosity is not None else STEP
 
@@ -284,10 +372,11 @@ class _LuminosityProblem(_Problem):
         grid = self.parsec.mks_grid
         x = np.clip(mks, grid[0], grid[-1])
         parsec = float(np.interp(x, grid, aux["curve"])) + ((mks - x) / PARSEC_TAIL_MAG)**2 * aux["constrained"]
-        applied = {"parsec": parsec + wall, "massfree": wall}.get(self.luminosity, 0.0)
+        parsec_mass = self.parsec.mass_penalty(self.template.axes, teff, mks, theta[2], log_mass)
+        applied = {"parsec": parsec + parsec_mass + wall, "massfree": wall}.get(self.luminosity, 0.0)
         return dict(parallax_mas=plx, mks=mks, luminosity=lum, mass=mass,
-                    radius=np.sqrt(lum) * (TEFF_SUN / teff)**2, parsec_penalty=parsec, mass_penalty=wall,
-                    luminosity_penalty=applied)
+                    radius=np.sqrt(lum) * (TEFF_SUN / teff)**2, parsec_penalty=parsec,
+                    parsec_mass_penalty=parsec_mass, mass_penalty=wall, luminosity_penalty=applied)
 
     def dust_terms(self, theta):
         z = theta[6]
@@ -310,6 +399,15 @@ class _LuminosityProblem(_Problem):
         return dict(companion, flux=companion["flux"] * k, columns=companion["columns"] * k,
                     variance=companion["variance"] * k**2)
 
+    def coeval(self, companion, mass):
+        """The companion at the giant's age, the age, and the wall on M2 above the giant's mass."""
+        if companion is None or "items" not in companion:
+            return companion, dict(coeval_penalty=0.0)
+        log_age = self.lifetime.log_age_of(mass)
+        excess = max(np.log10(companion["m2"] / mass), 0.0)
+        return _at_age(companion, log_age), dict(age_gyr=10**(log_age - 9),
+                                                 coeval_penalty=(excess / COEVAL_WALL_DEX)**2)
+
     def objective(self, x, companion, giant=None, aux=None):
         theta = self.theta(x)
         if theta[3] < 0 or abs(theta[6]) > Z_MAX or self.parallax(theta[6]) <= 0:
@@ -319,9 +417,11 @@ class _LuminosityProblem(_Problem):
             if giant is None:
                 return np.inf
             aux = self.aux(100 * theta[0], theta[1], theta[2])
+        physics = self.physics(theta, aux)
+        companion, coeval = self.coeval(companion, physics["mass"])
         value = self.likelihood(giant, *theta[3:6], self.scaled(companion, theta[6]))[0]
-        return (value + self.penalty(theta) + theta[6]**2 + self.physics(theta, aux)["luminosity_penalty"]
-                + self.dust_terms(theta)["dust_penalty"])
+        return (value + self.penalty(theta) + theta[6]**2 + physics["luminosity_penalty"]
+                + self.dust_terms(theta)["dust_penalty"] + coeval["coeval_penalty"])
 
     def fit(self, nodes, starts, companion):
         """As _Problem.fit, with the node's PARSEC terms carried into its inner fit."""
@@ -363,7 +463,8 @@ def _dust_table(dust_prior, sed, parallax):
 
 def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_gyr=0.01,
                         extinction_prior=None, tilt_sigma=0.15, use_wise=True, template=None,
-                        model=None, threshold=None, luminosity=None, parallax=None, dust_prior=None):
+                        model=None, threshold=None, luminosity=None, parallax=None, dust_prior=None,
+                        coeval=False):
     """Profile the fit of giant + main-sequence companion over a grid of companion masses.
 
     teff, logg and feh are (mean, sigma) Gaussian priors on the giant's labels, on the template's
@@ -378,6 +479,11 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
     and "parsec" adds the PARSEC M_Ks prior at its labels. dust_prior=EdenhoferPrior adds the map E at
     the trial distance (width sqrt(sigma**2 + DUST_FLOOR**2)); beyond MAP_EDGE_PC, a one-sided wall
     below the value there minus DUST_WALL. It needs sed.metadata["ra"] and ["dec"].
+
+    coeval=True, with luminosity="parsec", replaces companion_age_gyr by the giant's age: the
+    main-sequence lifetime of its implied mass, the youngest age a giant of that mass can have. The
+    companion's tracks and spectrum take the giant's prior [M/H] clipped to +-COEVAL_FEH, and a
+    companion heavier than the giant pays a wall of COEVAL_WALL_DEX in log10 M2.
 
     Returns rows per M2 (M2 = 0 is the giant alone) with the objective -2 ln L + priors and its
     difference from the giant alone (delta > 0: the companion makes the fit worse), its -2 ln L part,
@@ -394,6 +500,8 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
         raise ValueError(f"luminosity must be None or one of {LUMINOSITY}")
     if dust_prior is not None and extinction_prior is not None:
         raise ValueError("give extinction_prior or dust_prior, not both")
+    if coeval and luminosity != "parsec":
+        raise ValueError('coeval needs luminosity="parsec" for the giant\'s mass')
     parallax = (sed.parallax_mas, sed.parallax_error_mas) if parallax is None else tuple(parallax)
     if len(parallax) != 2 or not np.isfinite(parallax[0]) or parallax[0] <= 0:
         raise ValueError("a positive parallax places the companion")
@@ -413,13 +521,18 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
     physical = luminosity is not None or dust_prior is not None
     if physical:
         dust = None if dust_prior is None else _dust_table(dust_prior, sed, parallax)
+        companion_feh = float(np.clip(feh[0], -COEVAL_FEH, COEVAL_FEH))
+        lifetime = _Lifetime(model, companion_feh) if coeval else None
         problem = _LuminosityProblem(y, sigma2, wave, mask, template, priors, luminosity,
-                                     _parsec_prior(), parallax, _ks_zero_point(model), dust)
+                                     _parsec_prior(), parallax, _ks_zero_point(model), dust, lifetime)
     else:
         problem = _Problem(y, sigma2, wave, mask, template, priors)
     scale = (parallax[0] / 100)**2
     companions = {}
     for m2 in m2_grid:
+        if coeval:
+            companions[m2] = _companion_series(model, m2, companion_feh, scale, wavelength, mask, lifetime.log_age)
+            continue
         c = _companion(model, m2, companion_age_gyr, scale, wavelength)
         companions[m2] = dict(c, **{key: c[key][mask] for key in ("flux", "columns", "variance")})
 
@@ -466,8 +579,11 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
     for row in rows:
         th, c = row["theta"], row["companion"]
         labels = (100 * th[0], th[1], th[2])
+        coeval_terms = {}
         if physical:
             th = problem.theta(th)
+            ph = problem.physics(th, problem.aux(*labels))
+            c, coeval_terms = problem.coeval(c, ph["mass"])
             c = problem.scaled(c, th[6])
         minus2lnl, chi2, giant, total = problem.likelihood(problem.giant(*labels), *th[3:6], c)
         out = dict(
@@ -477,13 +593,15 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
             tilt=th[4], scale=float(np.exp(th[5])),
             m2_teff=np.nan if c is None else c["teff"], m2_radius=np.nan if c is None else c["radius"],
             companion_blue_fraction=0.0 if c is None else float(1 - giant[blue].sum() / total[blue].sum()))
+        if coeval:
+            out.update(age_gyr=coeval_terms.get("age_gyr", np.nan), coeval_penalty=coeval_terms["coeval_penalty"])
         if physical:
-            ph = problem.physics(th, problem.aux(*labels))
             du = problem.dust_terms(th)
             out.update(label_penalty=problem.penalty(th), z=th[6], parallax_mas=ph["parallax_mas"],
                        distance_pc=du["distance_pc"], mks=ph["mks"], luminosity=ph["luminosity"],
                        radius=ph["radius"], mass=ph["mass"], luminosity_penalty=ph["luminosity_penalty"],
-                       parsec_penalty=ph["parsec_penalty"], mass_penalty=ph["mass_penalty"],
+                       parsec_penalty=ph["parsec_penalty"], parsec_mass_penalty=ph["parsec_mass_penalty"],
+                       mass_penalty=ph["mass_penalty"],
                        dust_penalty=du["dust_penalty"], e_map=du["e_map"], e_map_sigma=du["e_map_sigma"])
         table.append(out)
     objective = np.array([r["objective"] for r in table])
@@ -496,4 +614,4 @@ def fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID, companion_age_
                 break
     return dict(rows=table, n_channels=int(mask.sum()), best_m2=table[best]["m2"],
                 detection=float(objective[0] - objective[best]), m2_excluded=excluded, threshold=threshold,
-                luminosity=luminosity, parallax=parallax, mask=mask, wavelength_um=wavelength)
+                luminosity=luminosity, coeval=coeval, parallax=parallax, mask=mask, wavelength_um=wavelength)

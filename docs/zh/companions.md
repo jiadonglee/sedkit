@@ -17,7 +17,7 @@ print(result["best_m2"], result["detection"], result["m2_excluded"])
 
 `teff`、`logg`、`feh` 为 APOGEE 标签尺度上的高斯先验。默认用经验巨星模板，扫描 1.5–15 太阳质量、年龄 0.01 Gyr 的太阳金属丰度主序伴星。默认 `use_wise=True`，不同于基础 `fit`。
 
-`GiantTemplate().evaluate(teff, logg, mh)` 返回模板通量及模型误差信息；`in_support` 检查标签支持。默认巨星亮度为自由缩放；`luminosity="parsec"` 加入演化亮度先验和质量边界，`"massfree"` 保留质量边界。`parallax=(mean, sigma)` 可替换目录视差；`dust_prior` 随试探距离求消光约束。
+`GiantTemplate().evaluate(teff, logg, mh)` 返回模板通量及模型误差信息；`in_support` 检查标签支持。默认巨星亮度为自由缩放；`luminosity="parsec"` 加入演化亮度先验和质量边界，`"massfree"` 保留质量边界。`parallax=(mean, sigma)` 可替换目录视差；`dust_prior` 随试探距离求消光约束。在 `luminosity="parsec"` 下，`coeval=True` 令伴星与巨星同龄。
 
 `rows` 保存每个伴星质量的拟合，其中 M2=0 为巨星单星。`detection` 为巨星单星目标函数减去扫描最低值；每行的 `delta` 则为该行目标函数减去巨星单星值。`m2_excluded` 是最佳质量以上、超过指定阈值的第一个网格质量。详见 [巨星验证](../validation-giant.md)。
 

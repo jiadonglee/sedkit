@@ -75,8 +75,9 @@ template `giant_grid.npz` from APOGEE DR17 giants with Gaia XP, 2MASS and
 AllWISE. `scripts/build_giant_prior.py` builds `parsec_prior.npz` on the same
 grid: the M_Ks density of PARSEC v1.2S giants near each node, with an
 age--metallicity weight fitted to template training giants with precise
-parallaxes, and the PARSEC bolometric correction BC_Ks. `summary.json`
-records both builds.
+parallaxes, the PARSEC bolometric correction BC_Ks, and the mass
+distribution of the same giants at each Teff, M_Ks and [M/H] (run script
+`p11_mass_prior.py`). `summary.json` records both builds.
 
 ### Hot-subdwarf atmospheres
 

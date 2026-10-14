@@ -161,3 +161,29 @@ def test_luminosity_options_are_validated(template, hot):
     with pytest.raises(ValueError):
         fit_giant_companion(sed, (4800, 100), (2.5, 0.2), (-0.3, 0.15), extinction_prior=(0.3, 0.05),
                             dust_prior=EdenhoferPrior(FlatQuery(0.3)), **kw)
+
+
+def test_parsec_mass_term_holds_the_mass_at_the_luminosity(template, hot):
+    from spbin.giant import _parsec_prior
+    prior = _parsec_prior()
+    node = tuple(int(np.argmin(np.abs(a - x))) for a, x in zip(template.axes, (4800.0, 2.5, -0.3)))
+    mks = prior.mks_grid[np.argmin(prior.pen[node].astype(float))]
+    curve = [prior.mass_penalty(template.axes, 4800.0, mks, -0.3, np.log10(m)) for m in (1.0, 1.5, 2.0, 10.0, 15.0)]
+    assert min(curve[:3]) < 2
+    assert curve[3] > 15 and curve[4] > curve[3]
+
+
+def test_coeval_holds_the_companion_below_the_giant(template, hot):
+    from spbin.giant import _Lifetime
+    sed = parsec_mock(template, hot, 3.0)              # a 1 Msun giant with a 10 Myr 3 Msun companion
+    kw = dict(m2_grid=(3.0,), template=template, model=hot, luminosity="parsec")
+    free = fit_giant_companion(sed, (4800, 100), (2.5, 0.2), (-0.3, 0.15), **kw)
+    coeval = fit_giant_companion(sed, (4800, 100), (2.5, 0.2), (-0.3, 0.15), coeval=True, **kw)
+    row = coeval["rows"][1]
+    assert coeval["rows"][0]["objective"] == pytest.approx(free["rows"][0]["objective"])
+    assert free["rows"][1]["mass"] < 2 and row["mass"] > 2.9
+    assert row["delta"] > free["rows"][1]["delta"] + 20
+    assert np.log10(row["age_gyr"]) + 9 == pytest.approx(_Lifetime(hot, -0.3).log_age_of(row["mass"]))
+    with pytest.raises(ValueError):
+        fit_giant_companion(sed, (4800, 100), (2.5, 0.2), (-0.3, 0.15), m2_grid=(), template=template,
+                            model=hot, luminosity="massfree", coeval=True)

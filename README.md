@@ -113,7 +113,8 @@ best constrained there:
   a 100 K x 0.2 dex x 0.2 dex grid in Teff, log g and [M/H].
 - **Luminosity.** The giant's luminosity is a free scale, or, with
   `luminosity="parsec"`, it is tied to the fitted parallax by the M_Ks
-  density of PARSEC giants near its labels.
+  density of PARSEC giants near its labels and the PARSEC masses at its
+  Teff and M_Ks. `coeval=True` then places the companion at the giant's age.
 - **Companion.** The companion is the hot-dwarf model above.
 
 See [model and limitations](docs/model.md) for the full description and
@@ -221,14 +222,15 @@ Giants with a hot companion:
   excludes companions from 2 solar masses upward (median).
 - **Luminosity and dust.** By default the giant's luminosity is a free
   scale at the catalogue parallax. `luminosity="parsec"` fits the parallax
-  and ties the luminosity to it through a PARSEC M_Ks prior and bounds on
-  the implied mass; `dust_prior=` adds the Edenhofer map E. With both, and
+  and ties the luminosity to it through PARSEC priors on M_Ks and on the
+  implied mass; `dust_prior=` adds the Edenhofer map E, and `coeval=True`
+  holds the companion to the giant's age and below its mass. With these and
   zero-point-corrected parallaxes passed through `parallax=`, the threshold
-  stays at 10 and injected 2 solar-mass companions are detected in 97.1 per
-  cent of cases.
+  is 11 and injected 2 solar-mass companions are detected in 97.1 per cent
+  of cases.
 - **Assumptions.** The fit needs Teff, log g and [M/H] priors on the
   APOGEE scale. Giant and companion share only extinction and, with
-  `luminosity=`, the parallax ([giant validation](docs/validation-giant.md)).
+  `luminosity=`, the parallax, and with `coeval=True` the age ([giant validation](docs/validation-giant.md)).
 
 Hot subdwarfs and their companions:
 

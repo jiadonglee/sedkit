@@ -17,7 +17,7 @@ print(result["best_m2"], result["detection"], result["m2_excluded"])
 
 `teff`, `logg` and `feh` are Gaussian label priors on the APOGEE scale. The default empirical giant template is combined with solar-metallicity, 0.01-Gyr main-sequence companions on a 1.5–15-solar-mass grid. `use_wise=True` is the default here.
 
-`GiantTemplate().evaluate(teff, logg, mh)` returns template flux and error information; `in_support` checks label support. Giant brightness is freely scaled by default. `luminosity="parsec"` adds an evolutionary luminosity prior and mass bounds; `"massfree"` retains mass bounds. `parallax=(mean, sigma)` replaces the catalogue value. `dust_prior` constrains extinction at the trial distance.
+`GiantTemplate().evaluate(teff, logg, mh)` returns template flux and error information; `in_support` checks label support. Giant brightness is freely scaled by default. `luminosity="parsec"` adds an evolutionary luminosity prior and mass bounds; `"massfree"` retains mass bounds. `parallax=(mean, sigma)` replaces the catalogue value. `dust_prior` constrains extinction at the trial distance. With `luminosity="parsec"`, `coeval=True` holds the companion at the age of the giant.
 
 `rows` holds each mass fit, with M2=0 denoting the giant alone. `detection` is the giant-only objective minus the profile minimum. A row's `delta` is its objective minus the giant-only value. `m2_excluded` is the first grid mass above the best mass exceeding the requested objective threshold. See [giant validation](../validation-giant.md).
 
