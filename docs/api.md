@@ -2,8 +2,32 @@
 
 ## Observations
 
-`download(source_id, cache_dir="data", refresh=False)` returns an `SED`.
+`download(source_id, cache_dir="data", refresh=False, uv=False)` returns an `SED`.
 Alternatively use `download(ra=..., dec=..., radius_arcsec=2)`.
+
+`uv=True` attaches archival GALEX, Swift/UVOT and XMM-OM crossmatches in
+`sed.metadata['uv']`. `download_uv(sed, cache_dir="data")` adds the same
+records to an existing SED. Save it with `sed.save(...)` to retain them.
+
+`crossmatch_uv(sources, cache_dir="data/uv", catalogues=("galex", "swift", "xmm"),
+radius_arcsec=3, refresh=False)` accepts an Astropy Table with `source_id`,
+`ra`, `dec` in degrees and optional `pmra`, `pmdec` in mas/yr, `ref_epoch`
+in Julian years (default 2016). It returns records keyed by source ID.
+VizieR catalogues are [GALEX GR6/7 AIS](https://cdsarc.cds.unistra.fr/ftp/II/335/ReadMe),
+[UVOTSSC](https://heasarc.gsfc.nasa.gov/w3browse/all/swuvotssc.html) and
+[XMM-SUSS5.0](https://cdsarc.cds.unistra.fr/ftp/II/370/ReadMe).
+Each keeps every matched observation, separation, AB magnitude, magnitude
+error and raw row. `usable` requires measured positive errors and clean
+quality flags; Swift/XMM also require point-source flags. GALEX applies
+the existing bright-source thresholds. Multiple distinct matched sources
+are marked `ambiguous` and their bands are excluded. ECSV tables and
+`uv.json` are cached; changed positions or radius require `refresh=True`.
+
+UV records are diagnostic photometry, separate from the 168 fitting
+channels. No catalogue match supplies no upper limit or coverage statement.
+Proper motion uses approximate observing epochs: 2007 for GALEX, 2007.5
+for Swift and 2010 for XMM. High-proper-motion associations need individual
+observation epochs; clean photometric flags do not establish a UV excess.
 
 `SED(flux, error, mask, parallax_mas, parallax_error_mas=0, source_id="")`
 accepts a user's own observations. Arrays have 168 channels:
@@ -33,7 +57,7 @@ all arguments, examples and cache semantics.
 ## Prediction
 
 ```python
-from sedkit import StellarModel
+from spbin import StellarModel
 model = StellarModel()
 pair = model.evaluate(m1=0.75, q=0.8, age_gyr=5, feh=0)
 ```
@@ -57,7 +81,7 @@ establishes real-data accuracy.
 ## Composable likelihood
 
 ```python
-from sedkit import loglike_sed
+from spbin import loglike_sed
 ll_sed = loglike_sed(sed, m1=0.75, q=0.8, parallax_mas=20,
                     age_gyr=5, feh=0, model=model)
 ```
@@ -113,7 +137,7 @@ determinant without priors.
 ## HR-diagram location
 
 ```python
-from sedkit import locate, fit_star
+from spbin import locate, fit_star
 
 where = locate(sed, extinction=0.0, dust_prior=None)
 result = fit_star(sed, region=None, labels=None, extinction=0.0,
@@ -141,13 +165,20 @@ dwarfs of the `ms`, `wd` and `hot_ms` regions (`None` fits them). `options`
 are keyword arguments of the route function and take precedence. The result
 holds `location`, `region`, the route's own `result`, `objectives`, `delta`
 and `preferred`, the simplest hypothesis within `tie` of the lowest
-objective. Unsupported regions, and the giant region without `labels`,
+objective. In the `ms` region `detection_statistic` holds
+objective(dwarf) − objective(composite) for `ms+ms` and `wd+dwarf`.
+`threshold` is `{"ms+ms": 59.0, "wd+dwarf": None}` when the fit has
+`feh=None`, `fit_parallax=True` and a fitted extinction, the configuration
+in which 0 of 197 independent RV-constant dwarfs exceed 59; otherwise it
+is `None`. No wd+dwarf threshold is calibrated
+([validation](validation-whitedwarf.md#main-sequence-region-of-fit_star)).
+Unsupported regions, and the giant region without `labels`,
 return `result=None` with the reason in `location`.
 
 ## Giants with a hot companion
 
 ```python
-from sedkit import download, fit_giant_companion
+from spbin import download, fit_giant_companion
 sed = download("465986123215151616", cache_dir="data")
 result = fit_giant_companion(sed, teff=(4895, 150), logg=(2.54, 0.3), feh=(-1.22, 0.2),
                              threshold=10)
@@ -185,7 +216,7 @@ stars, for example by a zero-point-corrected or non-single-star parallax;
 `download` stores the uncorrected Gaia DR3 value.
 
 ```python
-from sedkit import EdenhoferPrior
+from spbin import EdenhoferPrior
 result = fit_giant_companion(sed, teff=(4895, 150), logg=(2.54, 0.3), feh=(-1.22, 0.2),
                              luminosity="parsec", parallax=(0.374, 0.020),
                              dust_prior=EdenhoferPrior(), threshold=10)
@@ -214,8 +245,8 @@ thresholds calibrated on control giants are 10 for the default fit and for
 ## Hot subdwarfs and their companions
 
 ```python
-from sedkit import download, EdenhoferPrior
-from sedkit.subdwarf import fit_subdwarf_companion, blue_xp
+from spbin import download, EdenhoferPrior
+from spbin.subdwarf import fit_subdwarf_companion, blue_xp
 sed = download("1601000947085068160", cache_dir="data")
 result = fit_subdwarf_companion(sed, companions=("dwarf", "subgiant"), fit_parallax=True,
                                 dust_prior=EdenhoferPrior(), subdwarf_prior=dict(logg=(5.6, 0.3)))
@@ -272,7 +303,7 @@ tier.
 ## Plotting
 
 `plot(sed, result=None, path=None, *, axes=None, components=True, title=None)`
-returns a Matplotlib Figure in the blue/coral [sedkit palette](appearance.md).
+returns a Matplotlib Figure in the blue/coral [spbin palette](appearance.md).
 Single-star fits are orange and binary fits blue. Save it with `path=` or `fig.savefig(...)`.
 The paper-style upper panel shows linear lambda F_lambda in physical units;
 the lower panel shows ln(F/F_single), or ln(F/F_binary) for a binary-only
@@ -287,7 +318,7 @@ The plotting style is scoped to the call; spectra are not normalized.
 
 ## Photocentre orbits
 
-`sedkit.orbit.solve_orbit(a0_mas, parallax_mas, period_day, m1, age_gyr=5,
+`spbin.orbit.solve_orbit(a0_mas, parallax_mas, period_day, m1, age_gyr=5,
 feh=0, model=None)` returns the solutions of a Gaia photocentre orbit for a
 coeval main-sequence companion; `solve_amrf(a_obs, m1, ...)` takes the
 astrometric mass-ratio function directly. Each solution has `kind`, `q`,
@@ -302,7 +333,7 @@ the solutions by the fit objective, with `delta` above the best. See
 ## DA white dwarfs
 
 ```python
-from sedkit import WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
+from spbin import WhiteDwarfModel, fit_whitedwarf_companion, whitedwarf_light_limit
 
 fit_wd = fit_whitedwarf_companion(sed)
 light = whitedwarf_light_limit(sed, masses=[.6, .8, 1.], delta=9.)
@@ -320,7 +351,10 @@ thin-H sensitivity. `predict(teff, mass)` gives 10-pc fluxes;
 free_radius=False, companion_age_gyr=5., companion_feh=0., extinction=0.,
 extinction_prior=None, dust_prior=None, parallax=None, fit_parallax=False,
 blue=None, galex=None, use_spherex=False, whitedwarf_prior=None,
-companion_prior=None, hypotheses=None)` compares `dwarf`, `wd`, and `wd+dwarf`.
+companion_prior=None, hypotheses=None)` compares `dwarf`, `wd`, and `wd+dwarf`;
+`detection_statistic` is the better single-star objective minus the
+`wd+dwarf` objective (threshold 11 for XP fits with free dwarf age and
+metallicity, fitted parallax and extinction).
 `companions=False` compares the two single-star hypotheses. `hypotheses=`
 selects any of `dwarf`, `ms+ms` (a coeval dwarf pair with free q, one
 component with fully correlated model errors), `wd` and `wd+dwarf`.

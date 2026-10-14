@@ -5,7 +5,7 @@
 and conditional G-band light envelopes for a WD companion.
 
 ```python
-from sedkit import WhiteDwarfModel, fit_whitedwarf_companion
+from spbin import WhiteDwarfModel, fit_whitedwarf_companion
 
 result = fit_whitedwarf_companion(sed, companion_feh=0.)
 composite = result["hypotheses"]["wd+dwarf"]
@@ -74,9 +74,13 @@ model brightness. `chi2` and `minus2lnL`
 are also returned. `preferred` names the smallest objective;
 `detection_statistic` is the composite improvement over the better
 single-star model. This statistic is a diagnostic, not a probability.
-The shape-reference model's XP-only control comparison used a threshold
-of 55. The absolute-scale model needs its own composite-detection
-calibration; changing the model, data or priors changes that threshold's scope.
+On XP with free dwarf age and metallicity under a spectroscopic
+metallicity prior, fitted parallax and a dust-map extinction prior, a
+threshold of 11 lies above all 230 RV-constant training controls; 1 of
+200 independent FGK controls and 4 of 289 independent single DAs exceed
+it, while 99 of 126 SDSS DA/M systems do. Changing the model, data or
+priors changes that threshold's scope. For the main-sequence region of
+`fit_star`, see [validation](validation-whitedwarf.md#main-sequence-region-of-fit_star).
 
 On 289 independent single DAs at 100--150 pc, the M–R fit gives
 +1.40% Teff bias and 3.54% robust scatter; absolute XP normalization
@@ -97,8 +101,8 @@ faint-WD mode with the luminous dwarf as star 1.
 ## Conditional WD light limits
 
 ```python
-from sedkit import whitedwarf_light_limit
-from sedkit.orbit import solve_dark_companion
+from spbin import whitedwarf_light_limit
+from spbin.orbit import solve_dark_companion
 
 limit = whitedwarf_light_limit(
     sed, masses=[0.6, 0.8, 1.0], delta=9.,

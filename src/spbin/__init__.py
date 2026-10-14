@@ -13,6 +13,7 @@ from .plot import plot
 from .fetch import download
 from .gaia import query_gaia, download_gaia
 from .spherex import download_spherex, load_spherex
+from .uv import crossmatch_uv, download_uv
 
 __version__ = "0.2.0"
-__all__ = ["SED", "StellarModel", "EdenhoferPrior", "download", "query_gaia", "download_gaia", "download_spherex", "load_spherex", "fit", "loglike_sed", "plot", "GiantTemplate", "fit_giant_companion", "SubdwarfModel", "fit_subdwarf_companion", "WhiteDwarfModel", "fit_whitedwarf_companion", "whitedwarf_light_limit", "loglike_whitedwarf_sed", "locate", "fit_star"]
+__all__ = ["SED", "StellarModel", "EdenhoferPrior", "download", "query_gaia", "download_gaia", "download_spherex", "load_spherex", "crossmatch_uv", "download_uv", "fit", "loglike_sed", "plot", "GiantTemplate", "fit_giant_companion", "SubdwarfModel", "fit_subdwarf_companion", "WhiteDwarfModel", "fit_whitedwarf_companion", "whitedwarf_light_limit", "loglike_whitedwarf_sed", "locate", "fit_star"]

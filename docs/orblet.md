@@ -1,6 +1,6 @@
 # Connecting to orblet
 
-sedkit supplies the stellar likelihood and light ratio; orblet supplies
+spbin supplies the stellar likelihood and light ratio; orblet supplies
 orbital predictions and likelihoods. A shared parameter proposal supplies
 M1, q, age, metallicity, parallax and orbital elements.
 A joint fit composes
@@ -11,7 +11,7 @@ A joint fit composes
 `StellarModel.evaluate` returns the true component masses, absolute spectra,
 G magnitudes and `beta_g = F_G,2/F_G,1`. For a primary-frame orbit, the signed
 photocentre scaling is `(q - beta_g) / (q * (1 + beta_g))`.
-sedkit returns this as `a_phot_over_a1`; it agrees with orblet's
+spbin returns this as `a_phot_over_a1`; it agrees with orblet's
 `signed_photocentre_axis_ratio(q, beta)` convention.
 
 Scale the primary orbit returned by `campbell_xy` by this factor before

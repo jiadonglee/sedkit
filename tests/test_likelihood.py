@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel, loglike_sed
-from sedkit.fit import neg2_log_likelihood
+from spbin import SED, StellarModel, loglike_sed
+from spbin.fit import neg2_log_likelihood
 
 
 def test_composable_likelihood_has_no_catalogue_parallax_constraint():

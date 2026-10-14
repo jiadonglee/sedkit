@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="docs/assets/sedkit-logo.png" width="280" alt="sedkit logo">
+  <img src="docs/assets/spbin-logo.png" width="280" alt="spbin logo">
 </p>
-<p align="center">Download and fit stellar spectral energy distributions.</p>
+<p align="center">Spectrophotometric binaries: fit Gaia XP and infrared SEDs of single stars and unresolved binaries.</p>
 
 <p align="center">
   <picture>
@@ -10,17 +10,17 @@
   </picture>
 </p>
 
-sedkit combines public Gaia DR3 XP spectra with Gaia-linked 2MASS and
-AllWISE photometry. Its stellar model is a hybrid SED emulator: a network
-trained on real spectra where stars with good labels exist, synthetic
-atmospheres calibrated on real stars where they do not, and PARSEC stellar
-evolution tying both to mass, age and metallicity. It predicts absolute
-fluxes at the Gaia parallax for a single star or a coeval binary, tests red
-giants for hot companions, fits hot subdwarfs with or without a cool
-companion, and tells whether a Gaia astrometric orbit comes from a faint
-companion, a hidden near-equal-mass twin or a luminous star of another kind. The package runs
-on NumPy and SciPy, with no J-CAPS installation, JAX, GPU or separate model
-download.
+spbin fits single stars and unresolved binaries to public Gaia DR3 XP
+spectra combined with Gaia-linked 2MASS and AllWISE photometry. Its stellar
+model is a hybrid SED emulator: a network trained on real spectra where stars
+with good labels exist, synthetic atmospheres calibrated on real stars where
+they do not, and PARSEC stellar evolution tying both to mass, age and
+metallicity. It predicts absolute fluxes at the Gaia parallax for a single
+star or a coeval binary, tests red giants for hot companions, fits hot
+subdwarfs with or without a cool companion, and tells whether a Gaia
+astrometric orbit comes from a faint companion, a hidden near-equal-mass
+twin or a luminous star of another kind. The package runs on NumPy and
+SciPy, with no J-CAPS installation, JAX, GPU or separate model download.
 
 ## How the model is built
 
@@ -161,7 +161,11 @@ and absolute Gaia fluxes of 294 single DAs. On 289 independent stars,
 with extinction and parallax constraints, the cooling-relation fit gives
 1.4% temperature bias and 3.5% robust scatter. Its absolute-flux bias is
 1.9%, with about 14% source scatter. Masses remain conditional on the
-C/O cooling relation and reference gravity scale. See the
+C/O cooling relation and reference gravity scale. For 126 SDSS DA+M
+systems the WD temperature scatter is 13.9%, and the composite statistic
+exceeds its threshold of 11 for 99 of them. For 29 Gaia/RV WD+MS orbits,
+the allowed WD light moves the orbit's WD mass by a median 0.037 solar
+masses (0.025 with GALEX caps). See the
 [composite/orbit benchmarks](docs/validation-whitedwarf.md).
 
 Single stars:
@@ -286,7 +290,7 @@ Other measurements:
 ## Install
 
 ```bash
-pip install "sedkit[download] @ git+https://github.com/jiadonglee/sedkit.git"
+pip install "spbin[download] @ git+https://github.com/jiadonglee/spbin.git"
 ```
 
 For a local checkout, use `pip install -e ".[download]"`. Plain
@@ -297,7 +301,7 @@ acquisition, add the `spherex` extra; see [SPHEREx downloads](docs/spherex.md).
 ## One source
 
 ```python
-from sedkit import download, fit, plot
+from spbin import download, fit, plot
 
 sed = download("858860697467058688", cache_dir="data")
 result = fit(sed, age_gyr=5.0, feh=0.0)
@@ -316,10 +320,15 @@ Coordinates are also accepted: `download(ra=..., dec=...)`, in ICRS degrees
 at Gaia's reference epoch. Coordinate lookup requires exactly one Gaia
 match within 2 arcsec. Source IDs avoid coordinate-epoch ambiguity.
 
+Use `download(source_id, uv=True)` to also crossmatch GALEX, Swift/UVOT
+and XMM-OM. AB magnitudes, errors, quality flags and all matched observations
+are cached in `sed.metadata["uv"]` as diagnostics. UV photometry remains
+separate from the fitting channels; see the [UV API](docs/api.md#observations).
+
 ## One star, located first
 
 ```python
-from sedkit import download, fit_star
+from spbin import download, fit_star
 
 sed = download("1521154374020165376", cache_dir="data")
 result = fit_star(sed)
@@ -343,8 +352,15 @@ Hypotheses of one region share one data vector and likelihood, so their
 objectives compare directly; objectives of different regions do not. In the
 `ms` region MS+MS is one component with fully correlated model errors, as in
 `fit`. `preferred` is the simplest hypothesis within `tie=1` of the lowest
-objective; no composite-detection threshold is calibrated for the `ms`
-region. `region=` overrides the location and `options=` passes arguments to
+objective. In the `ms` region `detection_statistic` gives
+objective(dwarf) − objective(composite) for MS+MS and DA+dwarf. Fitted with
+`feh=None, fit_parallax=True` and a fitted extinction, an MS+MS statistic
+above the returned `threshold` of 59 occurs for 0 of 197 independent
+RV-constant dwarfs and 22 per cent of 755 Gaia DR3 SB2s; near-twin pairs
+mostly stay below it. DA+dwarf has no calibrated threshold in this
+region: a WD giving about 1 per cent of the G light is not detected, and
+WD-dominated pairs belong to the `wd` region
+([validation](docs/validation-whitedwarf.md#main-sequence-region-of-fit_star)). `region=` overrides the location and `options=` passes arguments to
 the route. Age is free by default (`age_gyr=None`); location is sensitive to
 extinction beyond about 200 pc.
 
@@ -355,7 +371,7 @@ Prepare the Edenhofer posterior-sample map once on a server with enough
 memory; the full map is about 19 GB and is not downloaded by the fit.
 
 ```python
-from sedkit import EdenhoferPrior
+from spbin import EdenhoferPrior
 
 prior = EdenhoferPrior()  # load the existing map once and reuse it
 result = fit(sed, extinction=None, dust_prior=prior, fit_parallax=True)
@@ -388,7 +404,7 @@ epoch photometry and cache behaviour.
 ## Is a Gaia substellar candidate a hidden twin?
 
 A Gaia photocentre orbit constrains mass ratio and light ratio together.
-`sedkit.orbit.solve_orbit` finds the faint and luminous solutions;
+`spbin.orbit.solve_orbit` finds the faint and luminous solutions;
 `rank_roots` compares their absolute SEDs. XP and 2MASS prefer the luminous
 solution for a followed-up binary and the dark solution for LP 769-9.
 See [the method and worked example](docs/orbit.md) and
@@ -412,6 +428,8 @@ Four executed notebooks, run from `examples/`:
 comparing zero-extinction and Edenhofer-prior fits of a real SB2.
 
 ## Documentation
+
+[Website](https://jiadonglee.github.io/spbin/) · [English guide](https://jiadonglee.github.io/spbin/en/) · [中文文档](https://jiadonglee.github.io/spbin/zh/)
 
 - [API](docs/api.md): observations, predictions and fitting options.
 - [Model and limitations](docs/model.md): physical assumptions and support.

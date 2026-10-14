@@ -14,11 +14,11 @@ brighter than a single star the system is; an SED fit along each solution
 branch, with q re-solved from the orbit at every trial primary, decides
 between them.
 
-    from sedkit.orbit import solve_orbit, rank_roots
+    from spbin.orbit import solve_orbit, rank_roots
     roots = solve_orbit(a0_mas=0.6978, parallax_mas=13.913, period_day=339.57, m1=0.686)
     ranked = rank_roots(sed, roots)          # needs an observed SED
 
-Command line: python -m sedkit.orbit --a0 0.6978 --parallax 13.913 --period 339.57 --m1 0.686
+Command line: python -m spbin.orbit --a0 0.6978 --parallax 13.913 --period 339.57 --m1 0.686
 """
 
 from dataclasses import replace

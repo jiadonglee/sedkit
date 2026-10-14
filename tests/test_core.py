@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel, fit
-from sedkit.fit import neg2_log_likelihood
+from spbin import SED, StellarModel, fit
+from spbin.fit import neg2_log_likelihood
 
 
 @pytest.fixture(scope="module")
@@ -22,7 +22,7 @@ def test_absolute_binary_and_photocentre(model):
 
 
 def test_ks_anchor_follows_download_zero_point(model):
-    from sedkit.fetch import TRAINING_SCALE, ZERO_JY
+    from spbin.fetch import TRAINING_SCALE, ZERO_JY
     labels = model.labels([0.7])
     flux = model.predict_labels(labels)[0, 63]
     zero = ZERO_JY[2] * 299792458.0 * 10.0 / (model.wavelength_um[63] * 1000)**2 * TRAINING_SCALE[2]

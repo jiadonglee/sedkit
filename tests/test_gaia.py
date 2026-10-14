@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from astropy.table import Table, MaskedColumn
 
-from sedkit.gaia import _archive_ids, _ids, _votable, download_gaia, query_gaia
+from spbin.gaia import _archive_ids, _ids, _votable, download_gaia, query_gaia
 
 IDS = [4318465066420528001, 4318465066420528002]
 
@@ -50,7 +50,7 @@ def test_votable_preserves_arrays_units_masks_and_rejects_overflow():
 def test_batch_resume_and_unavailable(monkeypatch, tmp_path):
     links = Table({"ID": [f"Gaia DR3 {IDS[0]}"], "access_url": [
         "https://example.org/data?RETRIEVAL_TYPE=XP_CONTINUOUS&ID=unused"], "error_message": [""]})
-    monkeypatch.setattr("sedkit.gaia._discover", lambda *args: links)
+    monkeypatch.setattr("spbin.gaia._discover", lambda *args: links)
     calls = []
 
     def stream(url, path, **kwargs):
@@ -59,7 +59,7 @@ def test_batch_resume_and_unavailable(monkeypatch, tmp_path):
         archive(temporary, [IDS[0]])
         return temporary
 
-    monkeypatch.setattr("sedkit.gaia._stream", stream)
+    monkeypatch.setattr("spbin.gaia._stream", stream)
     rows = download_gaia(IDS, products=["XP_CONTINUOUS", "RVS"], cache_dir=tmp_path)
     assert rows[0]["source_ids"] == [IDS[0]]
     assert rows[0]["unavailable_source_ids"] == [IDS[1]]
@@ -78,7 +78,7 @@ def test_batch_resume_and_unavailable(monkeypatch, tmp_path):
 def test_failed_batch_retries_without_marking_complete(monkeypatch, tmp_path):
     links = Table({"ID": [f"Gaia DR3 {sid}" for sid in IDS], "access_url": [
         "https://example.org/data?RETRIEVAL_TYPE=RVS"] * 2})
-    monkeypatch.setattr("sedkit.gaia._discover", lambda *args: links)
+    monkeypatch.setattr("spbin.gaia._discover", lambda *args: links)
     delivered = IDS[:1]
 
     def stream(url, path, **kwargs):
@@ -86,7 +86,7 @@ def test_failed_batch_retries_without_marking_complete(monkeypatch, tmp_path):
         archive(temporary, delivered)
         return temporary
 
-    monkeypatch.setattr("sedkit.gaia._stream", stream)
+    monkeypatch.setattr("spbin.gaia._stream", stream)
     with pytest.raises(RuntimeError, match="IDs differ"):
         download_gaia(IDS, products="RVS", cache_dir=tmp_path)
     assert not list(tmp_path.glob("*.zip"))
@@ -113,7 +113,7 @@ def test_query_resume_cache_and_overflow(monkeypatch, tmp_path):
         data = raw.replace(b'</RESOURCE>', b'<INFO name="QUERY_STATUS" value="OVERFLOW"/></RESOURCE>') if overflow else raw
         temporary.write_bytes(data)
         return temporary
-    monkeypatch.setattr("sedkit.gaia._stream", stream)
+    monkeypatch.setattr("spbin.gaia._stream", stream)
     with pytest.raises(RuntimeError, match="OVERFLOW"):
         query_gaia("SELECT source_id FROM gaiadr3.gaia_source", cache_dir=tmp_path)
     assert not (tmp_path / "catalogue.vot").exists()

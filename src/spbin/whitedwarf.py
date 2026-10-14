@@ -334,7 +334,10 @@ class _Hypothesis:
         ratios = [.3, .6, .9, 1.] if "q" in self.names else [.6]
         seeds = []
         if initial is not None:
-            seeds.extend({**base, **initial, "t": np.log(t), "q": q} for t in temperatures for q in ratios)
+            # A companion adds light: also start from less massive primaries.
+            primary = {**base, **initial}["primary"]
+            seeds.extend({**base, **initial, "t": np.log(t), "q": q, "primary": max(primary + s, np.log(.1))}
+                         for t in temperatures for q in ratios for s in np.log([1., .97, .93, .87, .8]))
         for t, mass, age, q in product(temperatures, masses, ages, ratios):
             v = dict(base, t=np.log(t), primary=np.log(mass), age=np.log(age), q=q)
             if self.free_radius and "t" in self.names:

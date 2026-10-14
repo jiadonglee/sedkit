@@ -7,7 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-from sedkit import EdenhoferPrior, StellarModel, download, fit, plot
+from spbin import EdenhoferPrior, StellarModel, download, fit, plot
 
 
 def main(cache_dir="data", output_dir="data/extinction_example", map_fname=None):

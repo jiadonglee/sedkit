@@ -1,7 +1,7 @@
 # Extinction fitting with a 3D dust prior
 
 ```python
-from sedkit import EdenhoferPrior, download, fit
+from spbin import EdenhoferPrior, download, fit
 
 sed = download("858860697467058688", cache_dir="data")
 prior = EdenhoferPrior()  # load once, reuse across sources
@@ -70,14 +70,14 @@ penalized best fits, not a marginalized Bayes factor.
 
 ## Real-data example
 
-The executed [extinction and parallax notebook](../examples/05_extinction_parallax.ipynb)
+The executed [extinction and parallax notebook](https://github.com/jiadonglee/spbin/blob/main/examples/05_extinction_parallax.ipynb)
 compares fixed E/distance, fitted E at fixed distance, and jointly fitted E/parallax.
 It shows the absolute SEDs, fitted parameters and input priors.
 
 Install `pip install -e ".[download,dust]"` and run
 `python examples/04_extinction_prior.py --cache-dir data --output-dir data/extinction_example`.
 Use `--map /path/to/samples_healpix.fits` for an explicit map path.
-The [example script](../examples/04_extinction_prior.py) fits the Gaia DR3
+The [example script](https://github.com/jiadonglee/spbin/blob/main/examples/04_extinction_prior.py) fits the Gaia DR3
 SB2 `858860697467058688` with E=0 and with the map prior. It saves unchanged
 observations, fitted fluxes/components/masks, a JSON parameter summary,
 and PNG/PDF SED and prior plots. See the [real-map check](extinction-validation.md).

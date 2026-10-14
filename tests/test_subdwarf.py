@@ -1,11 +1,11 @@
 import numpy as np
 import pytest
 
-from sedkit import SED, StellarModel
-from sedkit.extinction import extinction_curve
-from sedkit.orbit import (branch_from_rv, campbell, mass_from_rv, photocentre_a0, solve_dark_companion,
+from spbin import SED, StellarModel
+from spbin.extinction import extinction_curve
+from spbin.orbit import (branch_from_rv, campbell, mass_from_rv, photocentre_a0, solve_dark_companion,
                           solve_luminous_pair, thiele_innes)
-from sedkit.subdwarf import (GALEX_BRIGHT, SubdwarfModel, fit_subdwarf_companion, physical)
+from spbin.subdwarf import (GALEX_BRIGHT, SubdwarfModel, fit_subdwarf_companion, physical)
 
 
 @pytest.fixture(scope="module")

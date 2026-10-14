@@ -266,7 +266,7 @@ The luminosity prior is stored at float16, so its penalties carry about
 
 ## Limitations
 
-- XP starts at 392 nm in sedkit, the hot table and the ZGR23 curve, so the
+- XP starts at 392 nm in spbin, the hot table and the ZGR23 curve, so the
   Balmer jump (330--390 nm) is not used. The 71-channel test (XP below
   392 nm) leaves 2 solar-mass sensitivity unchanged.
 - The companion is a non-rotating, solar-metallicity star at 10 Myr: on the

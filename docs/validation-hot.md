@@ -14,7 +14,7 @@ and single-lined binaries, without giants or supergiants, Be and peculiar
 stars, and without stars whose Ks absolute magnitude contradicts a
 main-sequence star at their spectroscopic Teff. The dwarfs are J-CAPS 1 kpc
 IRFM dwarfs at 7000--7500 K with |[Fe/H]| <= 0.3, held to the conditions
-of a sedkit fit: Teff to IRFM (20 K), log g to the PARSEC value of their
+of a spbin fit: Teff to IRFM (20 K), log g to the PARSEC value of their
 network fit (0.05) and E to the Edenhofer map (0.002). Each star was fitted
 with Teff, log g, E and flux scale under these priors. The anchor holdout is
 a random 20 per cent per Teff bin; the dwarf holdout is the J-CAPS

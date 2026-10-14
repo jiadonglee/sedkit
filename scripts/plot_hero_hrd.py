@@ -16,9 +16,9 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, LogNorm
 from matplotlib.patches import FancyBboxPatch
 
-from sedkit import GiantTemplate, StellarModel, SubdwarfModel, WhiteDwarfModel
-from sedkit.giant import _companion, _ks_zero_point
-from sedkit.plot import BINARY, INK, INK2, SINGLE
+from spbin import GiantTemplate, StellarModel, SubdwarfModel, WhiteDwarfModel
+from spbin.giant import _companion, _ks_zero_point
+from spbin.plot import BINARY, INK, INK2, SINGLE
 
 ROOT = Path(__file__).resolve().parents[1]
 DENSITY = ROOT / "docs/assets/gaia-hrd-density.npz"
@@ -53,7 +53,7 @@ def style(t):
 
 def density():
     if not DENSITY.exists():
-        from sedkit import query_gaia
+        from spbin import query_gaia
         table = query_gaia(ADQL, cache_dir=ROOT / "data/gaia-query/hrd-density", wait=1500)
         DENSITY.parent.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(DENSITY, ix=np.asarray(table["ix"], np.int16),

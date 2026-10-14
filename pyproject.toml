@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sedkit"
+name = "spbin"
 version = "0.2.0"
 description = "Download and fit stellar spectral energy distributions"
 readme = "README.md"
@@ -21,13 +21,13 @@ notebook = ["jupyterlab", "ipykernel"]
 test = ["pytest>=7", "astropy>=6", "requests>=2.31", "pyvo>=1.5"]
 
 [project.urls]
-Repository = "https://github.com/jiadonglee/sedkit"
+Repository = "https://github.com/jiadonglee/spbin"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-sedkit = ["models/*.npz", "models/*.txt", "models/stellar/*.npz", "models/stellar/*.json", "models/hot/*.npz", "models/hot/*.json", "models/giant/*.npz", "models/giant/*.json", "models/subdwarf/*.npz", "models/subdwarf/*.json", "models/whitedwarf/*.npz", "models/whitedwarf/*.json"]
+spbin = ["models/*.npz", "models/*.txt", "models/stellar/*.npz", "models/stellar/*.json", "models/hot/*.npz", "models/hot/*.json", "models/giant/*.npz", "models/giant/*.json", "models/subdwarf/*.npz", "models/subdwarf/*.json", "models/whitedwarf/*.npz", "models/whitedwarf/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

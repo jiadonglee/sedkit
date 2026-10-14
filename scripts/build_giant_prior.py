@@ -20,7 +20,7 @@ from pathlib import Path
 
 import numpy as np
 
-OUT = Path(__file__).resolve().parents[1] / "src/sedkit/models/giant"
+OUT = Path(__file__).resolve().parents[1] / "src/spbin/models/giant"
 
 
 def main():

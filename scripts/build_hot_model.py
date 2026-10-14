@@ -9,7 +9,7 @@ The run (J-CAPS experiments/hot_emulator_v5_20261004) provides:
   out/model_error.npz      fractional covariance basis (64, k) and diagonal (64,)
   out/metrics_stage3.json, out/model_error_summary.json, out/operator_check_stars.csv
 
-The table is cut to the nodes spanning the supported Teff range, XP is converted to the sedkit
+The table is cut to the nodes spanning the supported Teff range, XP is converted to the spbin
 unit 1e-18 W m^-2 nm^-1, and values are stored as float32. The error
 term is expanded to the 168 model channels (NaN beyond J/H/Ks).
 
@@ -22,7 +22,7 @@ from pathlib import Path
 
 import numpy as np
 
-OUT = Path(__file__).resolve().parents[1] / "src/sedkit/models/hot"
+OUT = Path(__file__).resolve().parents[1] / "src/spbin/models/hot"
 SUPPORT = {"teff": [7000.0, 30000.0], "logg": [3.0, 4.75], "feh": [-0.3, 0.3]}
 TERM = "hot_v5"
 VERSION = "hot-v5"
@@ -65,7 +65,7 @@ def main():
         support=SUPPORT, channels="XP61 + J/H/Ks (64); W1/W2 and SPHEREx are not predicted",
         units="ln F_lambda at 10 pc for R = 1 Rsun, 1e-18 W m^-2 nm^-1",
         grids="CK04 (Castelli & Kurucz 2003) below 15 kK, TLUSTY BSTAR2006 15-29 kK, solar",
-        extinction="ZGR23 E (the sedkit curve) in the calibration",
+        extinction="ZGR23 E (the spbin curve) in the calibration",
         anchors="hot anchors (RV-constant and SB1, screened) and J-CAPS 1 kpc IRFM dwarfs at 7000-7500 K",
         holdout_median_rms=metrics["acceptance"],
         model_error=error_summary)
