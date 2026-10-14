@@ -2237,7 +2237,8 @@ return <code>result=None</code> with the reason in <code>location</code>.</p>
 </code></pre></div>
 <p><code>fit_giant_companion(sed, teff, logg, feh, *, m2_grid=M2_GRID,
 companion_age_gyr=0.01, extinction_prior=None, tilt_sigma=0.15,
-use_wise=True, template=None, model=None, threshold=None)</code> fits an
+use_wise=True, template=None, model=None, threshold=None, luminosity=None,
+parallax=None, dust_prior=None, coeval=False)</code> fits an
 empirical giant template plus a main-sequence companion of each grid mass
 (1.5--15 solar masses by default) at the catalogue parallax; see the
 <a href="../model/#giant-route">giant route</a>. <code>teff</code>, <code>logg</code> and <code>feh</code> are
@@ -2251,8 +2252,9 @@ parallax. Three keywords add that constraint:</p>
 <ul>
 <li><code>luminosity="parsec"</code> fits the parallax within 3 sigma (penalty z^2) and
   ties the giant's luminosity to it. The PARSEC M_Ks density at the giant's
-  labels enters as a prior, and the implied mass (from M_Ks, BC_Ks, log g and
-  Teff) is held in 0.2--10 solar masses.</li>
+  labels enters as a prior. The implied mass (from M_Ks, BC_Ks, log g and
+  Teff) is held to the PARSEC masses at its Teff, M_Ks and [M/H], and within
+  0.2--10 solar masses.</li>
 <li><code>luminosity="massfree"</code> keeps only the mass bounds, which allows a
   stripped giant.</li>
 <li><code>dust_prior=EdenhoferPrior(...)</code> adds the map E at the trial distance.
@@ -2260,13 +2262,17 @@ parallax. Three keywords add that constraint:</p>
   E is held above the value at 1.2 kpc minus 0.04. It needs
   <code>sed.metadata["ra"]</code> and <code>["dec"]</code> and replaces <code>extinction_prior</code>.</li>
 </ul>
+<p><code>coeval=True</code>, with <code>luminosity="parsec"</code>, makes the companion coeval with
+the giant: it takes the main-sequence lifetime of the giant's implied mass as
+its age, and a companion heavier than the giant is charged by a wall
+(<a href="../model/#giant-route">giant route</a>).</p>
 <p><code>parallax=(mean, sigma)</code> replaces the SED's parallax and error for both
 stars, for example by a zero-point-corrected or non-single-star parallax;
 <code>download</code> stores the uncorrected Gaia DR3 value.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spbin</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdenhoferPrior</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">fit_giant_companion</span><span class="p">(</span><span class="n">sed</span><span class="p">,</span> <span class="n">teff</span><span class="o">=</span><span class="p">(</span><span class="mi">4895</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">logg</span><span class="o">=</span><span class="p">(</span><span class="mf">2.54</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span> <span class="n">feh</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.22</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
                              <span class="n">luminosity</span><span class="o">=</span><span class="s2">"parsec"</span><span class="p">,</span> <span class="n">parallax</span><span class="o">=</span><span class="p">(</span><span class="mf">0.374</span><span class="p">,</span> <span class="mf">0.020</span><span class="p">),</span>
-                             <span class="n">dust_prior</span><span class="o">=</span><span class="n">EdenhoferPrior</span><span class="p">(),</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+                             <span class="n">dust_prior</span><span class="o">=</span><span class="n">EdenhoferPrior</span><span class="p">(),</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
 </code></pre></div>
 <p><code>result["rows"]</code> holds one row per mass, M2 = 0 being the giant alone:
 <code>objective</code>, its <code>delta</code> from the giant alone, its -2 ln L part <code>minus2lnL</code>,
@@ -2277,13 +2283,14 @@ tolerance; a profile point without it is not a reliable minimum.
 With <code>luminosity</code> or <code>dust_prior</code>, rows also hold the fitted <code>z</code> and
 <code>parallax_mas</code>, the giant's <code>mks</code>, <code>luminosity</code>, <code>radius</code> and <code>mass</code>, the map
 <code>e_map</code> and <code>distance_pc</code>, and the penalties <code>label_penalty</code>,
-<code>luminosity_penalty</code> (<code>parsec_penalty</code> plus <code>mass_penalty</code> for "parsec"),
-and <code>dust_penalty</code>. <code>detection</code> is the objective
+<code>luminosity_penalty</code> (<code>parsec_penalty</code>, <code>parsec_mass_penalty</code> and
+<code>mass_penalty</code> for "parsec"), and <code>dust_penalty</code>. With <code>coeval</code>, rows also
+hold the system's <code>age_gyr</code> and the <code>coeval_penalty</code> of the wall. <code>detection</code> is the objective
 of the giant alone minus the profile minimum and <code>best_m2</code> the mass at the
 minimum. With <code>threshold=t</code>, <code>m2_excluded</code> is the lowest grid mass above
 <code>best_m2</code> whose objective exceeds the minimum by more than t. The
-thresholds calibrated on control giants are 10 for the default fit and for
-<code>luminosity="parsec"</code> with or without the dust prior, and 11 for
+thresholds calibrated on control giants are 10 for the default fit, and 11
+for <code>luminosity="parsec"</code> with or without the dust prior or <code>coeval</code>, and for
 <code>luminosity="massfree"</code> with the dust prior
 (<a href="../validation-giant/">giant validation</a>). <code>dust_prior=</code> without
 <code>luminosity=</code> has no calibrated threshold.</p>

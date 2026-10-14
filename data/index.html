@@ -2003,8 +2003,9 @@ template <code>giant_grid.npz</code> from APOGEE DR17 giants with Gaia XP, 2MASS
 AllWISE. <code>scripts/build_giant_prior.py</code> builds <code>parsec_prior.npz</code> on the same
 grid: the M_Ks density of PARSEC v1.2S giants near each node, with an
 age--metallicity weight fitted to template training giants with precise
-parallaxes, and the PARSEC bolometric correction BC_Ks. <code>summary.json</code>
-records both builds.</p>
+parallaxes, the PARSEC bolometric correction BC_Ks, and the mass
+distribution of the same giants at each Teff, M_Ks and [M/H] (run script
+<code>p11_mass_prior.py</code>). <code>summary.json</code> records both builds.</p>
 <h3 id="hot-subdwarf-atmospheres">Hot-subdwarf atmospheres<a class="headerlink" href="#hot-subdwarf-atmospheres" title="Permanent link">&para;</a></h3>
 <p>A subdwarf table needs Teff 20--45 kK, log g 5--6.5, a helium axis and
 300 nm--5 um, from NLTE or line-blanketed atmospheres. The public grids:</p>

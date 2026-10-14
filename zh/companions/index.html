@@ -1958,7 +1958,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"best_m2"</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">"detection"</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">"m2_excluded"</span><span class="p">])</span>
 </code></pre></div>
 <p><code>teff</code>、<code>logg</code>、<code>feh</code> 为 APOGEE 标签尺度上的高斯先验。默认用经验巨星模板，扫描 1.5–15 太阳质量、年龄 0.01 Gyr 的太阳金属丰度主序伴星。默认 <code>use_wise=True</code>，不同于基础 <code>fit</code>。</p>
-<p><code>GiantTemplate().evaluate(teff, logg, mh)</code> 返回模板通量及模型误差信息；<code>in_support</code> 检查标签支持。默认巨星亮度为自由缩放；<code>luminosity="parsec"</code> 加入演化亮度先验和质量边界，<code>"massfree"</code> 保留质量边界。<code>parallax=(mean, sigma)</code> 可替换目录视差；<code>dust_prior</code> 随试探距离求消光约束。</p>
+<p><code>GiantTemplate().evaluate(teff, logg, mh)</code> 返回模板通量及模型误差信息；<code>in_support</code> 检查标签支持。默认巨星亮度为自由缩放；<code>luminosity="parsec"</code> 加入演化亮度先验和质量边界，<code>"massfree"</code> 保留质量边界。<code>parallax=(mean, sigma)</code> 可替换目录视差；<code>dust_prior</code> 随试探距离求消光约束。在 <code>luminosity="parsec"</code> 下，<code>coeval=True</code> 令伴星与巨星同龄。</p>
 <p><code>rows</code> 保存每个伴星质量的拟合，其中 M2=0 为巨星单星。<code>detection</code> 为巨星单星目标函数减去扫描最低值；每行的 <code>delta</code> 则为该行目标函数减去巨星单星值。<code>m2_excluded</code> 是最佳质量以上、超过指定阈值的第一个网格质量。详见 <a href="../../validation-giant/">巨星验证</a>。</p>
 <h3 id="_3">热亚矮星<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spbin</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_subdwarf_companion</span>

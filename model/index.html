@@ -2048,7 +2048,7 @@ metallicity, at the parallax; W1/W2 follow the Rayleigh--Jeans
 tail of its Ks flux. Giant and companion share ZGR23 E &gt;= 0 on a curve
 multiplied by (lambda / 0.55 micron)**tilt, with a Gaussian tilt prior
 (default width 0.15, the scatter of free tilts of reddened control
-giants). They share nothing else: no common age and no q &lt;= 1. Label
+giants). By default they share nothing else: no common age and no q &lt;= 1. Label
 priors on the template's APOGEE scale are required. The fit profiles the
 objective, -2 ln L with the template and companion covariances plus the
 priors, over a grid of M2. For each M2, the scale, E and tilt are fitted
@@ -2074,6 +2074,30 @@ adds -2 ln(p / p_mode) of M_Ks near the labels:</p>
 <li>Nodes without PARSEC giants in the kernel (1142 of 6603) carry no M_Ks
   constraint; there the mass walls alone bound the luminosity.</li>
 </ul>
+<p>At fixed Teff and log g, M_Ks fixes the mass, but log g is fitted within a
+wide prior. A second term therefore holds the implied mass to the masses
+PARSEC gives a giant of the fitted Teff, M_Ks and [M/H]:</p>
+<ul>
+<li>Cells lie on the template's Teff and [M/H] axes and at 0.1 mag in M_Ks
+  from -10 to +4. The same points and weights are used, with a kernel of
+  200 K, 0.15 mag and 0.15 dex.</li>
+<li>The current-mass histogram in log10 M is smoothed by 0.06 dex, which
+  covers the log g and Teff scales of the template. Its range is where the
+  smoothed density exceeds 1e-3 of its peak, padded by 0.1 dex. A uniform
+  floor over that range makes any mass inside it cost at most 10; beyond the
+  range the penalty rises as (distance / 0.05 dex)^2.</li>
+<li>Cells with too few PARSEC giants, such as the Hertzsprung gap, take the
+  curve of the nearest constrained cell within three kernel widths.</li>
+</ul>
+<p>With <code>coeval=True</code> (and "parsec") the companion shares the giant's age. That
+age is the main-sequence lifetime of the giant's implied mass, the youngest
+age a giant of that mass can have. The companion is interpolated in log age
+between the PARSEC table ages, with its covariance mixed like the template's.
+Its tracks and spectrum take the giant's prior [M/H] clipped to +-0.3 (the hot
+route's range), and a Gaussian wall of 0.02 dex holds M2 at or below the
+giant's mass: without mass exchange, a heavier companion would have left the
+main sequence first. A coeval fit can therefore keep a heavy companion only
+by making the giant heavier, which the PARSEC mass term charges.</p>
 <p>With <code>dust_prior=</code>, E follows the Edenhofer et al. (2023) map at the trial
 distance, with the map width widened by 0.04 in quadrature. Beyond
 1.2 kpc, near the map's 1.25 kpc edge, E is held above the 1.2 kpc value
