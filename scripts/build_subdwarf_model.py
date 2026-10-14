@@ -143,10 +143,10 @@ def _spectrum(url, session):
     return data[order, 0] / 10.0, np.pi * data[order, 1] * 1e-7
 
 
-class Reducer:
-    """Channels and passband fluxes of one surface spectrum, at 10 pc for R = 1 Rsun."""
+class XPOperator:
+    """The J-CAPS phase-0 forward model of the Gaia XP external calibration on XP_SAMPLING."""
 
-    def __init__(self, operator_dir, hot_run):
+    def __init__(self, operator_dir):
         sys.path.insert(0, str(Path(operator_dir) / "scripts"))
         import validate_calspec as V
         from forward_xp import ContinuousBases
@@ -154,7 +154,6 @@ class Reducer:
         from gaiaxpy.config.paths import config_path
         from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
         from forward_xp import FILES
-        from spbin.model import StellarModel
 
         self.V = V
         bases = ContinuousBases()
@@ -168,15 +167,9 @@ class Reducer:
             model = ExternalInstrumentModel.from_config_csv(*(f"{config_path}/{f}" for f in FILES[xp]))
             mask = np.where(self.weight[xp] > 0, 1.0, 0.0)
             self.design[xp] = SampledBasisFunctions.from_external_instrument_model(lam, mask, model).get_design_matrix()
-        wave = StellarModel().wavelength_um * 1000
-        self.nir = wave[61:66]
-        sph = wave[66:]
-        edges = np.r_[sph[0] - (sph[1] - sph[0]) / 2, (sph[1:] + sph[:-1]) / 2, sph[-1] + (sph[-1] - sph[-2]) / 2]
-        self.spherex_edges = edges
-        self.filters = _filters()
-        self.ew_max = float(np.load(Path(hot_run) / "out/balmer_index.npz")["ew_max_nm"])
 
-    def xp(self, wl, f10):
+    def __call__(self, wl, f10):
+        """XP_SAMPLING fluxes (1e-18 W m^-2 nm^-1) of a spectrum in erg s-1 cm-2 nm-1."""
         flam = f10 / 10.0   # erg s-1 cm-2 A-1
         out = []
         for i, xp in enumerate(("bp", "rp")):
@@ -184,6 +177,22 @@ class Reducer:
             c = band.coefficients(band.fg(wl, flam), self.p[2 + 3 * i:5 + 3 * i], self.V.KNOTS[xp])
             out.append(self.p[i] * self.weight[xp] * (c @ self.design[xp]))
         return (out[0] + out[1]) * 1e18
+
+
+class Reducer:
+    """Channels and passband fluxes of one surface spectrum, at 10 pc for R = 1 Rsun."""
+
+    def __init__(self, operator_dir, hot_run):
+        from spbin.model import StellarModel
+
+        self.xp = XPOperator(operator_dir)
+        wave = StellarModel().wavelength_um * 1000
+        self.nir = wave[61:66]
+        sph = wave[66:]
+        edges = np.r_[sph[0] - (sph[1] - sph[0]) / 2, (sph[1:] + sph[:-1]) / 2, sph[-1] + (sph[-1] - sph[-2]) / 2]
+        self.spherex_edges = edges
+        self.filters = _filters()
+        self.ew_max = float(np.load(Path(hot_run) / "out/balmer_index.npz")["ew_max_nm"])
 
     def reduce(self, wl, flux):
         f10 = flux * SCALE_10PC                  # erg s-1 cm-2 nm-1 at 10 pc

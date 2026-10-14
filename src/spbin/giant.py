@@ -49,12 +49,15 @@ class GiantTemplate:
     Fluxes are dereddened and normalised to their mean over 0.55--0.95 micron. Nodes lie on a Teff x log g x
     [M/H] grid; values between nodes are trilinear, and a point is supported only when all eight
     neighbouring nodes are. The covariance is fractional: N_BASIS columns plus a diagonal per node.
+    blue=True loads the template extended by the six blue_xp channels at 332-382 nm (channels 66-71), with
+    the covariance decomposed jointly over all 72 channels.
     """
 
-    def __init__(self):
-        with np.load(DATA / "giant_grid.npz", allow_pickle=False) as archive:
+    def __init__(self, blue=False):
+        with np.load(DATA / ("giant_blue.npz" if blue else "giant_grid.npz"), allow_pickle=False) as archive:
             grid = {key: archive[key] for key in archive.files}
         self.summary = json.loads((DATA / "summary.json").read_text())
+        self.blue = blue
         self.axes = (grid["teff_ax"], grid["logg_ax"], grid["mh_ax"])
         self.template = grid["template"]
         self.basis = grid["basis"].astype(float)
@@ -62,6 +65,8 @@ class GiantTemplate:
         self.n_eff = grid["n_eff"]
         self.wavelength_um = grid["wavelength_um"]
         self.supported = np.isfinite(self.template[..., :61]).all(-1) & np.isfinite(self.template[..., 63])
+        if blue:
+            self.supported &= np.isfinite(self.template[..., 66:]).all(-1)
 
     def _corners(self, teff, logg, mh):
         index, weight = [], []
@@ -88,7 +93,7 @@ class GiantTemplate:
         return self._corners(teff, logg, mh) is not None
 
     def evaluate(self, teff, logg, mh):
-        """Normalised flux (66 channels), fractional covariance columns and diagonal; None outside support.
+        """Normalised flux (66 or 72 channels), fractional covariance columns and diagonal; None outside support.
 
         Columns of the eight corner nodes are scaled by the square root of their weights, so the covariance
         is the weighted sum of the corner covariances.

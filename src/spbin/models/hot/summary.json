@@ -95,5 +95,156 @@
         "median_chi2_per_dof": 2.140835193076426
       }
     }
+  },
+  "uv": {
+    "file": "hot_uv.npz",
+    "grids": "CK04 solar below 15 kK (seam-matched to TLUSTY, tapered to 11 kK), TLUSTY BSTAR2006 15-29 kK, OSTAR2002 30 kK",
+    "operator": "J-CAPS phase0_forward_xp_20261003 transfer.json on 332-992 nm (XP channels 332-382 nm)",
+    "content": "ln(F / F_392) of the six blue XP channels and of the 2 nm coarse spectrum over 130-1100 nm",
+    "seam_max_abs_ln_blue": 0.13168568893135188,
+    "calibration": {
+      "anchors": "hot-table anchors (RV-constant, SB1 and 7-7.5 kK J-CAPS dwarfs) at their MAP labels",
+      "model": "ln(F_obs / F_model) per blue channel: training-anchor medians in Teff bins, linear in ln Teff between the bins' median Teff, flat beyond",
+      "bins_k": [
+        7000.0,
+        7500.0,
+        9000.0,
+        11500.0,
+        15000.0,
+        30000.0
+      ],
+      "node_teff_k": [
+        7162.6,
+        8222.1,
+        10241.1,
+        12831.8,
+        17351.1
+      ],
+      "offset": [
+        [
+          0.5535,
+          0.2044,
+          0.3762,
+          0.4076,
+          0.466,
+          0.1194
+        ],
+        [
+          0.9043,
+          0.2655,
+          0.4241,
+          0.4716,
+          0.4268,
+          0.0748
+        ],
+        [
+          0.4222,
+          0.1619,
+          0.3009,
+          0.3372,
+          0.2725,
+          0.0164
+        ],
+        [
+          0.066,
+          0.0514,
+          0.1669,
+          0.2259,
+          0.1941,
+          0.0017
+        ],
+        [
+          -0.2972,
+          -0.0249,
+          0.0936,
+          0.1599,
+          0.1553,
+          0.0017
+        ]
+      ],
+      "residuals": {
+        "train": {
+          "n": 531,
+          "median": [
+            -0.0232,
+            -0.003,
+            -0.005,
+            -0.0038,
+            -0.0009,
+            0.0003
+          ],
+          "robust_sd": [
+            0.1235,
+            0.0624,
+            0.0647,
+            0.0494,
+            0.0488,
+            0.0357
+          ],
+          "median_error": [
+            0.1722,
+            0.07,
+            0.0796,
+            0.0729,
+            0.0815,
+            0.0754
+          ]
+        },
+        "holdout": {
+          "n": 132,
+          "median": [
+            -0.0406,
+            -0.0058,
+            -0.0108,
+            0.0077,
+            0.0113,
+            0.0075
+          ],
+          "robust_sd": [
+            0.1438,
+            0.0756,
+            0.0786,
+            0.0535,
+            0.0551,
+            0.0333
+          ],
+          "median_error": [
+            0.171,
+            0.0744,
+            0.0852,
+            0.0785,
+            0.0878,
+            0.0823
+          ]
+        },
+        "holdout_above_9kK": {
+          "n": 36,
+          "median": [
+            -0.037,
+            0.01,
+            0.022,
+            0.0167,
+            0.0162,
+            0.0096
+          ],
+          "robust_sd": [
+            0.1672,
+            0.075,
+            0.0924,
+            0.0626,
+            0.0706,
+            0.0253
+          ],
+          "median_error": [
+            0.1643,
+            0.0925,
+            0.1277,
+            0.1125,
+            0.1267,
+            0.1055
+          ]
+        }
+      }
+    }
   }
 }

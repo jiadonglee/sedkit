@@ -168,14 +168,19 @@ The companion is a dwarf from `StellarModel()` (PARSEC mass, age and [M/H]
 through the network, supported Teff 2800--7498 K) or a subgiant from
 `GiantTemplate` with log g 3.2--3.8 and a free scale; its luminosity and
 radius follow from its Ks flux, the parallax and the PARSEC BC_Ks, and its
-mass g R^2 / G is held to 0.7--3 solar masses by walls of 0.1 dex. The two
+mass g R^2 / G is held to 0.7--3 solar masses by walls of 0.1 dex. A red
+giant companion uses `GiantTemplate(blue=True)` at log g 0--3.8: the
+template extended to the six blue XP channels at 332--382 nm, with its
+covariance decomposed jointly over all 72 channels; its M_Ks from the
+parallax carries the PARSEC M_Ks prior of the giant route. The two
 stars share the parallax and ZGR23 E, nothing else. The single-FGK
-hypothesis is one `StellarModel()` star. All hypotheses use one data
+hypothesis is one `StellarModel()` star, the single giant one template
+giant. All hypotheses use one data
 vector: XP and J/H/Ks (W1/W2 with `use_wise`, SPHEREx with `use_spherex`
 and without the subgiant), plus optional blue XP and GALEX points. Below
 392 nm the extinction curve is Gordon et al. (2023) R_V = 3.1 scaled to
-ZGR23 over 392--550 nm. A companion's flux below 392 nm is a blackbody
-joined to its 392--412 nm flux, with a 50 per cent error.
+ZGR23 over 392--550 nm. A dwarf or subgiant companion's flux below 392 nm
+is a blackbody joined to its 392--412 nm flux, with a 50 per cent error.
 
 Light fractions use a 2 nm spectrum of each component on the XP channel
 scale: the channels in 392--992 nm, the model spectrum beyond, joined at
@@ -189,6 +194,34 @@ parameters refitted at each node, then a free polish. `ranges` spans each
 reported quantity over the profile points and the interpolated crossings
 within 1 of the minimum: a profile interval in Teff, not a marginal
 posterior.
+
+
+Two main-sequence alternatives to an sdB beside a giant share the giant's
+parallax and E.
+
+- **Hot star (`hot_ms`).** 6800--30000 K on the PARSEC isochrones through
+  `StellarModel(hot=True)`; below 7000 K the network supplies its fluxes.
+  - Its blue XP channels and coarse spectrum come from CK04 and TLUSTY spectra
+    through the XP operator, relative to its 392 nm channel and calibrated on
+    hot anchors (5 per cent on the blue channels, 10 per cent on GALEX).
+  - The anchors start at 7000 K, so below that the offset is held at the first
+    node. At 6.8 kK the blue channels then lie up to 0.1 in ln above CoolUV and
+    above APOGEE dwarfs, and carry 12 per cent error.
+- **F/G/K star (`fg_ms`).** From `StellarModel()`, coeval with the giant
+  and at its [M/H].
+  - Its blue XP channels are its 392 nm channel times an empirical colour
+    ln(F / F_392), the kernel-weighted median of 35 k APOGEE DR17 dwarfs
+    within 500 pc at E < 0.05. The table spans 4400--6900 K and [M/H] -1 to
+    0.5 (`models/stellar/cool_blue.npz`, `scripts/build_cool_blue.py`).
+  - Its error is the star-to-star scatter, 5--9 per cent at 5200--6800 K
+    and 11--14 per cent below 5200 K, plus 2 per cent in quadrature. On a
+    hold-out half the median residual is below 0.002 in ln.
+  - The 392 nm channel lies on Ca II H and K, so these colours do not
+    follow a blackbody.
+- **Separation from an sdB.** The two stars overlap at 6800--6900 K, so
+  every Teff from 4400 K to 30 kK has a main-sequence alternative. On XP and
+  blue XP alone an F star near 6800 K and an sdB beside the same giant differ
+  by only 30--60 in objective, so the UV is what separates them.
 
 ## Limitations
 
