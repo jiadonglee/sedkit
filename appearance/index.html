@@ -1889,17 +1889,23 @@ orange; coeval-binary fits are blue. Line styles also distinguish the models.</p
 <h2 id="homepage-assets">Homepage assets<a class="headerlink" href="#homepage-assets" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../assets/spbin-logo.png">Logo</a>.</li>
+<li><a href="../assets/hero-hrd.png">HR diagram of binary classes</a>, with a
+  <a href="../assets/hero-hrd-dark.png">dark-theme version</a> and PDFs of both.</li>
 <li><a href="../assets/sed-example.png">SED example</a>, also available as <a href="../assets/sed-example.pdf">PDF</a>.</li>
 <li><a href="../assets/extinction-parallax-priors.png">Extinction and parallax priors</a>,
   also available as <a href="../assets/extinction-parallax-priors.pdf">PDF</a>.</li>
 </ul>
 <p>Recreate the scientific figures from the repository root:</p>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>scripts/plot_readme.py
+python<span class="w"> </span>scripts/plot_hero_hrd.py
 </code></pre></div>
 <p>The <a href="https://github.com/jiadonglee/spbin/blob/main/scripts/plot_readme.py">plotting script</a> reads the saved observations,
 model fluxes, masks and prior moments for Gaia DR3 <code>858860697467058688</code> in
 <a href="https://github.com/jiadonglee/spbin/tree/main/examples/results/extinction_20261003">the real-map example</a>.
 It requires no new fitting, catalogue acquisition or dust-map loading.
+The HR-diagram figure draws its composites from the bundled models over a
+binned Gaia DR3 HR diagram (stars within 400 pc at |b| &gt; 25 deg) stored in
+<code>docs/assets/gaia-hrd-density.npz</code>.
 The prior curves are input constraints evaluated at the fitted distances,
 not posterior uncertainty distributions. See <a href="../extinction/">the extinction method</a>.</p>
 
