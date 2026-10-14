@@ -38,8 +38,12 @@ def _bilinear(teff_ax, logg_ax, values, teff, logg):
     y = (logg - logg_ax[j]) / (logg_ax[j + 1] - logg_ax[j])
     if values.ndim == 3:
         x, y = x[:, None], y[:, None]
-    return ((1 - x) * (1 - y) * values[i, j] + x * (1 - y) * values[i + 1, j]
-            + (1 - x) * y * values[i, j + 1] + x * y * values[i + 1, j + 1])
+    weights = np.stack([(1 - x) * (1 - y), x * (1 - y), (1 - x) * y, x * y])
+    corners = np.stack([values[i, j], values[i + 1, j], values[i, j + 1], values[i + 1, j + 1]])
+    terms = np.zeros_like(corners, dtype=np.result_type(weights, corners))
+    # A missing neighbour contributes nothing at an exact supported node.
+    np.multiply(weights, corners, out=terms, where=weights != 0)
+    return terms.sum(axis=0)
 
 
 def _stellar_parameters(masses, age_gyr, tracks):

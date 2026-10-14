@@ -23,6 +23,18 @@ def mock(wd, teff=15000, mass=.6, companion=None):
     return sed, p, cool, beta
 
 
+def test_cooling_supported_node_next_to_missing_mass(wd):
+    temperature = float(wd.cooling['teff_ax'][-1])
+    valid = np.flatnonzero(np.isfinite(wd.cooling['radius'][-1]))
+    index = valid[0]
+    mass = float(wd.cooling['mass_ax'][index])
+    physical = wd.physical(temperature, mass)
+    assert physical['radius'] == pytest.approx(wd.cooling['radius'][-1, index])
+    assert np.isfinite(wd.predict(temperature, mass)['flux'][wd.support]).all()
+    with pytest.raises(ValueError):
+        wd.physical(temperature, mass - .005)
+
+
 def test_cooling_relation_units_and_support(wd):
     p = wd.physical(10000, .6)
     assert abs(p["radius"] - .01283) < 2e-5
